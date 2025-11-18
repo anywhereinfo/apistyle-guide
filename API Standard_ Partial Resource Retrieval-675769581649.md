@@ -35,52 +35,64 @@ Example: Fabric Connection Service
 
 ### 🔹 Full Resource
 
+```
 GET /fabric/v1/connections/12345
+```
 
 **Response**
 
+```
 {
-"id": "12345",
-"name": "AWS-Transit-Connect",
-"status": "active",
-"bandwidth": {
-"committed\_mbps": 1000,
-"burst\_mbps": 2000
-},
-"location": {
-"city": "Denver",
-"region": "US-CENTRAL-1"
-},
-"provider": "aws",
-"tags": ["gold", "naas"]
+  "id": "12345",
+  "name": "AWS-Transit-Connect",
+  "status": "active",
+  "bandwidth": {
+    "committed_mbps": 1000,
+    "burst_mbps": 2000
+  },
+  "location": {
+    "city": "Denver",
+    "region": "US-CENTRAL-1"
+  },
+  "provider": "aws",
+  "tags": ["gold", "naas"]
 }
+```
 
 ### 🔹 Partial Resource (Using `fields`)
 
+```
 GET /fabric/v1/connections/12345?fields=id,name,status
+```
 
 **Response**
 
+```
 {
-"id": "12345",
-"name": "AWS-Transit-Connect",
-"status": "active"
+  "id": "12345",
+  "name": "AWS-Transit-Connect",
+  "status": "active"
 }
+```
 
 Nested Field Example – MCGW Interface
 -------------------------------------
 
+```
 GET /mcgw/v1/interfaces/7df9a?fields=id,device.name,device.state
+```
 
 **Response**
 
+```
 {
-"id": "7df9a",
-"device": {
-"name": "edge-router-01",
-"state": "up"
+  "id": "7df9a",
+  "device": {
+    "name": "edge-router-01",
+    "state": "up"
+  }
 }
-}
+```
 
 Validation & Governance Automation
 ----------------------------------

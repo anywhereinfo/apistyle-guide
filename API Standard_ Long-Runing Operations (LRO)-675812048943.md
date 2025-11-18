@@ -53,131 +53,137 @@ The `GET /operations/{operationId}` endpoint is the "source of truth" for the jo
 
 Here is an **example** of a `FAILED` operation response:
 
+```
 {
-"operationId": "a1b2-c3d4-e5f6",
-"status": "FAILED",
-"percent": 33,
-"startedAt": "2025-10-29T16:00:00Z",
-"completedAt": "2025-10-29T16:00:15Z",
-"metadata": {
-"message": "Failed during partner verification.",
-"step": "PARTNER\_VERIFY"
-},
-"resource": null,
-"error": {
-"title": "Partner timeout",
-"detail": "The operation failed because a downstream partner did not respond.",
-"errors": [
-{
-"code": "PARTNER\_TIMEOUT",
-"message": "Partner did not confirm teardown within SLA",
-"meta": {
-"traceId": "traceId-abc123"
+  "operationId": "a1b2-c3d4-e5f6",
+  "status": "FAILED",
+  "percent": 33,
+  "startedAt": "2025-10-29T16:00:00Z",
+  "completedAt": "2025-10-29T16:00:15Z",
+  "metadata": {
+    "message": "Failed during partner verification.",
+    "step": "PARTNER_VERIFY"
+  },
+  "resource": null,
+  "error": {
+    "title": "Partner timeout",
+    "detail": "The operation failed because a downstream partner did not respond.",
+    "errors": [
+      {
+        "code": "PARTNER_TIMEOUT",
+        "message": "Partner did not confirm teardown within SLA",
+        "meta": {
+          "traceId": "traceId-abc123"
+        }
+      }
+    ]
+  }
 }
-}
-]
-}
-}
+```
 
 #### 3.2.1 Formal OAS 3.1 Schema Definitions
 
+```
 # These schemas MUST be used for the GET /operations/{id} response
 components:
-schemas:
-Operation:
-type: object
-required: [operationId, status, startedAt]
-properties:
-operationId:
-type: string
-description: Unique identifier for the operation.
-example: "a1b2-c3d4-e5f6"
-status:
-type: string
-description: The current state of the operation.
-enum: [PENDING, RUNNING, SUCCEEDED, FAILED, CANCELLED]
-percent:
-type: integer
-format: int32
-description: Estimated progress percentage (0-100).
-example: 33
-startedAt:
-type: string
-format: date-time
-description: UTC timestamp when the operation was accepted.
-example: "2025-10-29T16:00:00Z"
-completedAt:
-type: string
-format: date-time
-description: UTC timestamp when the operation entered a terminal state.
-example: "2025-10-29T16:00:30Z"
-resource:
-type: object
-description: Present on SUCCEEDED for POST/PUT/PATCH.
-properties:
-id:
-type: string
-description: The ID of the created/modified resource.
-example: "port-1234"
-href:
-type: string
-format: uri
-description: The full URI to GET the resource.
-example: "/v1/ports/1234"
-error:
-description: Present on FAILED. Follows the LPDP Problem Details profile.
-$ref: '#/components/schemas/LpdpProblem'
-metadata:
-type: object
-description: >
-Service-specific metadata. This object contains rich, real-time
-status information.
-properties:
-message:
-type: string
-description: The current human-readable status message.
-example: 'Step 2 of 4: Verifying configuration...'
-step:
-type: string
-description: A machine-readable code for the current sub-state.
-example: 'VERIFYING\_CONFIG'
-additionalProperties: true
-# ------ LPDP Problem Details Profile Schemas ------
-LpdpProblem:
-type: object
-additionalProperties: false
-description: Minimal Problem-Details envelope (RFC 9457-compliant)
-properties:
-title:
-type: string
-description: Short, human-readable summary.
-detail:
-type: string
-description: Optional longer explanation.
-errors:
-type: array
-minItems: 1
-items: { $ref: '#/components/schemas/LpdpError' }
-required: [ title, errors ]
-LpdpError:
-type: object
-additionalProperties: false
-description: Individual error item.
-properties:
-code:
-type: string
-description: Stable, machine-readable identifier (string form preferred).
-message:
-type: string
-description: Human-readable explanation of the issue.
-meta:
-type: object
-description: >
-Optional unregulated extension for machine-readable context.
-Lumen does not prescribe its structure. Teams may define custom
-schemas if needed.
-additionalProperties: true
-required: [ code, message ]
+  schemas:
+    Operation:
+      type: object
+      required: [operationId, status, startedAt]
+      properties:
+        operationId:
+          type: string
+          description: Unique identifier for the operation.
+          example: "a1b2-c3d4-e5f6"
+        status:
+          type: string
+          description: The current state of the operation.
+          enum: [PENDING, RUNNING, SUCCEEDED, FAILED, CANCELLED]
+        percent:
+          type: integer
+          format: int32
+          description: Estimated progress percentage (0-100).
+          example: 33
+        startedAt:
+          type: string
+          format: date-time
+          description: UTC timestamp when the operation was accepted.
+          example: "2025-10-29T16:00:00Z"
+        completedAt:
+          type: string
+          format: date-time
+          description: UTC timestamp when the operation entered a terminal state.
+          example: "2025-10-29T16:00:30Z"
+        resource:
+          type: object
+          description: Present on SUCCEEDED for POST/PUT/PATCH.
+          properties:
+            id:
+              type: string
+              description: The ID of the created/modified resource.
+              example: "port-1234"
+            href:
+              type: string
+              format: uri
+              description: The full URI to GET the resource.
+              example: "/v1/ports/1234"
+        error:
+          description: Present on FAILED. Follows the LPDP Problem Details profile.
+          $ref: '#/components/schemas/LpdpProblem'
+        metadata:
+          type: object
+          description: >
+            Service-specific metadata. This object contains rich, real-time 
+            status information.
+          properties:
+            message:
+              type: string
+              description: The current human-readable status message.
+              example: 'Step 2 of 4: Verifying configuration...'
+            step:
+              type: string
+              description: A machine-readable code for the current sub-state.
+              example: 'VERIFYING_CONFIG'
+          additionalProperties: true
+    
+    # ------ LPDP Problem Details Profile Schemas ------
+    LpdpProblem:
+      type: object
+      additionalProperties: false
+      description: Minimal Problem-Details envelope (RFC 9457-compliant)
+      properties:
+        title:
+          type: string
+          description: Short, human-readable summary.
+        detail:
+          type: string
+          description: Optional longer explanation.
+        errors:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/LpdpError' }
+      required: [ title, errors ]
+
+    LpdpError:
+      type: object
+      additionalProperties: false
+      description: Individual error item.
+      properties:
+        code:
+          type: string
+          description: Stable, machine-readable identifier (string form preferred).
+        message:
+          type: string
+          description: Human-readable explanation of the issue.
+        meta:
+          type: object
+          description: >
+            Optional unregulated extension for machine-readable context.
+            Lumen does not prescribe its structure. Teams may define custom
+            schemas if needed.
+          additionalProperties: true
+      required: [ code, message ]
+```
 
 ### 3.3 Industry Standard Schemas (Google & Microsoft)
 
@@ -438,82 +444,88 @@ All errors **must** use `application/problem+json` and our `LPDP-Mini v1.0` prof
 
 ### 8.1 LRO Initiator (e.g., Async DELETE
 
+```
 paths:
-/resources/{id}:
-delete:
-summary: Deletes a resource asynchronously
-parameters:
-- in: header
-name: Idempotency-Key
-required: true
-schema: { type: string, minLength: 8 }
-responses:
-'202':
-description: Accepted; poll the operation resource for status.
-headers:
-Location:
-schema: { type: string, format: uri }
-description: The URL of the /operations/{operationId} resource.
-Retry-After:
-schema: { type: integer, example: 10 }
-'404': # ... standard errors
-'409': # ... concurrency/lock error
-'429':
-description: Rate limit exceeded (e.g., too many concurrent ops).
-headers:
-Retry-After: { schema: { type: integer, example: 60 } }
-content:
-application/problem+json:
-schema: { $ref: '#/components/schemas/LpdpProblem' }
-'503':
-description: Service Unavailable (e.g., job queue is full).
-headers:
-Retry-After: { schema: { type: integer, example: 120 } }
-content:
-application/problem+json:
-schema: { $ref: '#/components/schemas/LpdpProblem' }
+  /resources/{id}:
+    delete:
+      summary: Deletes a resource asynchronously
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: { type: string, minLength: 8 }
+      responses:
+        '202':
+          description: Accepted; poll the operation resource for status.
+          headers:
+            Location:
+              schema: { type: string, format: uri }
+              description: The URL of the /operations/{operationId} resource.
+            Retry-After:
+              schema: { type: integer, example: 10 }
+        '404': # ... standard errors
+        '409': # ... concurrency/lock error
+        '429':
+          description: Rate limit exceeded (e.g., too many concurrent ops).
+          headers:
+            Retry-After: { schema: { type: integer, example: 60 } }
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/LpdpProblem' }
+        '503':
+          description: Service Unavailable (e.g., job queue is full).
+          headers:
+            Retry-After: { schema: { type: integer, example: 120 } }
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/LpdpProblem' }
+```
 
 ### 8.2 Get Operation Status (Polling)
 
+```
 paths:
-/operations/{operationId}:
-get:
-summary: Gets the status of a long-running operation.
-parameters:
-- in: header
-name: If-None-Match
-schema: { type: string }
-description: ETag for a 304 Not Modified response.
-responses:
-'200':
-description: Operation status.
-headers:
-ETag: { schema: { type: string } }
-Retry-After: { schema: { type: integer, example: 10 } }
-content:
-application/json:
-schema: { $ref: '#/components/schemas/Operation' }
-'304':
-description: Not Modified. Operation status has not changed.
-'404':
-description: Operation expired or not found.
-content:
-application/problem+json:
-schema: { $ref: '#/components/schemas/LpdpProblem' }
+  /operations/{operationId}:
+    get:
+      summary: Gets the status of a long-running operation.
+      parameters:
+        - in: header
+          name: If-None-Match
+          schema: { type: string }
+          description: ETag for a 304 Not Modified response.
+      responses:
+        '200':
+          description: Operation status.
+          headers:
+            ETag: { schema: { type: string } }
+            Retry-After: { schema: { type: integer, example: 10 } }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Operation' }
+        '304':
+          description: Not Modified. Operation status has not changed.
+        '404':
+          description: Operation expired or not found.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/LpdpProblem' }
+```
 
 ### 8.3 Cancel Operation
 
+```
 paths:
-/operations/{operationId}:
-delete:
-summary: Requests cancellation of an operation.
-responses:
-'202':
-description: Cancellation request accepted (best-effort).
-'404':
-description: Operation not found or expired.
-'409':
-description: Conflict. Operation is already in a terminal state.
+  /operations/{operationId}:
+    delete:
+      summary: Requests cancellation of an operation.
+      responses:
+        '202':
+          description: Cancellation request accepted (best-effort).
+        '404':
+          description: Operation not found or expired.
+        '409':
+          description: Conflict. Operation is already in a terminal state.
+```
 
 ---
 

@@ -88,19 +88,23 @@ A singleton resource (e.g., `/configuration`, `/profile`, `/settings`, `/status`
 
 **Example**
 
+```
 PATCH /v1/organization/settings
 If-Match: "v1"
 Content-Type: application/json
+
 {
-"auto\_approve": false
+  "auto_approve": false
 }
+
 HTTP/1.1 200 OK
 ETag: "v2"
 Content-Type: application/json
 {
-"auto\_approve": false,
-"timezone": "America/Chicago"
+  "auto_approve": false,
+  "timezone": "America/Chicago"
 }
+```
 
 ---
 
@@ -114,9 +118,12 @@ present keys → overwrite,
 `null` → delete,  
 absent → no change.
 
+```
 PATCH /v1/customers/123
 Content-Type: application/merge-patch+json
+
 { "status": "inactive" }
+```
 
 ---
 
@@ -124,12 +131,15 @@ Content-Type: application/merge-patch+json
 
 Explicit, ordered operations for atomic control.
 
+```
 PATCH /v1/customers/123
 Content-Type: application/json-patch+json
+
 [
-{ "op": "replace", "path": "/status", "value": "inactive" },
-{ "op": "remove", "path": "/temporary\_flag" }
+  { "op": "replace", "path": "/status", "value": "inactive" },
+  { "op": "remove", "path": "/temporary_flag" }
 ]
+```
 
 ---
 
@@ -163,13 +173,15 @@ Content-Type: application/json-patch+json
 
 **Spectral Example**
 
+```
 rules:
-patch-must-use-merge-patch:
-description: "PATCH operations must default to application/merge-patch+json"
-given: "$.paths[\*].patch.requestBody.content"
-then:
-field: "application/merge-patch+json"
-function: truthy
+  patch-must-use-merge-patch:
+    description: "PATCH operations must default to application/merge-patch+json"
+    given: "$.paths[*].patch.requestBody.content"
+    then:
+      field: "application/merge-patch+json"
+      function: truthy
+```
 
 **Summary**
 
@@ -217,22 +229,27 @@ function: truthy
 **Example**
 -----------
 
+```
 PATCH /v1/customers/123
 If-Match: "v4"
 Content-Type: application/merge-patch+json
+
 {
-"email": "jane.doe@example.com",
-"status": "inactive"
+  "email": "jane.doe@example.com",
+  "status": "inactive"
 }
+
 HTTP/1.1 200 OK
 Content-Type: application/json
 ETag: "v5"
+
 {
-"id": "123",
-"name": "Jane Doe",
-"email": "jane.doe@example.com",
-"status": "inactive"
+  "id": "123",
+  "name": "Jane Doe",
+  "email": "jane.doe@example.com",
+  "status": "inactive"
 }
+```
 
 ---
 
@@ -258,33 +275,35 @@ ETag: "v5"
 **OAS Authoring Requirements**
 ------------------------------
 
+```
 paths:
-/v1/customers/{id}:
-patch:
-summary: Partially update customer
-parameters:
-- in: path
-name: id
-required: true
-schema: { type: string }
-- in: header
-name: If-Match
-schema: { type: string }
-requestBody:
-required: true
-content:
-application/merge-patch+json:
-schema: { $ref: '#/components/schemas/CustomerPatch' }
-responses:
-'200':
-description: Successful partial update
-headers:
-ETag:
-description: Entity tag for versioning
-schema: { type: string }
-'412': { description: Precondition failed (stale ETag) }
-'400': { description: Invalid request }
-'404': { description: Not found }
+  /v1/customers/{id}:
+    patch:
+      summary: Partially update customer
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+        - in: header
+          name: If-Match
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema: { $ref: '#/components/schemas/CustomerPatch' }
+      responses:
+        '200':
+          description: Successful partial update
+          headers:
+            ETag:
+              description: Entity tag for versioning
+              schema: { type: string }
+        '412': { description: Precondition failed (stale ETag) }
+        '400': { description: Invalid request }
+        '404': { description: Not found }
+```
 
 ---
 

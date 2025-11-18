@@ -50,13 +50,20 @@ Since `POST` requests create new resources, they are the highest risk for duplic
 
 When a client sends a `POST` request, it **SHOULD** generate a unique key (e.g., a **UUID**) and send it in the `idempotency-key` header.
 
-HTTPPOST /v1/customers
+```
+HTTP
+```
+
+```
+POST /v1/customers
 idempotency-key: a8b4-12a8-8f81-9b48-18e0-128a
 Content-Type: application/json
+
 {
-"name": "Jane Doe",
-"email": "jane.doe@example.com"
+  "name": "Jane Doe",
+  "email": "jane.doe@example.com"
 }
+```
 
 If the client suffers a network error and needs to retry, it **MUST** send the *exact same* `idempotency-key` with the retry request.
 

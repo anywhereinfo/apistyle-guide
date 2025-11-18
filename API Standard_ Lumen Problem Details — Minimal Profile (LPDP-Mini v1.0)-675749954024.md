@@ -37,43 +37,46 @@ All error responses **MUST** use:
 
 ### JSON Schema (OpenAPI fragment)
 
+```
 components:
-schemas:
-LpdpProblem:
-type: object
-additionalProperties: false
-description: Minimal Problem-Details envelope (RFC 9457-compliant)
-properties:
-title:
-type: string
-description: Short, human-readable summary.
-detail:
-type: string
-description: Optional longer explanation.
-errors:
-type: array
-minItems: 1
-items: { $ref: '#/components/schemas/LpdpError' }
-required: [ title, errors ]
-LpdpError:
-type: object
-additionalProperties: false
-description: Individual error item.
-properties:
-code:
-type: string
-description: Stable, machine-readable identifier (string form preferred).
-message:
-type: string
-description: Human-readable explanation of the issue.
-meta:
-type: object
-description: >
-Optional unregulated extension for machine-readable context.
-Lumen does not prescribe its structure. Teams may define custom
-schemas if needed.
-additionalProperties: true
-required: [ code, message ]
+  schemas:
+    LpdpProblem:
+      type: object
+      additionalProperties: false
+      description: Minimal Problem-Details envelope (RFC 9457-compliant)
+      properties:
+        title:
+          type: string
+          description: Short, human-readable summary.
+        detail:
+          type: string
+          description: Optional longer explanation.
+        errors:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/LpdpError' }
+      required: [ title, errors ]
+
+    LpdpError:
+      type: object
+      additionalProperties: false
+      description: Individual error item.
+      properties:
+        code:
+          type: string
+          description: Stable, machine-readable identifier (string form preferred).
+        message:
+          type: string
+          description: Human-readable explanation of the issue.
+        meta:
+          type: object
+          description: >
+            Optional unregulated extension for machine-readable context.
+            Lumen does not prescribe its structure. Teams may define custom
+            schemas if needed.
+          additionalProperties: true
+      required: [ code, message ]
+```
 
 ---
 
@@ -134,26 +137,29 @@ Examples: `auth.missing`, `resource.not_found`, `dependency.failed`.
 
 ### Example of Per-API Override
 
+```
 components:
-schemas:
-LpdpError\_MCGW\_V1:
-allOf:
-- $ref: '#/components/schemas/LpdpError'
-- type: object
-properties:
-meta:
-$ref: '#/components/schemas/McgwErrorMetaV1'
-McgwErrorMetaV1:
-type: object
-additionalProperties: false
-description: Meta structure specific to MCGW v1 APIs.
-properties:
-subsystem: { type: string }
-operation: { type: string }
-cause:
-type: string
-enum: [timeout, unavailable, error, authorization, unknown]
-required: [ subsystem, cause ]
+  schemas:
+    LpdpError_MCGW_V1:
+      allOf:
+        - $ref: '#/components/schemas/LpdpError'
+        - type: object
+          properties:
+            meta:
+              $ref: '#/components/schemas/McgwErrorMetaV1'
+
+    McgwErrorMetaV1:
+      type: object
+      additionalProperties: false
+      description: Meta structure specific to MCGW v1 APIs.
+      properties:
+        subsystem: { type: string }
+        operation: { type: string }
+        cause:
+          type: string
+          enum: [timeout, unavailable, error, authorization, unknown]
+      required: [ subsystem, cause ]
+```
 
 ---
 
@@ -174,71 +180,88 @@ Canonical Examples and HTTP Status Mapping
 
 ### (a) Validation Error — 422
 
+```
 {
-"title": "Validation failed",
-"errors": [
-{ "code": "string.min", "message": "[name] must be at least 3 characters.", "meta": { "min": 3, "actual": 2 } },
-{ "code": "cidr.invalid", "message": "[ip\_address] must be a valid IPv4 CIDR.", "meta": { "expected": "IPv4 CIDR, e.g., 192.168.1.0/24" } }
-]
+  "title": "Validation failed",
+  "errors": [
+    { "code": "string.min", "message": "[name] must be at least 3 characters.", "meta": { "min": 3, "actual": 2 } },
+    { "code": "cidr.invalid", "message": "[ip_address] must be a valid IPv4 CIDR.", "meta": { "expected": "IPv4 CIDR, e.g., 192.168.1.0/24" } }
+  ]
 }
+```
 
 ### (b) Dependency Failure — 503
 
+```
 {
-"title": "Backend dependency failed",
-"errors": [
-{
-"code": "dependency.failed",
-"message": "VRF service did not respond.",
-"meta": { "subsystem": "VRFService", "operation": "lookupVrf", "resource": "vrf", "cause": "timeout" }
+  "title": "Backend dependency failed",
+  "errors": [
+    {
+      "code": "dependency.failed",
+      "message": "VRF service did not respond.",
+      "meta": { "subsystem": "VRFService", "operation": "lookupVrf", "resource": "vrf", "cause": "timeout" }
+    }
+  ]
 }
-]
-}
+```
 
 ### (c) Composite Key Not Found — 404
 
+```
 {
-"title": "VRF not found",
-"errors": [
-{ "code": "resource.not\_found", "message": "No VRF matched the provided name and customer.", "meta": { "resource": "vrf" } }
-]
+  "title": "VRF not found",
+  "errors": [
+    { "code": "resource.not_found", "message": "No VRF matched the provided name and customer.", "meta": { "resource": "vrf" } }
+  ]
 }
+```
 
 ### (d) Ambiguous Resource — 409
 
+```
 {
-"title": "VRF selection is ambiguous",
-"errors": [
-{ "code": "resource.ambiguous", "message": "More than one VRF matches the provided criteria.", "meta": { "resource": "vrf", "candidates": 3 } }
-]
+  "title": "VRF selection is ambiguous",
+  "errors": [
+    { "code": "resource.ambiguous", "message": "More than one VRF matches the provided criteria.", "meta": { "resource": "vrf", "candidates": 3 } }
+  ]
 }
+```
 
 ### (e) Unknown Failure — 500
 
+```
 {
-"title": "Unable to fetch VRF information",
-"errors": [
-{ "code": "resource.lookup\_failed", "message": "VRF information could not be retrieved.", "meta": { "subsystem": "VRFService", "cause": "unknown" } }
-]
+  "title": "Unable to fetch VRF information",
+  "errors": [
+    { "code": "resource.lookup_failed", "message": "VRF information could not be retrieved.", "meta": { "subsystem": "VRFService", "cause": "unknown" } }
+  ]
 }
+```
 
 ### (f) Auth Failures — 401 / 403
 
+```
 {
-"title": "Unauthorized",
-"errors": [ { "code": "auth.missing", "message": "Authorization header is required." } ]
+  "title": "Unauthorized",
+  "errors": [ { "code": "auth.missing", "message": "Authorization header is required." } ]
 }
+```
+
+```
 {
-"title": "Forbidden",
-"errors": [ { "code": "auth.forbidden", "message": "Caller not permitted to perform this operation." } ]
+  "title": "Forbidden",
+  "errors": [ { "code": "auth.forbidden", "message": "Caller not permitted to perform this operation." } ]
 }
+```
 
 ### (g) Malformed Request — 400
 
+```
 {
-"title": "Malformed request",
-"errors": [ { "code": "request.invalid\_json", "message": "Request body is not valid JSON." } ]
+  "title": "Malformed request",
+  "errors": [ { "code": "request.invalid_json", "message": "Request body is not valid JSON." } ]
 }
+```
 
 ---
 

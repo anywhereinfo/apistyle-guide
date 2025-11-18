@@ -72,20 +72,23 @@ This page defines the required and recommended practices for all `POST` operatio
 
 **Example:**
 
+```
 POST /v1/customers
 Content-Type: application/json
 {
-"name": "Jane Doe",
-"email": "jane@example.com"
+  "name": "Jane Doe",
+  "email": "jane@example.com"
 }
+
 HTTP/1.1 201 Created
 Location: /v1/customers/c123
 Content-Type: application/json
 {
-"id": "c123",
-"name": "Jane Doe",
-"email": "jane@example.com"
+  "id": "c123",
+  "name": "Jane Doe",
+  "email": "jane@example.com"
 }
+```
 
 ---
 
@@ -103,14 +106,16 @@ When performing an action on an existing resource that does not map to a CRUD op
 
 **Example:**
 
+```
 POST /v1/invoices/123/void
 Idempotency-Key: 4af7e7d9-91a6-4823-a1c0-8d112c884cb5
 HTTP/1.1 200 OK
 Content-Type: application/json
 {
-"id": "123",
-"status": "voided"
+  "id": "123",
+  "status": "voided"
 }
+```
 
 ---
 
@@ -129,13 +134,18 @@ Content-Type: application/json
 
 **Example:**
 
+```
 POST /v1/payments
 Idempotency-Key: 827dcf3e-44fb-4f07-94b3-6b47cf3b813d
+
 → 201 Created
+
 # Retry (same key)
 → 201 Created (identical response)
+
 # Retry (same key, different payload)
 → 409 Conflict
+```
 
 ---
 
@@ -177,30 +187,32 @@ Idempotency-Key: 827dcf3e-44fb-4f07-94b3-6b47cf3b813d
 
 When documenting `POST` operations in OpenAPI:
 
+```
 paths:
-/v1/orders:
-post:
-summary: Create an order
-parameters:
-- in: header
-name: Idempotency-Key
-schema: { type: string, maxLength: 255 }
-requestBody:
-required: true
-content:
-application/json:
-schema: { $ref: '#/components/schemas/OrderCreate' }
-responses:
-'201':
-description: Created
-headers:
-Location:
-schema: { type: string, format: uri }
-'202': { description: Accepted (async creation) }
-'207': { description: Partial success (batch results) }
-'400': { description: Invalid request }
-'409': { description: Conflict (duplicate or idempotency) }
-'422': { description: Validation failed }
+  /v1/orders:
+    post:
+      summary: Create an order
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          schema: { type: string, maxLength: 255 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OrderCreate' }
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              schema: { type: string, format: uri }
+        '202': { description: Accepted (async creation) }
+        '207': { description: Partial success (batch results) }
+        '400': { description: Invalid request }
+        '409': { description: Conflict (duplicate or idempotency) }
+        '422': { description: Validation failed }
+```
 
 **MUST**
 

@@ -15,13 +15,15 @@ Clients **MUST** treat the ETag as an opaque string. They should store it, but n
 
 Example ETag Response Header:
 
+```
 HTTP/1.1 200 OK
 Content-Type: application/json
 ETag: "abc-123-xyz-789"
 {
-"id": "user-42",
-"name": "Jane Doe"
+  "id": "user-42",
+  "name": "Jane Doe"
 }
+```
 
 ---
 
@@ -124,49 +126,53 @@ This table summarizes the server's mandatory behavior when `ETag`-related header
 
 ### Example: Defining ETag on a GET Response
 
+```
 paths:
-/users/{userId}:
-get:
-summary: Get a single user
-responses:
-'200':
-description: The user resource.
-headers:
-etag:
-schema:
-type: string
-description: The ETag for this version of the resource.
-content:
-application/json:
-schema:
-$ref: '#/components/schemas/User'
+  /users/{userId}:
+    get:
+      summary: Get a single user
+      responses:
+        '200':
+          description: The user resource.
+          headers:
+            etag:
+              schema:
+                type: string
+              description: The ETag for this version of the resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+```
 
 ### Example: Requiring If-Match on a PATCH Request
 
+```
 paths:
-/users/{userId}:
-patch:
-summary: Update a user
-parameters:
-- in: header
-name: if-match
-description: The ETag of the resource to update, for concurrency control.
-required: true
-schema:
-type: string
-requestBody:
-# ... request body definition
-responses:
-'200':
-description: Update successful.
-headers:
-etag:
-schema:
-type: string
-description: The new ETag for the updated resource.
-'412':
-description: Precondition Failed. The resource has been modified.
-content:
-application/problem+json:
-schema:
-$ref: '#/components/schemas/Problem'
+  /users/{userId}:
+    patch:
+      summary: Update a user
+      parameters:
+        - in: header
+          name: if-match
+          description: The ETag of the resource to update, for concurrency control.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        # ... request body definition
+      responses:
+        '200':
+          description: Update successful.
+          headers:
+            etag:
+              schema:
+                type: string
+              description: The new ETag for the updated resource.
+        '412':
+          description: Precondition Failed. The resource has been modified.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+```

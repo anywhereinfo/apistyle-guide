@@ -45,18 +45,20 @@ The response body for a paginated request MUST be a JSON object containing two t
 
 **Example Response:**
 
+```
 {
-"data": [
-{ "id": "svc-abc-101", "name": "Service 101" },
-// ... 49 more items
-{ "id": "svc-xyz-150", "name": "Service 150" }
-],
-"pagination": {
-"total": 473,
-"limit": 50,
-"offset": 100
+  "data": [
+    { "id": "svc-abc-101", "name": "Service 101" },
+    // ... 49 more items
+    { "id": "svc-xyz-150", "name": "Service 150" }
+  ],
+  "pagination": {
+    "total": 473,
+    "limit": 50,
+    "offset": 100
+  }
 }
-}
+```
 
 ---
 
@@ -85,20 +87,24 @@ The response structure for Keyset pagination is simplified to facilitate "infini
 
 **Example Response:**
 
-```json
+```
+JSON
+```
+
+```
 {
-"data": [
-{ "id": "evt-123", "timestamp": "2025-10-15T14:30:00Z" },
-// ... 49 more items
-{ "id": "evt-456", "timestamp": "2025-10-15T14:28:00Z" }
-],
-"pagination": {
-"next\_cursor": "ZjkzMjc5YTYxYjItM2RiYi00YjU4LTg5ZmMtMTdiYmI5Zj",
-"has\_next\_page": true,
-"next": "https://api.lumen.com/v1/events?limit=50&after=ZjkzMjc5YTYxYjItM2RiYi00YjU4LTg5ZmMtMTdiYmI5Zj"
+  "data": [
+    { "id": "evt-123", "timestamp": "2025-10-15T14:30:00Z" },
+    // ... 49 more items
+    { "id": "evt-456", "timestamp": "2025-10-15T14:28:00Z" }
+  ],
+  "pagination": {
+    "next_cursor": "ZjkzMjc5YTYxYjItM2RiYi00YjU4LTg5ZmMtMTdiYmI5Zj",
+    "has_next_page": true,
+    "next": "https://api.lumen.com/v1/events?limit=50&after=ZjkzMjc5YTYxYjItM2RiYi00YjU4LTg5ZmMtMTdiYmI5Zj"
+  }
 }
 ```
-}
 
 ---
 

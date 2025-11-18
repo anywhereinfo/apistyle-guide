@@ -67,38 +67,48 @@ It is not part of a collection. A singleton **may or may not pre-exist** , if it
 
 **Create (first-time PUT)**
 
+```
 PUT /v1/organization/settings
 Content-Type: application/json
+
 {
-"auto\_approve": true,
-"timezone": "America/Chicago"
+  "auto_approve": true,
+  "timezone": "America/Chicago"
 }
+
 HTTP/1.1 201 Created
 ETag: "v1"
 Location: /v1/organization/settings
+```
 
 **Replace (subsequent update)**
 
+```
 PUT /v1/organization/settings
 If-Match: "v1"
 Content-Type: application/json
+
 {
-"auto\_approve": false,
-"timezone": "America/Chicago"
+  "auto_approve": false,
+  "timezone": "America/Chicago"
 }
+
 HTTP/1.1 200 OK
 ETag: "v2"
+```
 
 **Conflict (stale ETag)**
 
+```
 HTTP/1.1 412 Precondition Failed
 Content-Type: application/problem+json
 {
-"type": "https://api.lumen.com/errors/conflict",
-"title": "Precondition Failed",
-"status": 412,
-"detail": "The resource has been modified by another client."
+  "type": "https://api.lumen.com/errors/conflict",
+  "title": "Precondition Failed",
+  "status": 412,
+  "detail": "The resource has been modified by another client."
 }
+```
 
 ---
 
@@ -107,12 +117,14 @@ Content-Type: application/problem+json
 * Singleton `PUT` operations follow the same idempotency, full-replacement, and ETag/If-Match rules as normal resources.
 * Example Spectral validation:
 
+```
 rules:
-singleton-put-must-support-etag:
-given: "$.paths[?(@property.match(/^\\/v1\\/(configuration|profile|settings|status|organization\\/[^/]+\\/policy)/))].put"
-then:
-field: "responses['200'].headers.ETag"
-function: truthy
+  singleton-put-must-support-etag:
+    given: "$.paths[?(@property.match(/^\\/v1\\/(configuration|profile|settings|status|organization\\/[^/]+\\/policy)/))].put"
+    then:
+      field: "responses['200'].headers.ETag"
+      function: truthy
+```
 
 **Summary**
 
@@ -156,25 +168,32 @@ function: truthy
 **Example**
 -----------
 
+```
 PUT /v1/customers/c123
 If-Match: "v4"
 Content-Type: application/json
+
 {
-"id": "c123",
-"name": "Jane Doe",
-"email": "jane@example.com",
-"status": "active"
+  "id": "c123",
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "status": "active"
 }
+```
+
+```
 HTTP/1.1 200 OK
 Content-Type: application/json
 ETag: "v5"
 Cache-Control: private, max-age=60
+
 {
-"id": "c123",
-"name": "Jane Doe",
-"email": "jane@example.com",
-"status": "active"
+  "id": "c123",
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "status": "active"
 }
+```
 
 ---
 
@@ -214,34 +233,36 @@ Cache-Control: private, max-age=60
 **OAS Authoring Requirements**
 ------------------------------
 
+```
 paths:
-/v1/customers/{id}:
-put:
-summary: Replace a customer resource
-parameters:
-- in: path
-name: id
-required: true
-schema: { type: string }
-- in: header
-name: If-Match
-schema: { type: string }
-requestBody:
-required: true
-content:
-application/json:
-schema: { $ref: '#/components/schemas/Customer' }
-responses:
-'200':
-description: Successful replacement
-headers:
-ETag:
-description: Entity tag for versioning
-schema: { type: string }
-'201': { description: Created (first-time PUT) }
-'412': { description: Precondition failed (stale ETag) }
-'400': { description: Invalid request }
-'404': { description: Not found }
+  /v1/customers/{id}:
+    put:
+      summary: Replace a customer resource
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+        - in: header
+          name: If-Match
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Customer' }
+      responses:
+        '200':
+          description: Successful replacement
+          headers:
+            ETag:
+              description: Entity tag for versioning
+              schema: { type: string }
+        '201': { description: Created (first-time PUT) }
+        '412': { description: Precondition failed (stale ETag) }
+        '400': { description: Invalid request }
+        '404': { description: Not found }
+```
 
 **MUST**
 
@@ -283,26 +304,28 @@ schema: { type: string }
 **Conditional Update Decision Tree**
 ------------------------------------
 
- ┌────────────────────────────┐
-│ Is this a change? │
-└──────────────┬──────────────┘
-│
-┌────────────┴────────────┐
-│ │
-No → Use GET Yes → Modify state
-│
-┌───────────┴───────────┐
-│ │
-Is it a new resource? Existing resource?
-│ │
-┌─────────────┘ └──────────────┐
-│ │
-Use POST (create) Replace or update?
-│
-┌───────────────────────┴────────────────────────┐
-│ │
-Replace full representation? Modify partial fields only?
-│ │
-┌─────────┘ └──────────┐
-│ │
-✅ Use PUT with If-Match ✅ Use PATCH with If-Match
+```
+                   ┌────────────────────────────┐
+                   │      Is this a change?      │
+                   └──────────────┬──────────────┘
+                                  │
+                     ┌────────────┴────────────┐
+                     │                         │
+               No → Use GET              Yes → Modify state
+                                              │
+                                  ┌───────────┴───────────┐
+                                  │                       │
+                      Is it a new resource?         Existing resource?
+                                  │                       │
+                    ┌─────────────┘                       └──────────────┐
+                    │                                                  │
+           Use POST (create)                             Replace or update?
+                                                                   │
+                                           ┌───────────────────────┴────────────────────────┐
+                                           │                                              │
+                                  Replace full representation?                Modify partial fields only?
+                                           │                                              │
+                                 ┌─────────┘                                              └──────────┐
+                                 │                                                             │
+                        ✅ Use PUT with If-Match                                 ✅ Use PATCH with If-Match
+```

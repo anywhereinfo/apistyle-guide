@@ -17,7 +17,9 @@ The major version represents the public contract with the client and **MUST** on
 
 * **Implementation**: The major version **MUST** be included in the URI path and prefixed with a "v" (e.g., `v1`, `v2`).
 
+  ```
   https://api.lumen.com/inventory/v1/connections
+  ```
 * **Client Impact**: A client's integration is tied to this major version. We guarantee that no breaking changes will be made within a given major version.
 
 ### Minor Versions: The Diagnostic Tool 🩺
@@ -26,7 +28,9 @@ The minor version is an internal reference used to track non-breaking, additive 
 
 * **Implementation**: The server **SHOULD** include the semantic version (major.minor) in an HTTP response header.
 
+  ```
   API-Version: 1.2
+  ```
 * **Client Impact**: This has **zero impact** on the client's code. They are not required to send or parse this header. Its purpose is to provide a precise reference point for debugging, especially in distributed systems where deployment lag could lead to different nodes running different code versions.
 
 Defining Breaking vs. Non-Breaking Changes
@@ -101,9 +105,11 @@ Deprecating an endpoint or feature requires a phased approach. The removal of an
 
    **Example HTTP Headers**
 
+   ```
    HTTP/1.1 200 OK
    Deprecation: Wed, 22 Oct 2025 13:30:00 GMT
    Sunset: Fri, 22 Oct 2027 13:30:00 GMT
+   ```
 2. **Guide (Phase 2)** 🚀: Provide a clear path forward for consumers.
 
    * If a replacement exists, the server **SHOULD** return a `Link` header pointing to the new endpoint (e.g., `Link: <.../v1/new-endpoint>; rel="alternate"`).

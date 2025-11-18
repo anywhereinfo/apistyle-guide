@@ -116,31 +116,35 @@ This metadata lives directly on the operation object within the OAS file, making
 
 **Example within the OAS (**`api.oas.yaml`**):**
 
+```
 paths:
-/users:
-post:
-summary: Create a new user
-operationId: createUser
-# --- Automated Governance Metadata Starts Here ---
-x-data-classification: "Restricted (PII)"
-x-operation-type: "lro" # (Long-Running Operation)
-x-financial-operation: false
-x-idempotent: false
-# --- Automated Governance Metadata Ends Here ---
-tags:
-- Users
-requestBody:
-description: User object to be created
-required: true
-content:
-application/json:
-schema:
-$ref: '#/components/schemas/User'
-responses:
-'202':
-description: Accepted. The user creation is in progress.
-'400':
-description: Invalid input
+  /users:
+    post:
+      summary: Create a new user
+      operationId: createUser
+      
+      # --- Automated Governance Metadata Starts Here ---
+      x-data-classification: "Restricted (PII)"
+      x-operation-type: "lro" # (Long-Running Operation)
+      x-financial-operation: false
+      x-idempotent: false
+      # --- Automated Governance Metadata Ends Here ---
+
+      tags:
+        - Users
+      requestBody:
+        description: User object to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '202':
+          description: Accepted. The user creation is in progress.
+        '400':
+          description: Invalid input
+```
 
 ### 3.2. Key Endpoint-Level Metadata Fields
 
@@ -167,201 +171,203 @@ A common concern is that `x-` tags will clutter the rendered documentation (e.g.
 4.0 API-Metadata JSON Schema
 ----------------------------
 
+```
 {
-"$schema": "http://json-schema.org/draft-07/schema#",
-"title": "API Governance Catalog Metadata",
-"description": "Schema for the catalog.yaml file, which provides governance and discovery metadata for an API.",
-"type": "object",
-"properties": {
-"schemaVersion": {
-"description": "The version of this metadata schema.",
-"type": "string",
-"enum": ["v1.0"]
-},
-"apiName": {
-"description": "The human-readable, canonical name of the API.",
-"type": "string",
-"minLength": 1
-},
-"ownershipModel": {
-"description": "Defines the ownership classification of the API. For governance scope, always 'Lumen-Owned'.",
-"type": "string",
-"enum": ["Lumen-Owned"]
-},
-"assetId": {
-"type": "string",
-"minLength": 1,
-"description": "Lumen Asset ID (SYSGEN) linking to Asset Management",
-"examples": ["SYSGEN-45123"]
-},
-"businessOwner": {
-"description": "The primary stakeholder or Product Manager (email, ID, or alias).",
-"type": "string",
-"minLength": 1
-},
-"technicalOwner": {
-"description": "The Engineering Lead or Architect (email, ID, or alias).",
-"type": "string",
-"minLength": 1
-},
-"developmentTeam": {
-"description": "The name or alias of the team that builds and maintains the API.",
-"type": "string",
-"minLength": 1
-},
-"supportContact": {
-"description": "The official support channel for consumers (email or Slack channel).",
-"type": "string",
-"minLength": 1
-},
-"consumerAudience": {
-"description": "The intended consumer channel, which dictates security and exposure.",
-"type": "string",
-"enum": [
-"internal-ui",
-"internal-service",
-"external-partner",
-"external-public"
-]
-},
-"apiLayer": {
-"description": "The architectural classification of the API, based on its primary role.",
-"type": "string",
-"enum": [
-"Experience",
-"Canonical",
-"Process",
-"System"
-]
-},
-"system": {
-"description": "A key/name that links this API to a larger System or Domain in the software catalog.",
-"type": "string"
-},
-"lifecycleStage": {
-"description": "The current stage of the API's life.",
-"type": "string",
-"enum": [
-"Design",
-"In-Development",
-"Active",
-"Deprecated",
-"Retired"
-]
-},
-"governanceLevel": {
-"description": "The level of review and adherence to standards applied to this API.",
-"type": "string",
-"enum": [
-"Fully Governed",
-"Partially Governed",
-"Lift and Shift",
-"Exception"
-]
-},
-"deprecationDate": {
-"description": "The date (ISO 8601) when the API will no longer be supported.",
-"type": ["string", "null"],
-"format": "date-time"
-},
-"sunsetDate": {
-"description": "The date (ISO 8601) when the API will be shut down.",
-"type": ["string", "null"],
-"format": "date-time"
-},
-"apiStyle": {
-"description": "The architectural style of the API.",
-"type": "string",
-"enum": [
-"REST",
-"RPC-style",
-"GraphQL",
-"gRPC",
-"Async"
-]
-},
-"protocol": {
-"description": "The primary protocol used.",
-"type": "string",
-"enum": [
-"HTTPS",
-"WSS",
-"AMQP",
-"MQTT"
-]
-},
-"dataClassification": {
-"description": "The highest sensitivity level of data handled by any endpoint in the API.",
-"type": "string",
-"enum": [
-"Public",
-"Internal",
-"Confidential",
-"Restricted (PII, PCI, PHI)"
-]
-},
-"complianceRequirements": {
-"description": "A list of any compliance regulations that apply to this API.",
-"type": "array",
-"items": {
-"type": "string"
-},
-"uniqueItems": true
-},
-"reviewAuditTrail": {
-"description": "An immutable log of the latest governance review.",
-"type": "object",
-"properties": {
-"reviewId": {
-"description": "A unique identifier for the latest governance review.",
-"type": "string",
-"minLength": 1
-},
-"reviewDate": {
-"description": "The timestamp (ISO 8601) when the latest review was completed.",
-"type": "string",
-"format": "date-time"
-},
-"reviewStatus": {
-"description": "The outcome of the review.",
-"type": "string",
-"enum": [
-"Pending",
-"Approved",
-"Approved with Conditions",
-"Rejected"
-]
-},
-"securityReviewId": {
-"description": "A unique identifier that links to an internal risk or security review record.",
-"type": "string"
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "API Governance Catalog Metadata",
+  "description": "Schema for the catalog.yaml file, which provides governance and discovery metadata for an API.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "description": "The version of this metadata schema.",
+      "type": "string",
+      "enum": ["v1.0"]
+    },
+    "apiName": {
+      "description": "The human-readable, canonical name of the API.",
+      "type": "string",
+      "minLength": 1
+    },
+    "ownershipModel": {
+    "description": "Defines the ownership classification of the API. For governance scope, always 'Lumen-Owned'.",
+    "type": "string",
+    "enum": ["Lumen-Owned"]
+  },
+    "assetId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Lumen Asset ID (SYSGEN) linking to Asset Management",
+      "examples": ["SYSGEN-45123"]
+    },
+    "businessOwner": {
+      "description": "The primary stakeholder or Product Manager (email, ID, or alias).",
+      "type": "string",
+      "minLength": 1
+    },
+    "technicalOwner": {
+      "description": "The Engineering Lead or Architect (email, ID, or alias).",
+      "type": "string",
+      "minLength": 1
+    },
+    "developmentTeam": {
+      "description": "The name or alias of the team that builds and maintains the API.",
+      "type": "string",
+      "minLength": 1
+    },
+    "supportContact": {
+      "description": "The official support channel for consumers (email or Slack channel).",
+      "type": "string",
+      "minLength": 1
+    },
+    "consumerAudience": {
+      "description": "The intended consumer channel, which dictates security and exposure.",
+      "type": "string",
+      "enum": [
+        "internal-ui",
+        "internal-service",
+        "external-partner",
+        "external-public"
+      ]
+    },
+    "apiLayer": {
+      "description": "The architectural classification of the API, based on its primary role.",
+      "type": "string",
+      "enum": [
+        "Experience",
+        "Canonical",
+        "Process",
+        "System"
+      ]
+    },
+    "system": {
+      "description": "A key/name that links this API to a larger System or Domain in the software catalog.",
+      "type": "string"
+    },
+    "lifecycleStage": {
+      "description": "The current stage of the API's life.",
+      "type": "string",
+      "enum": [
+        "Design",
+        "In-Development",
+        "Active",
+        "Deprecated",
+        "Retired"
+      ]
+    },
+    "governanceLevel": {
+      "description": "The level of review and adherence to standards applied to this API.",
+      "type": "string",
+      "enum": [
+        "Fully Governed",
+        "Partially Governed",
+        "Lift and Shift",
+        "Exception"
+      ]
+    },
+    "deprecationDate": {
+      "description": "The date (ISO 8601) when the API will no longer be supported.",
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "sunsetDate": {
+      "description": "The date (ISO 8601) when the API will be shut down.",
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "apiStyle": {
+      "description": "The architectural style of the API.",
+      "type": "string",
+      "enum": [
+        "REST",
+        "RPC-style",
+        "GraphQL",
+        "gRPC",
+        "Async"
+      ]
+    },
+    "protocol": {
+      "description": "The primary protocol used.",
+      "type": "string",
+      "enum": [
+        "HTTPS",
+        "WSS",
+        "AMQP",
+        "MQTT"
+      ]
+    },
+    "dataClassification": {
+      "description": "The highest sensitivity level of data handled by any endpoint in the API.",
+      "type": "string",
+      "enum": [
+        "Public",
+        "Internal",
+        "Confidential",
+        "Restricted (PII, PCI, PHI)"
+      ]
+    },
+    "complianceRequirements": {
+      "description": "A list of any compliance regulations that apply to this API.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "reviewAuditTrail": {
+      "description": "An immutable log of the latest governance review.",
+      "type": "object",
+      "properties": {
+        "reviewId": {
+          "description": "A unique identifier for the latest governance review.",
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewDate": {
+          "description": "The timestamp (ISO 8601) when the latest review was completed.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "reviewStatus": {
+          "description": "The outcome of the review.",
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Approved",
+            "Approved with Conditions",
+            "Rejected"
+          ]
+        },
+        "securityReviewId": {
+          "description": "A unique identifier that links to an internal risk or security review record.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reviewId",
+        "reviewDate",
+        "reviewStatus"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "apiName",
+    "ownershipModel",
+    "assetId"
+    "businessOwner",
+    "technicalOwner",
+    "developmentTeam",
+    "supportContact",
+    "consumerAudience",
+    "apiLayer",
+    "lifecycleStage",
+    "governanceLevel",
+    "apiStyle",
+    "protocol",
+    "dataClassification",
+    "reviewAuditTrail"
+  ],
+  "additionalProperties": false
 }
-},
-"required": [
-"reviewId",
-"reviewDate",
-"reviewStatus"
-],
-"additionalProperties": false
-}
-},
-"required": [
-"schemaVersion",
-"apiName",
-"ownershipModel",
-"assetId"
-"businessOwner",
-"technicalOwner",
-"developmentTeam",
-"supportContact",
-"consumerAudience",
-"apiLayer",
-"lifecycleStage",
-"governanceLevel",
-"apiStyle",
-"protocol",
-"dataClassification",
-"reviewAuditTrail"
-],
-"additionalProperties": false
-}
+```

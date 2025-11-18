@@ -27,21 +27,28 @@ It is *not* intended for partial removal, filtered deletion, or passing instruct
 
 #### 🧾 **Example (Correct)**
 
+```
 DELETE /fabric/v1/connections/12345
+```
 
 **Response**
 
+```
 HTTP/1.1 204 No Content
+```
 
 ---
 
 #### 🚫 **Example (Incorrect)**
 
+```
 DELETE /mcgw/v1/routes
 Content-Type: application/json
+
 {
-"routeIds": ["r1","r2","r3"]
+  "routeIds": ["r1","r2","r3"]
 }
+```
 
 **Why This Is Non-Compliant:**  
 This DELETE request attempts partial modification via a request body, which has no defined semantics under RFC 9110.  
@@ -82,24 +89,28 @@ Use PATCH or a POST action endpoint instead.
 
 **Rule 1 – No DELETE Request Body**
 
+```
 rules:
-lumen-no-delete-body:
-description: "DELETE requests must not define requestBody"
-given: "$.paths[\*].delete"
-then:
-field: requestBody
-function: falsy
+  lumen-no-delete-body:
+    description: "DELETE requests must not define requestBody"
+    given: "$.paths[*].delete"
+    then:
+      field: requestBody
+      function: falsy
+```
 
 **Rule 2 – Valid DELETE Responses**
 
+```
 rules:
-lumen-delete-status-codes:
-description: "Allowed HTTP status codes for DELETE"
-given: "$.paths[\*].delete.responses"
-then:
-function: lumen-validate-status-code
-functionOptions:
-validCodes: [204, 400, 401, 403, 404, 405, 500]
+  lumen-delete-status-codes:
+    description: "Allowed HTTP status codes for DELETE"
+    given: "$.paths[*].delete.responses"
+    then:
+      function: lumen-validate-status-code
+      functionOptions:
+        validCodes: [204, 400, 401, 403, 404, 405, 500]
+```
 
 ---
 

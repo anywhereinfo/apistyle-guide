@@ -16,7 +16,9 @@ OAS Version and Format
 * Utilize OAS 3.0.3 for all new API specifications to ensure alignment with ApigeeX industry practices.
 * Include the correct version declaration at the start of the document:
 
+  ```
   openapi: 3.0.3
+  ```
 
 ### **Use YAML as the Documentation Format**
 
@@ -65,12 +67,14 @@ Security
 
 Apply security requirements at the individual path or operation level rather than globally. This approach provides precise control and accommodates varying security needs for different endpoints.
 
+```
 paths:
-/items:
-get:
-security:
-- OAuth2:
-- read
+  /items:
+    get:
+      security:
+        - OAuth2:
+            - read
+```
 
 ---
 
@@ -88,88 +92,106 @@ The `components` section is the central repository for all reusable definitions.
 
 Define reusable query and path parameters under
 
+```
 components.parameters.
+```
 
 #### Declare Reusable Parameters example
 
+```
 components:
-parameters:
-ResourceId:
-name: id
-in: path
-description: The unique identifier for the resource.
-required: true
-schema:
-type: string
-format: uuid
-LimitParam:
-name: limit
-in: query
-description: The maximum number of items to return per page.
-schema:
-type: integer
-default: 20
+  parameters:
+    ResourceId:
+      name: id
+      in: path
+      description: The unique identifier for the resource.
+      required: true
+      schema:
+        type: string
+        format: uuid
+    LimitParam:
+      name: limit
+      in: query
+      description: The maximum number of items to return per page.
+      schema:
+        type: integer
+        default: 20
+```
 
 #### Reference them in your paths
 
+```
 paths:
-/v1/items/{id}:
-parameters:
-- $ref: '#/components/parameters/ResourceId'
+  /v1/items/{id}:
+    parameters:
+      - $ref: '#/components/parameters/ResourceId'
+```
 
 #### Reusable Request Headers
 
 Request headers are treated as parameters with “in: header” and are also defined under
 
+```
 components.parameters
+```
 
 #### Define the reusable header as a parameter
 
+```
 components:
-parameters:
-CorrelationIdHeader:
-name: X-Correlation-ID
-in: header
-description: Tracks a request across multiple services for debugging.
-required: true
-schema:
-type: string
-format: uuid
+  parameters:
+    CorrelationIdHeader:
+      name: X-Correlation-ID
+      in: header
+      description: Tracks a request across multiple services for debugging.
+      required: true
+      schema:
+        type: string
+        format: uuid
+```
 
 #### Reference it in your path
 
+```
 paths:
-/v1/items:
-post:
-parameters:
-- $ref: '#/components/parameters/CorrelationIdHeader'
+  /v1/items:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/CorrelationIdHeader'
+```
 
 #### Reusable Response Headers
 
 Response headers have their own dedicated section for reusability:
 
+```
 components.headers
+```
 
 #### Define the reusable response header
 
+```
 components:
-headers:
-RateLimitRemaining:
-description: The number of requests left for the current time window.
-schema:
-type: integer
+  headers:
+    RateLimitRemaining:
+      description: The number of requests left for the current time window.
+      schema:
+        type: integer
+```
 
 #### Reference it in a response definition
 
+```
 paths:
-/v1/items:
-get:
-responses:
-'200':
-description: A successful response.
-headers:
-RateLimit-Remaining:
-$ref: '#/components/headers/RateLimitRemaining'
+  /v1/items:
+    get:
+      responses:
+        '200':
+          description: A successful response.
+          headers:
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+```
 
 ---
 
@@ -185,48 +207,53 @@ Data Types and Examples
 
 #### OAS `examples` Example
 
+```
 paths:
-/v1/items:
-post:
-summary: Create a new item
-requestBody:
-required: true
-content:
-application/json:
-schema:
-$ref: '#/components/schemas/Item'
-examples:
-# First example: A simple item with only required fields
-simpleItem:
-summary: A basic item
-description: An example of creating an item with the minimum required information.
-value:
-name: "Standard Widget"
-price: 19.99
-# Second example: An item with optional fields included
-itemWithOptionalFields:
-summary: An item with optional data
-description: An example of creating an item that includes optional fields like a description and SKU.
-value:
-name: "Premium Widget"
-price: 29.99
-description: "A high-quality, durable widget."
-sku: "PREM-WID-001"
+  /v1/items:
+    post:
+      summary: Create a new item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+            examples:
+              # First example: A simple item with only required fields
+              simpleItem:
+                summary: A basic item
+                description: An example of creating an item with the minimum required information.
+                value:
+                  name: "Standard Widget"
+                  price: 19.99
+
+              # Second example: An item with optional fields included
+              itemWithOptionalFields:
+                summary: An item with optional data
+                description: An example of creating an item that includes optional fields like a description and SKU.
+                value:
+                  name: "Premium Widget"
+                  price: 29.99
+                  description: "A high-quality, durable widget."
+                  sku: "PREM-WID-001"
+```
 
 Casing Requirements
 -------------------
 
 Schema objects defined in the `components` section **MUST** use **PascalCase** (also known as UpperCamelCase). This convention makes it easy to distinguish schema objects from `snake_case` field names within the specification.
 
+```
 # ✅ Good: Uses PascalCase
 CustomerOrder:
-type: object
-properties:
-order\_id:
-type: string
-# ❌ Bad: Uses snake\_case
-customer\_details:
-type: object
+  type: object
+  properties:
+    order_id:
+      type: string
+# ❌ Bad: Uses snake_case
+customer_details:
+  type: object
+```
 
 ---
 

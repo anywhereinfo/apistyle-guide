@@ -69,20 +69,24 @@ This is the most important concept. We **abstract** our internal process into a 
 
 The client must know our internal steps. **(FORBIDDEN)**
 
+```
 POST /api/checkPrice
 POST /api/createQuote
 POST /api/submitOrder
+```
 
 #### ✅ The "Workflow Resource" (Our Standard)
 
 The client interacts with **one resource** (`/v1/connections`) and provides a **desired-state** body. Our façade hides the *entire* price/quote/order process.
 
+```
 POST /v1/connections
 {
-"bandwidth": "10G",
-"src\_port": "port-abc",
-"dst\_port": "port-xyz"
+  "bandwidth": "10G",
+  "src_port": "port-abc",
+  "dst_port": "port-xyz"
 }
+```
 
 ---
 
@@ -121,11 +125,13 @@ POST /v1/connections
 
 **Example Metadata:**
 
+```
 {
-"entitlementId": "ENT-123",
-"usageType": "bandwidth-hours",
-"meteringUnit": "GB"
+  "entitlementId": "ENT-123",
+  "usageType": "bandwidth-hours",
+  "meteringUnit": "GB"
 }
+```
 
 **Why:** Supports SaaS-like pay-per-use and quota enforcement similar to cloud hyperscalers.
 
@@ -167,12 +173,14 @@ POST /v1/connections
 
 **Example:**
 
+```
 POST /telemetry/events
 {
-"api": "/fabric/v1/ports",
-"latencyMs": 245,
-"status": 200
+  "api": "/fabric/v1/ports",
+  "latencyMs": 245,
+  "status": 200
 }
+```
 
 **Why:** Provides the foundation for automated SLA tracking, billing accuracy, and health dashboards.
 
@@ -208,11 +216,13 @@ POST /telemetry/events
 
 **Example Error:**
 
+```
 {
-"errorCode": "FABRIC-404",
-"message": "Port not found",
-"correlationId": "abc-123"
+  "errorCode": "FABRIC-404",
+  "message": "Port not found",
+  "correlationId": "abc-123"
 }
+```
 
 **Why:** Developers can reuse tooling and templates across products, just like AWS SDK parity across services.
 

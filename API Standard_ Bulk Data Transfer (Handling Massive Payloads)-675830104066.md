@@ -41,17 +41,21 @@ This flow is used when a client needs to *send* a massive file to an API.
 
    The client makes a small, fast, and authenticated API call to the gateway to request a secure upload location.
 
+   ```
    POST /v1/reports
+   ```
 
    (See Metadata Schema below for required request/response formats)
 2. **Step 2: API Responds with Pre-Signed URL (Control Plane)**
 
    The API service generates a secure, one-time-use upload URL from GCS/S3 or any cloud storage bucket and returns it to the client.
 
+   ```
    {
-   "fileId": "abc-123-xyz",
-   "preSignedUploadUrl": "[https://storage.googleapis.com/bucket/upload?signature=..."
+     "fileId": "abc-123-xyz",
+     "preSignedUploadUrl": "[https://storage.googleapis.com/bucket/upload?signature=..."
    }
+   ```
 3. **Step 3: Client Uploads File (Data Plane)**
 
    The client uploads the massive payload directly to the preSignedUploadUrl. This traffic bypasses the API Gateway.
@@ -59,16 +63,20 @@ This flow is used when a client needs to *send* a massive file to an API.
 
    Once the upload is complete, the client makes a second small API call to notify the service that the file is ready for processing.
 
+   ```
    POST /v1/reports/abc-123-xyz/process
+   ```
 5. **Step 5: API Responds Asynchronously (Control Plane)**
 
    The API Gateway now follows the API Standard: Long-Running Operations, returning an HTTP 202 Accepted with a statusUrl.
 
+   ```
    {
-   "jobId": "job-999",
-   "status": "Queued",
-   "statusUrl": "/v1/reports/status/job-999"
+     "jobId": "job-999",
+     "status": "Queued",
+     "statusUrl": "/v1/reports/status/job-999"
    }
+   ```
 
 ### Use Case B: Bulk Response (Massive Download)
 
@@ -78,16 +86,20 @@ This flow is used when a client makes a request that *produces* a massive result
 
    The client makes a small, fast POST request to start the job, per the Long-Running Operations standard.
 
+   ```
    POST /v1/reports/generate
+   ```
 2. **Step 2: API Responds Asynchronously (Control Plane)**
 
    The API Gateway instantly returns an HTTP 202 Accepted with a statusUrl. The 60-second timeout problem is solved.
 
+   ```
    {
-   "jobId": "job-777",
-   "status": "InProgress",
-   "statusUrl": "/v1/reports/status/job-777"
+     "jobId": "job-777",
+     "status": "InProgress",
+     "statusUrl": "/v1/reports/status/job-777"
    }
+   ```
 3. **Step 3: Server Produces File (Background Work)**
 
    The backend service runs the 5-minute query and saves the massive payload as a file in a temporary cloud storage bucket, adhering to the security requirements below.
@@ -95,18 +107,22 @@ This flow is used when a client makes a request that *produces* a massive result
 
    The client polls the statusUrl.
 
+   ```
    GET /v1/reports/status/job-777
+   ```
 5. **Step 5: API Responds with Result URL (Control Plane)**
 
    Once the job is done, the API returns a small JSON payload containing a new, pre-signed download URL for the file in GCS/S3 or any cloud storage bucket. The massive payload problem is solved.
 
    200 OK
 
+   ```
    {
-   "jobId": "job-777",
-   "status": "Complete",
-   "resultUrl": "[https://storage.googleapis.com/bucket/download/report-777.csv?signature=..."
+     "jobId": "job-777",
+     "status": "Complete",
+     "resultUrl": "[https://storage.googleapis.com/bucket/download/report-777.csv?signature=..."
    }
+   ```
 6. **Step 6: Client Downloads File (Data Plane)**
 
    The client follows the resultUrl to download the massive file directly from the cloud storage bucket. This traffic bypasses the API Gateway.
@@ -150,104 +166,110 @@ The JSON payloads for the control plane (Steps 1, 2, 5) MUST be part of the API'
 
 ### Example Schema for Upload Response (Step 2)
 
+```
 {
-"type": "object",
-"properties": {
-"fileId": {
-"type": "string",
-"description": "The unique identifier for the uploaded file.",
-"example": "abc-123-xyz"
-},
-"preSignedUploadUrl": {
-"type": "string",
-"format": "uri",
-"description": "The temporary URL to PUT the file to."
+  "type": "object",
+  "properties": {
+    "fileId": {
+      "type": "string",
+      "description": "The unique identifier for the uploaded file.",
+      "example": "abc-123-xyz"
+    },
+    "preSignedUploadUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "The temporary URL to PUT the file to."
+    }
+  },
+  "required": ["fileId", "preSignedUploadUrl"]
 }
-},
-"required": ["fileId", "preSignedUploadUrl"]
-}
+```
 
 ### Example Schema for Download Response (Step 5)
 
 This schema defines the successful response (`status: "Complete"`) and the failed job response (`status: "Failed"`).
 
+```
 {
-"type": "object",
-"properties": {
-"jobId": {
-"type": "string",
-"example": "job-777"
-},
-"status": {
-"type": "string",
-"enum": ["InProgress", "Complete", "Failed"],
-"example": "Complete"
-},
-"resultUrl": {
-"type": "string",
-"format": "uri",
-"description": "Present only when status is 'Complete'. This is the pre-signed URL to download the result file."
-},
-"error": {
-"description": "Present only when status is 'Failed'. Follows the LPDP-Mini v1.0 standard.",
-"$ref": "#/components/schemas/LpdpProblem"
+  "type": "object",
+  "properties": {
+    "jobId": {
+      "type": "string",
+      "example": "job-777"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["InProgress", "Complete", "Failed"],
+      "example": "Complete"
+    },
+    "resultUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "Present only when status is 'Complete'. This is the pre-signed URL to download the result file."
+    },
+    "error": {
+      "description": "Present only when status is 'Failed'. Follows the LPDP-Mini v1.0 standard.",
+      "$ref": "#/components/schemas/LpdpProblem"
+    }
+  },
+  "required": ["jobId", "status"]
 }
-},
-"required": ["jobId", "status"]
-}
+```
 
 ### Dependent Schemas (Error Profile)
 
 The following schemas are required to support the `error` property above, per the **API Standard: Lumen Problem Details (LPDP-Mini v1.0)**.
 
+```
 {
-"components": {
-"schemas": {
-"LpdpProblem": {
-"type": "object",
-"additionalProperties": false,
-"description": "Minimal Problem-Details envelope (RFC 9457-compliant) per LPDP-Mini v1.0",
-"properties": {
-"title": {
-"type": "string",
-"description": "Short, human-readable summary."
-},
-"detail": {
-"type": "string",
-"description": "Optional longer explanation."
-},
-"errors": {
-"type": "array",
-"minItems": 1,
-"items": { "$ref": "#/components/schemas/LpdpError" }
+  "components": {
+    "schemas": {
+      "LpdpProblem": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Minimal Problem-Details envelope (RFC 9457-compliant) per LPDP-Mini v1.0",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Short, human-readable summary."
+          },
+          "detail": {
+            "type": "string",
+            "description": "Optional longer explanation."
+          },
+          "errors": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/components/schemas/LpdpError" }
+          }
+        },
+        "required": [ "title", "errors" ]
+      },
+      "LpdpError": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Individual error item.",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Stable, machine-readable identifier (string form preferred)."
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable explanation of the issue."
+          },
+          "meta": {
+            "type": "object",
+            "description": "Optional unregulated extension for machine-readable context.",
+            "additionalProperties": true
+          }
+        },
+        "required": [ "code", "message" ]
+      }
+    }
+  }
 }
-},
-"required": [ "title", "errors" ]
-},
-"LpdpError": {
-"type": "object",
-"additionalProperties": false,
-"description": "Individual error item.",
-"properties": {
-"code": {
-"type": "string",
-"description": "Stable, machine-readable identifier (string form preferred)."
-},
-"message": {
-"type": "string",
-"description": "Human-readable explanation of the issue."
-},
-"meta": {
-"type": "object",
-"description": "Optional unregulated extension for machine-readable context.",
-"additionalProperties": true
-}
-},
-"required": [ "code", "message" ]
-}
-}
-}
-}
+```
 
 6. Related Standards
 --------------------

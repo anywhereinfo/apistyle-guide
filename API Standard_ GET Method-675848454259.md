@@ -49,10 +49,12 @@ Singletons do not require an identifier or belong to a collection.
 
 **Examples**
 
-GET /v1/profile → current user profile
-GET /v1/organization/settings → organization configuration
-GET /v1/configuration → global configuration
-GET /v1/status → system status or health
+```
+GET /v1/profile                → current user profile
+GET /v1/organization/settings  → organization configuration
+GET /v1/configuration          → global configuration
+GET /v1/status                 → system status or health
+```
 
 **Design Guidance**
 
@@ -68,20 +70,27 @@ GET /v1/status → system status or health
 
 **Example**
 
+```
 GET /v1/profile
 If-None-Match: "v12"
+
 HTTP/1.1 200 OK
 ETag: "v13"
 Cache-Control: private, max-age=60
 {
-"id": "u123",
-"name": "Jane Doe",
-"email": "jane@example.com"
+  "id": "u123",
+  "name": "Jane Doe",
+  "email": "jane@example.com"
 }
+```
+
+```
 GET /v1/profile
 If-None-Match: "v13"
+
 HTTP/1.1 304 Not Modified
 ETag: "v13"
+```
 
 **Governance Note**  
 Singletons must be documented as distinct resources (`/profile`, `/settings`, `/status`) and enforced through Spectral rules to verify `ETag` and `If-None-Match` support.
@@ -94,26 +103,30 @@ Every successful `GET` MUST return a JSON object.
 
 #### **Single Resource**
 
+```
 {
-"id": "c123",
-"name": "Jane Doe",
-"email": "jane@example.com",
-"created\_at": "2025-10-20T12:34:56Z"
+  "id": "c123",
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "created_at": "2025-10-20T12:34:56Z"
 }
+```
 
 #### **Collection**
 
+```
 {
-"data": [
-{ "id": "c123", "name": "Jane Doe" },
-{ "id": "c124", "name": "John Smith" }
-],
-"pagination": {
-"limit": 20,
-"offset": 0,
-"total": 245
+  "data": [
+    { "id": "c123", "name": "Jane Doe" },
+    { "id": "c124", "name": "John Smith" }
+  ],
+  "pagination": {
+    "limit": 20,
+    "offset": 0,
+    "total": 245
+  }
 }
-}
+```
 
 **MUST**
 
@@ -178,54 +191,62 @@ Every successful `GET` MUST return a JSON object.
 
 **Request**
 
+```
 GET /v1/customers/123
 If-None-Match: "v5"
 Accept: application/json
+```
 
 **Response (Resource Updated)**
 
+```
 HTTP/1.1 200 OK
 Content-Type: application/json
 ETag: "v6"
 Cache-Control: private, max-age=60
 {
-"id": "123",
-"name": "Jane Doe",
-"email": "jane@example.com"
+ "id": "123",
+ "name": "Jane Doe",
+ "email": "jane@example.com"
 }
+```
 
 **Response (Not Modified)**
 
+```
 HTTP/1.1 304 Not Modified
 ETag: "v6"
+```
 
 ---
 
 ### **OAS Authoring Requirements**
 
+```
 paths:
-/v1/customers/{id}:
-get:
-summary: Retrieve customer by ID
-parameters:
-- in: path
-name: id
-required: true
-schema: { type: string }
-- in: header
-name: If-None-Match
-schema: { type: string }
-responses:
-'200':
-description: Successful response
-headers:
-ETag:
-description: Entity tag for versioning
-schema: { type: string }
-'304':
-description: Not Modified
-'400': { description: Invalid request }
-'404': { description: Not found }
+  /v1/customers/{id}:
+    get:
+      summary: Retrieve customer by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+        - in: header
+          name: If-None-Match
+          schema: { type: string }
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            ETag:
+              description: Entity tag for versioning
+              schema: { type: string }
+        '304':
+          description: Not Modified
+        '400': { description: Invalid request }
+        '404': { description: Not found }
+```
 
 **MUST**
 

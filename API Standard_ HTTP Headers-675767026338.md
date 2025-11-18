@@ -105,12 +105,14 @@ The following Spectral rules SHOULD be used to enforce these header standards.
 
 ### Header Name Format
 
+```
 rules:
-lumen-header-name-format:
-given: "$..parameters[?(@.in=='header')].name"
-then:
-function: pattern
-functionOptions: { match: "^[a-z][a-z0-9-]\*$" }
+  lumen-header-name-format:
+    given: "$..parameters[?(@.in=='header')].name"
+    then:
+      function: pattern
+      functionOptions: { match: "^[a-z][a-z0-9-]*$" }
+```
 
 ---
 

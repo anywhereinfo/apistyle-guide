@@ -36,23 +36,27 @@ This improves logical grouping, maintainability, and future extensibility.
 
 ✅ **Recommended**
 
+```
 {
-"customer\_id": "C123",
-"billing\_address": {
-"line1": "100 Main St",
-"city": "Denver",
-"postal\_code": "80202"
+  "customer_id": "C123",
+  "billing_address": {
+    "line1": "100 Main St",
+    "city": "Denver",
+    "postal_code": "80202"
+  }
 }
-}
+```
 
 ❌ **Not Recommended**
 
+```
 {
-"customer\_id": "C123",
-"billing\_address\_line1": "100 Main St",
-"billing\_address\_city": "Denver",
-"billing\_address\_postal\_code": "80202"
+  "customer_id": "C123",
+  "billing_address_line1": "100 Main St",
+  "billing_address_city": "Denver",
+  "billing_address_postal_code": "80202"
 }
+```
 
 ---
 
@@ -60,7 +64,9 @@ This improves logical grouping, maintainability, and future extensibility.
 
 Field names **MUST** follow **lower snake\_case**, matching regex:
 
-^[a-z][a-z0-9\_]\*$
+```
+^[a-z][a-z0-9_]*$
+```
 
 Rules:
 
@@ -81,15 +87,19 @@ Empty arrays must be represented as `[]`, *not* `null`.
 
 ✅ **Recommended**
 
+```
 {
-"line\_items": []
+  "line_items": []
 }
+```
 
 ❌ **Not Recommended**
 
+```
 {
-"line\_items": null
+  "line_items": null
 }
+```
 
 ---
 
@@ -108,22 +118,24 @@ Empty arrays must be represented as `[]`, *not* `null`.
 
 ### **Example — Valid Payload**
 
+```
 {
-"order\_id": "ORD\_9876",
-"customer": {
-"customer\_id": "C12345",
-"name": "Acme Corp"
-},
-"line\_items": [
-{
-"item\_id": "I567",
-"quantity": 3
+  "order_id": "ORD_9876",
+  "customer": {
+    "customer_id": "C12345",
+    "name": "Acme Corp"
+  },
+  "line_items": [
+    {
+      "item_id": "I567",
+      "quantity": 3
+    }
+  ],
+  "total_amount": 1500,
+  "currency": "USD",
+  "created_at": "2025-11-11T18:30:00Z"
 }
-],
-"total\_amount": 1500,
-"currency": "USD",
-"created\_at": "2025-11-11T18:30:00Z"
-}
+```
 
 ---
 
@@ -131,22 +143,28 @@ Empty arrays must be represented as `[]`, *not* `null`.
 
 **Duplicate Keys**
 
+```
 {
-"name": "Acme",
-"name": "Acme Inc"
+  "name": "Acme",
+  "name": "Acme Inc"
 }
+```
 
 **Null Array**
 
+```
 {
-"line\_items": null
+  "line_items": null
 }
+```
 
 **Unsafe Number**
 
+```
 {
-"amount": 99999999999999999
+  "amount": 99999999999999999
 }
+```
 
 ---
 

@@ -76,57 +76,69 @@ Each field **must also define a pattern and example** so the meaning is clear ev
 
 #### **CountryCode**
 
+```
 CountryCode:
-type: string
-description: ISO 3166-1 alpha-2 country code (uppercase).
-format: country-code
-pattern: '^[A-Z]{2}$'
-example: "US"
+  type: string
+  description: ISO 3166-1 alpha-2 country code (uppercase).
+  format: country-code
+  pattern: '^[A-Z]{2}$'
+  example: "US"
+```
 
 #### **CurrencyCode**
 
+```
 CurrencyCode:
-type: string
-description: ISO 4217 currency code (uppercase).
-format: currency-code
-pattern: '^[A-Z]{3}$'
-example: "USD"
+  type: string
+  description: ISO 4217 currency code (uppercase).
+  format: currency-code
+  pattern: '^[A-Z]{3}$'
+  example: "USD"
+```
 
 #### **LanguageTag**
 
+```
 LanguageTag:
-type: string
-description: Language tag per ISO 639-1 / BCP 47.
-format: language-tag
-pattern: '^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})\*$'
-example: "en-US"
+  type: string
+  description: Language tag per ISO 639-1 / BCP 47.
+  format: language-tag
+  pattern: '^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$'
+  example: "en-US"
+```
 
 #### **Email**
 
+```
 Email:
-type: string
-description: Email address per RFC 5322.
-format: email
-pattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
-example: "user@example.com"
+  type: string
+  description: Email address per RFC 5322.
+  format: email
+  pattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+  example: "user@example.com"
+```
 
 #### **UUID**
 
+```
 UUID:
-type: string
-description: Universally Unique Identifier per RFC 4122.
-format: uuid
-pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
-example: "279fc665-d04d-4dba-bcad-17c865489dfa"
+  type: string
+  description: Universally Unique Identifier per RFC 4122.
+  format: uuid
+  pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+  example: "279fc665-d04d-4dba-bcad-17c865489dfa"
+```
 
 #### **URI**
 
+```
 URI:
-type: string
-description: URI string per RFC 3986.
-format: uri
-pattern: '^(https?|ftp)://[^\s/$.?#].[^\s]\*$'
-example: "https://api.lumen.com/v1/services"
+  type: string
+  description: URI string per RFC 3986.
+  format: uri
+  pattern: '^(https?|ftp)://[^\s/$.?#].[^\s]*$'
+  example: "https://api.lumen.com/v1/services"
+```
 
 ---
 
@@ -134,22 +146,24 @@ example: "https://api.lumen.com/v1/services"
 
 > Represents a monetary amount using ISO 4217 minor units (integer-based).
 
+```
 Money:
-type: object
-required: [amount, currency]
-properties:
-amount:
-type: integer
-minimum: 0
-maximum: 9007199254740991 # I-JSON safe (2^53 – 1)
-description: >
-Monetary amount expressed in ISO 4217 minor units.
-Example: USD 12.34 → amount=1234, currency="USD"
-currency:
-$ref: '#/components/schemas/CurrencyCode'
-example:
-amount: 1234
-currency: "USD"
+  type: object
+  required: [amount, currency]
+  properties:
+    amount:
+      type: integer
+      minimum: 0
+      maximum: 9007199254740991   # I-JSON safe (2^53 – 1)
+      description: >
+        Monetary amount expressed in ISO 4217 minor units.
+        Example: USD 12.34 → amount=1234, currency="USD"
+    currency:
+      $ref: '#/components/schemas/CurrencyCode'
+  example:
+    amount: 1234
+    currency: "USD"
+```
 
 ---
 
@@ -157,57 +171,64 @@ currency: "USD"
 
 A common postal address representation used consistently across all domains.
 
+```
 Address:
-type: object
-description: Postal address (country-specific formatting may apply).
-additionalProperties: false
-properties:
-line1:
-type: string
-description: Primary street line (street, number, unit).
-maxLength: 256
-example: "100 Main St Apt 5B"
-line2:
-type: string
-description: Secondary line (building, suite, floor) if needed.
-maxLength: 256
-example: "Building A, Floor 3"
-city:
-type: string
-description: City, town, or locality.
-maxLength: 128
-example: "Denver"
-state:
-type: string
-description: State, region, or province (country-specific).
-maxLength: 128
-example: "CO"
-postal\_code:
-type: string
-description: Postal/ZIP code (country-specific format).
-maxLength: 32
-example: "80202"
-country:
-$ref: '#/components/schemas/CountryCode'
-example:
-line1: "100 Main St Apt 5B"
-city: "Denver"
-state: "CO"
-postal\_code: "80202"
-country: "US"
+  type: object
+  description: Postal address (country-specific formatting may apply).
+  additionalProperties: false
+  properties:
+    line1:
+      type: string
+      description: Primary street line (street, number, unit).
+      maxLength: 256
+      example: "100 Main St Apt 5B"
+    line2:
+      type: string
+      description: Secondary line (building, suite, floor) if needed.
+      maxLength: 256
+      example: "Building A, Floor 3"
+    city:
+      type: string
+      description: City, town, or locality.
+      maxLength: 128
+      example: "Denver"
+    state:
+      type: string
+      description: State, region, or province (country-specific).
+      maxLength: 128
+      example: "CO"
+    postal_code:
+      type: string
+      description: Postal/ZIP code (country-specific format).
+      maxLength: 32
+      example: "80202"
+    country:
+      $ref: '#/components/schemas/CountryCode'
+  example:
+    line1: "100 Main St Apt 5B"
+    city: "Denver"
+    state: "CO"
+    postal_code: "80202"
+    country: "US"
+```
 
 **Context-specific variants:**
 
+```
 UsShippingAddress:
-allOf:
-- $ref: '#/components/schemas/Address'
-- type: object
-required: [line1, city, state, postal\_code, country]
+  allOf:
+    - $ref: '#/components/schemas/Address'
+    - type: object
+      required: [line1, city, state, postal_code, country]
+```
+
+```
 InternationalBillingAddress:
-allOf:
-- $ref: '#/components/schemas/Address'
-- type: object
-required: [line1, city, postal\_code, country]
+  allOf:
+    - $ref: '#/components/schemas/Address'
+    - type: object
+      required: [line1, city, postal_code, country]
+```
 
 ---
 

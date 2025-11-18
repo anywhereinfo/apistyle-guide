@@ -53,23 +53,27 @@ Use timestamp names that clearly express **intent** — whether the value repres
 
 #### ✅ **Recommended**
 
+```
 {
-"created\_at": "2025-10-12T15:45:33Z",
-"updated\_at": "2025-10-15T19:02:11Z",
-"starts\_at": "2025-11-01T00:00:00Z",
-"ends\_at": "2025-11-30T23:59:59Z",
-"valid\_from": "2025-11-01T00:00:00Z",
-"valid\_until": "2026-01-01T00:00:00Z"
+  "created_at": "2025-10-12T15:45:33Z",
+  "updated_at": "2025-10-15T19:02:11Z",
+  "starts_at": "2025-11-01T00:00:00Z",
+  "ends_at": "2025-11-30T23:59:59Z",
+  "valid_from": "2025-11-01T00:00:00Z",
+  "valid_until": "2026-01-01T00:00:00Z"
 }
+```
 
 #### ❌ **Not Recommended**
 
+```
 {
-"created": "2025-10-12",
-"modification\_date": "2025-10-15T19:02:11Z",
-"start\_date": "2025-11-01",
-"expire\_at": "2025-11-30"
+  "created": "2025-10-12",
+  "modification_date": "2025-10-15T19:02:11Z",
+  "start_date": "2025-11-01",
+  "expire_at": "2025-11-30"
 }
+```
 
 **Issues:**
 
@@ -85,28 +89,30 @@ The following Spectral rule enforces this convention during API design-time vali
 
 #### **Rule ID:** `lumen-date-field-naming`
 
+```
 rules:
-lumen-date-field-naming:
-description: "Date/time fields must use '\_at' for RFC 3339 date-time and '\_on' for RFC 3339 date."
-message: >-
-"{{property}} field name does not follow Lumen Date/Time naming convention.
-Use '\_at' for RFC 3339 date-time, '\_on' for RFC 3339 date.
-For ranges, use \*\_from / \*\_until."
-given: "$.components.schemas.\*.properties.\*"
-severity: warn
-then:
-- function: pattern
-field: "@key"
-functionOptions:
-match: ".\*(\_at|\_on|\_from|\_until)$"
-- function: truthy
-field: "format"
-- function: enumeration
-field: "format"
-functionOptions:
-values:
-- date
-- date-time
+  lumen-date-field-naming:
+    description: "Date/time fields must use '_at' for RFC 3339 date-time and '_on' for RFC 3339 date."
+    message: >-
+      "{{property}} field name does not follow Lumen Date/Time naming convention.
+       Use '_at' for RFC 3339 date-time, '_on' for RFC 3339 date.
+       For ranges, use *_from / *_until."
+    given: "$.components.schemas.*.properties.*"
+    severity: warn
+    then:
+      - function: pattern
+        field: "@key"
+        functionOptions:
+          match: ".*(_at|_on|_from|_until)$"
+      - function: truthy
+        field: "format"
+      - function: enumeration
+        field: "format"
+        functionOptions:
+          values:
+            - date
+            - date-time
+```
 
 ✅ **What it checks:**
 

@@ -79,15 +79,17 @@ If synchronous boundaries can’t be guaranteed:
 
 ### 6.1 207 Multi-Status (Partial Success)
 
+```
 HTTP/1.1 207 Multi-Status
 Content-Type: application/json
 {
-"results": [
-{ "id": "c101", "status": 201, "message": "Created" },
-{ "id": "c102", "status": 409, "message": "Duplicate customer" }
-],
-"summary": { "total": 2, "succeeded": 1, "failed": 1 }
+  "results": [
+    { "id": "c101", "status": 201, "message": "Created" },
+    { "id": "c102", "status": 409, "message": "Duplicate customer" }
+  ],
+  "summary": { "total": 2, "succeeded": 1, "failed": 1 }
 }
+```
 
 **Rules**
 
@@ -105,26 +107,30 @@ Content-Type: application/json
 
 **Submit**
 
+```
 POST /v1/customers/batch
 → 202 Accepted
 Location: /v1/jobs/9827
 Retry-After: 10
+```
 
 **Poll**
 
+```
 GET /v1/jobs/9827
 → 200 OK
 {
-"id": "9827",
-"state": "in\_progress",
-"accepted": 1000,
-"processed": 300,
-"succeeded": 295,
-"failed": 5,
-"links": {
-"results": "/v1/jobs/9827/results"
+  "id": "9827",
+  "state": "in_progress",
+  "accepted": 1000,
+  "processed": 300,
+  "succeeded": 295,
+  "failed": 5,
+  "links": {
+    "results": "/v1/jobs/9827/results"
+  }
 }
-}
+```
 
 **Rules**
 
@@ -172,225 +178,241 @@ Async specifics:
 
 ### 10.1 Batch Endpoint (sync/async)
 
+```
 paths:
-/v1/customers/batch:
-post:
-summary: Create multiple customers
-parameters:
-- in: header
-name: Idempotency-Key
-required: true
-schema: { type: string, maxLength: 255 }
-requestBody:
-required: true
-content:
-application/json:
-schema:
-type: array
-items: { $ref: '#/components/schemas/CustomerCreate' }
-responses:
-'201': { description: All created successfully }
-'200': { description: All items succeeded (non-creation action)' }
-'207':
-description: Partial success (mixed outcomes)
-content:
-application/json:
-schema:
-$ref: '#/components/schemas/BatchMultiStatusResponseCompact'
-'202':
-description: Accepted for asynchronous processing
-headers:
-Location:
-schema: { type: string, format: uri }
-Retry-After:
-schema: { type: integer, minimum: 1 }
-content:
-application/json:
-schema:
-$ref: '#/components/schemas/JobStatus'
-'400': { description: Invalid input or schema error }
-'409': { description: Conflict or idempotency-key mismatch }
+  /v1/customers/batch:
+    post:
+      summary: Create multiple customers
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: { type: string, maxLength: 255 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: { $ref: '#/components/schemas/CustomerCreate' }
+      responses:
+        '201': { description: All created successfully }
+        '200': { description: All items succeeded (non-creation action)' }
+        '207':
+          description: Partial success (mixed outcomes)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchMultiStatusResponseCompact'
+        '202':
+          description: Accepted for asynchronous processing
+          headers:
+            Location:
+              schema: { type: string, format: uri }
+            Retry-After:
+              schema: { type: integer, minimum: 1 }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
+        '400': { description: Invalid input or schema error }
+        '409': { description: Conflict or idempotency-key mismatch }
+```
+
 > If you also support **full** results inline for small batches, offer an alternate 207 response using `BatchMultiStatusResponseFull`.
 
 ### 10.2 Job Polling
 
+```
 paths:
-/v1/jobs/{jobId}:
-get:
-summary: Get job status
-parameters:
-- in: path
-name: jobId
-required: true
-schema: { type: string }
-responses:
-'200':
-description: Job status
-content:
-application/json:
-schema:
-$ref: '#/components/schemas/JobStatus'
+  /v1/jobs/{jobId}:
+    get:
+      summary: Get job status
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Job status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
+```
 
 ### 10.3 (Optional) Exported Full Results
 
+```
 paths:
-/v1/exports/{exportId}:
-get:
-summary: Download exported batch results
-parameters:
-- in: path
-name: exportId
-required: true
-schema: { type: string }
-responses:
-'200':
-description: Export ready
-content:
-application/json:
-schema:
-$ref: '#/components/schemas/ExportManifest'
-'202': { description: Still generating; retry later }
-'410': { description: Export expired }
+  /v1/exports/{exportId}:
+    get:
+      summary: Download exported batch results
+      parameters:
+        - in: path
+          name: exportId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Export ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportManifest'
+        '202': { description: Still generating; retry later }
+        '410': { description: Export expired }
+```
 
 ---
 
 11. Reusable Schemas (Components)
 ---------------------------------
 
+```
 components:
-schemas:
-BatchSummary:
-type: object
-description: Counts for a batch operation
-required: [total, succeeded, failed]
-properties:
-total: { type: integer, minimum: 0 }
-succeeded: { type: integer, minimum: 0 }
-failed: { type: integer, minimum: 0 }
-BatchFailure:
-type: object
-description: Per-item failure record (used in compact and full)
-required: [index, status, code, message]
-properties:
-index:
-type: integer
-minimum: 0
-description: Zero-based position of the item in the submitted array
-id:
-type: string
-nullable: true
-description: Server-assigned or client key if available
-status:
-type: integer
-description: HTTP status for this item (e.g., 409, 412, 422)
-code:
-type: string
-description: Stable application error code (string, not numeric)
-message:
-type: string
-description: Human-readable summary (safe for logs)
-details:
-$ref: '#/components/schemas/ProblemDetails'
-BatchSuccess:
-type: object
-description: Per-item success record (used only in 'full' view)
-required: [index, status]
-properties:
-index:
-type: integer
-minimum: 0
-id:
-type: string
-nullable: true
-description: Created/affected resource identifier if available
-status:
-type: integer
-description: HTTP status for this item (e.g., 200, 201)
-resource:
-type: object
-additionalProperties: true
-description: Optional representation of the created/updated resource (domain-specific)
-BatchMultiStatusResponseCompact:
-type: object
-description: Default compact batch response (summary + failures only)
-required: [summary]
-properties:
-summary:
-$ref: '#/components/schemas/BatchSummary'
-failures:
-type: array
-description: Failed items only (paged if large)
-items: { $ref: '#/components/schemas/BatchFailure' }
-page:
-$ref: '#/components/schemas/PageMeta' # refer to pagination style guide
-BatchMultiStatusResponseFull:
-type: object
-description: Full batch response (summary + successes + failures). Use only for small batches or exports.
-required: [summary]
-properties:
-summary:
-$ref: '#/components/schemas/BatchSummary'
-successes:
-type: array
-description: Successful items (optional and typically limited)
-items: { $ref: '#/components/schemas/BatchSuccess' }
-failures:
-type: array
-description: Failed items (may be paged)
-items: { $ref: '#/components/schemas/BatchFailure' }
-page:
-$ref: '#/components/schemas/PageMeta' # refer to pagination style guide
-JobStatus:
-type: object
-description: Operational status for an asynchronous batch job (no per-item data)
-required: [id, state, submitted\_at, progress, links]
-properties:
-id: { type: string }
-type: { type: string, enum: [batch] }
-state: { type: string, enum: [queued, in\_progress, completed, failed, canceled] }
-submitted\_at: { type: string, format: date-time }
-progress:
-type: object
-required: [total, processed, succeeded, failed]
-properties:
-total: { type: integer, minimum: 0 }
-processed: { type: integer, minimum: 0 }
-succeeded: { type: integer, minimum: 0 }
-failed: { type: integer, minimum: 0 }
-links:
-type: object
-required: [self]
-properties:
-self:
-type: string
-format: uri
-description: Canonical job URI for polling
-results:
-type: string
-format: uri
-nullable: true
-description: Optional link to compact or exported results (no per-item payload inline)
-idempotency\_key:
-type: string
-description: Echo of the submission key to support replay semantics
-request\_hash:
-type: string
-description: Hash/fingerprint of original request body for conflict detection
-error:
-$ref: '#/components/schemas/ProblemDetails' # refer to LPDP
-ExportManifest:
-type: object
-description: Descriptor for large exported batch results
-required: [id, state]
-properties:
-id: { type: string }
-state: { type: string, enum: [pending, generating, completed, failed, expired] }
-file\_type: { type: string, enum: [application/jsonl, application/json, text/csv] }
-size\_bytes: { type: integer, minimum: 0 }
-expires\_at: { type: string, format: date-time }
-download\_url: { type: string, format: uri }
-error:
-$ref: '#/components/schemas/ProblemDetails'
+  schemas:
+
+    BatchSummary:
+      type: object
+      description: Counts for a batch operation
+      required: [total, succeeded, failed]
+      properties:
+        total: { type: integer, minimum: 0 }
+        succeeded: { type: integer, minimum: 0 }
+        failed: { type: integer, minimum: 0 }
+
+    BatchFailure:
+      type: object
+      description: Per-item failure record (used in compact and full)
+      required: [index, status, code, message]
+      properties:
+        index:
+          type: integer
+          minimum: 0
+          description: Zero-based position of the item in the submitted array
+        id:
+          type: string
+          nullable: true
+          description: Server-assigned or client key if available
+        status:
+          type: integer
+          description: HTTP status for this item (e.g., 409, 412, 422)
+        code:
+          type: string
+          description: Stable application error code (string, not numeric)
+        message:
+          type: string
+          description: Human-readable summary (safe for logs)
+        details:
+          $ref: '#/components/schemas/ProblemDetails'
+
+    BatchSuccess:
+      type: object
+      description: Per-item success record (used only in 'full' view)
+      required: [index, status]
+      properties:
+        index:
+          type: integer
+          minimum: 0
+        id:
+          type: string
+          nullable: true
+          description: Created/affected resource identifier if available
+        status:
+          type: integer
+          description: HTTP status for this item (e.g., 200, 201)
+        resource:
+          type: object
+          additionalProperties: true
+          description: Optional representation of the created/updated resource (domain-specific)
+
+    BatchMultiStatusResponseCompact:
+      type: object
+      description: Default compact batch response (summary + failures only)
+      required: [summary]
+      properties:
+        summary:
+          $ref: '#/components/schemas/BatchSummary'
+        failures:
+          type: array
+          description: Failed items only (paged if large)
+          items: { $ref: '#/components/schemas/BatchFailure' }
+        page:
+          $ref: '#/components/schemas/PageMeta' # refer to pagination style guide
+
+    BatchMultiStatusResponseFull:
+      type: object
+      description: Full batch response (summary + successes + failures). Use only for small batches or exports.
+      required: [summary]
+      properties:
+        summary:
+          $ref: '#/components/schemas/BatchSummary'
+        successes:
+          type: array
+          description: Successful items (optional and typically limited)
+          items: { $ref: '#/components/schemas/BatchSuccess' }
+        failures:
+          type: array
+          description: Failed items (may be paged)
+          items: { $ref: '#/components/schemas/BatchFailure' }
+        page:
+          $ref: '#/components/schemas/PageMeta' # refer to pagination style guide
+
+    JobStatus:
+      type: object
+      description: Operational status for an asynchronous batch job (no per-item data)
+      required: [id, state, submitted_at, progress, links]
+      properties:
+        id: { type: string }
+        type: { type: string, enum: [batch] }
+        state: { type: string, enum: [queued, in_progress, completed, failed, canceled] }
+        submitted_at: { type: string, format: date-time }
+        progress:
+          type: object
+          required: [total, processed, succeeded, failed]
+          properties:
+            total: { type: integer, minimum: 0 }
+            processed: { type: integer, minimum: 0 }
+            succeeded: { type: integer, minimum: 0 }
+            failed: { type: integer, minimum: 0 }
+        links:
+          type: object
+          required: [self]
+          properties:
+            self:
+              type: string
+              format: uri
+              description: Canonical job URI for polling
+            results:
+              type: string
+              format: uri
+              nullable: true
+              description: Optional link to compact or exported results (no per-item payload inline)
+        idempotency_key:
+          type: string
+          description: Echo of the submission key to support replay semantics
+        request_hash:
+          type: string
+          description: Hash/fingerprint of original request body for conflict detection
+        error:
+          $ref: '#/components/schemas/ProblemDetails' # refer to LPDP  
+
+    ExportManifest:
+      type: object
+      description: Descriptor for large exported batch results
+      required: [id, state]
+      properties:
+        id: { type: string }
+        state: { type: string, enum: [pending, generating, completed, failed, expired] }
+        file_type: { type: string, enum: [application/jsonl, application/json, text/csv] }
+        size_bytes: { type: integer, minimum: 0 }
+        expires_at: { type: string, format: date-time }
+        download_url: { type: string, format: uri }
+        error:
+          $ref: '#/components/schemas/ProblemDetails'
+```
 
 ---
 
