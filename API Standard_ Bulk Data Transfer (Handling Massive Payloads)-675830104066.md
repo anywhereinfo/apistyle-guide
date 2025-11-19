@@ -5,7 +5,7 @@
 1. Purpose & Scope
 ------------------
 
-This standard is an extension of the [**API Standard: Long-Running Operations (Async API Pattern)**](/wiki/spaces/NAPA/pages/675812048943/API+Standard+Long-Runing+Operations+LRO).
+This standard is an extension of the [**API Standard: Long-Running Operations (Async API Pattern)**](API Standard_ Long-Runing Operations (LRO)-675812048943.md).
 
 The "Long-Running" guide solves the **TIME** problem (jobs > 60 seconds). This guide solves the **SIZE** problem (payloads > 5MB).
 
@@ -274,9 +274,9 @@ The following schemas are required to support the `error` property above, per th
 
 This standard MUST be implemented in conjunction with the following governance standards:
 
-* [**API Standard: Long-Running Operations**](/wiki/spaces/NAPA/pages/675812048943/API+Standard+Long-Runing+Operations+LRO): This is a required component for the asynchronous flow.
-* [**API Standard: Lumen Problem Details (LPDP-Mini v1.0)**](/wiki/spaces/NAPA/pages/675749954024/API+Standard+Lumen+Problem+Details+Minimal+Profile+LPDP-Mini+v1.0): This defines the mandatory error structure for a failed job.
-* [**API Standard: Pagination**](/wiki/spaces/NAPA/pages/675750379523/API+Pagination+Standards): Teams should first attempt to use standard pagination to handle large *list-based* responses. This Bulk Data standard is for *single-object* massive payloads (like a generated file).
+* [**API Standard: Long-Running Operations**](API Standard_ Long-Runing Operations (LRO)-675812048943.md): This is a required component for the asynchronous flow.
+* [**API Standard: Lumen Problem Details (LPDP-Mini v1.0)**](API Standard_ Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)-675749954024.md): This defines the mandatory error structure for a failed job.
+* [**API Standard: Pagination**](API Pagination Standards-675750379523.md): Teams should first attempt to use standard pagination to handle large *list-based* responses. This Bulk Data standard is for *single-object* massive payloads (like a generated file).
 
 7. Automation Notes (for Governance Tools)
 ------------------------------------------
