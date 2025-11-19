@@ -42,6 +42,7 @@
     - [API Standard: Rest & Resource Design](API%20Standard_%20Rest%20%26%20Resource%20Design-675866738817.md)
     - [API Standard: JSON Payload](API%20Standard_%20JSON%20Payload-675866051051.md)
     - [API Versioning Strategy](API%20Versioning%20Strategy-675743498245.md)
+  - [API Standard: Rate Limits & Error Handling Standard](API%20Standard_%20Rate%20Limits%20%26%20Error%20Handling%20Standard-675890790459.md)
 - [Tactical Engagements & Analysis](Tactical%20Engagements%20%26%20Analysis-675725509712.md)
   - [IoD API Analysis](IoD%20API%20Analysis-675725705761.md)
     - [IOD APIs and Customer Interactions](IOD%20APIs%20and%20Customer%20Interactions-675856842772.md)
