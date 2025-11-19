@@ -33,7 +33,7 @@ Details
   }
 * Api will return following information to client. it can follow current data format to be compatible with POST payload which is extension TMF payload design.
 
-  + **state/status** RUNNING, SUCCEEDED , FAILED , for status follow [API Standard: Long-Runing Operations (LRO)](API Standard_ Long-Runing Operations (LRO)-675812048943.md)
+  + **state/status** RUNNING, SUCCEEDED , FAILED , for status follow [API Standard: Long-Runing Operations (LRO)](API%20Standard_%20Long-Runing%20Operations%20%28LRO%29-675812048943.md)
 
     - Status of the order Request
   + **orderId** (88 number, once we have it available in backend or when orderRequest goes to SUCCEEDED)
@@ -42,7 +42,7 @@ Details
   + **serviceId** (77 number, once we have it available in backend or when orderRequest goes to SUCCEEDED)
 
     - The service id which is needed to get the information about service using serviceProvisioning API
-* Use Retry After header attributes to guide client on configurable delay, follow [API Standard: Long-Runing Operations (LRO)](API Standard_ Long-Runing Operations (LRO)-675812048943.md)
+* Use Retry After header attributes to guide client on configurable delay, follow [API Standard: Long-Runing Operations (LRO)](API%20Standard_%20Long-Runing%20Operations%20%28LRO%29-675812048943.md)
 
 ![IOD External API - Get well quick fix 11-10-2025.png](images/675856842772-1-IOD%20External%20API%20-%20Get%20well%20quick%20fix%2011-10-2025.png)
 

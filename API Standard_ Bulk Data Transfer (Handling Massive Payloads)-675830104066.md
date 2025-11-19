@@ -5,7 +5,7 @@
 1. Purpose & Scope
 ------------------
 
-This standard is an extension of the [**API Standard: Long-Running Operations (Async API Pattern)**](API Standard_ Long-Runing Operations (LRO)-675812048943.md).
+This standard is an extension of the [**API Standard: Long-Running Operations (Async API Pattern)**](API%20Standard_%20Long-Runing%20Operations%20%28LRO%29-675812048943.md).
 
 The "Long-Running" guide solves the **TIME** problem (jobs > 60 seconds). This guide solves the **SIZE** problem (payloads > 5MB).
 
@@ -274,9 +274,9 @@ The following schemas are required to support the `error` property above, per th
 
 This standard MUST be implemented in conjunction with the following governance standards:
 
-* [**API Standard: Long-Running Operations**](API Standard_ Long-Runing Operations (LRO)-675812048943.md): This is a required component for the asynchronous flow.
-* [**API Standard: Lumen Problem Details (LPDP-Mini v1.0)**](API Standard_ Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)-675749954024.md): This defines the mandatory error structure for a failed job.
-* [**API Standard: Pagination**](API Pagination Standards-675750379523.md): Teams should first attempt to use standard pagination to handle large *list-based* responses. This Bulk Data standard is for *single-object* massive payloads (like a generated file).
+* [**API Standard: Long-Running Operations**](API%20Standard_%20Long-Runing%20Operations%20%28LRO%29-675812048943.md): This is a required component for the asynchronous flow.
+* [**API Standard: Lumen Problem Details (LPDP-Mini v1.0)**](API%20Standard_%20Lumen%20Problem%20Details%20%E2%80%94%20Minimal%20Profile%20%28LPDP-Mini%20v1.0%29-675749954024.md): This defines the mandatory error structure for a failed job.
+* [**API Standard: Pagination**](API%20Pagination%20Standards-675750379523.md): Teams should first attempt to use standard pagination to handle large *list-based* responses. This Bulk Data standard is for *single-object* massive payloads (like a generated file).
 
 7. Automation Notes (for Governance Tools)
 ------------------------------------------

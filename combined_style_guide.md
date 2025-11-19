@@ -1801,9 +1801,9 @@ POST /telemetry/events
 # Reference Architectures (The "Playbooks")
 <a id="reference-architectures-the-playbooks-675726754110"></a>
 
-* [Proposed Sell Reference Architecture: : A Strategic Interface Layer Architecture](Proposed Sell Reference Architecture_ _ A Strategic Interface Layer Architecture-675690086637.md)
-* [Proposed "Buy" Reference Architecture for Partner Integration at Lumen: The PIL Model](Proposed _Buy_ Reference Architecture for Partner Integration at Lumen_ The PIL Model-675690971354.md)
-* [API Publishing Playbook: Public vs. Internal Deployment Workflow](API Publishing Playbook_ Public vs. Internal Deployment Workflow-675869589623.md)
+* [Proposed Sell Reference Architecture: : A Strategic Interface Layer Architecture](Proposed%20Sell%20Reference%20Architecture_%20_%20A%20Strategic%20Interface%20Layer%20Architecture-675690086637.md)
+* [Proposed "Buy" Reference Architecture for Partner Integration at Lumen: The PIL Model](Proposed%20_Buy_%20Reference%20Architecture%20for%20Partner%20Integration%20at%20Lumen_%20The%20PIL%20Model-675690971354.md)
+* [API Publishing Playbook: Public vs. Internal Deployment Workflow](API%20Publishing%20Playbook_%20Public%20vs.%20Internal%20Deployment%20Workflow-675869589623.md)
 
 ## Proposed Sell Reference Architecture: : A Strategic Interface Layer Architecture
 <a id="proposed-sell-reference-architecture-a-strategic-interface-layer-architecture-675690086637"></a>
@@ -2095,28 +2095,28 @@ Post-Publishing Lifecycle
 # Lumen API Style Guide
 <a id="lumen-api-style-guide-675725804440"></a>
 
-* [API Style Guide Governance Tracker](API Style Guide Governance Tracker-675726426458.md)
-  + [OAS Specification Best Practices](OAS Specification Best Practices-675743727627.md)
-  + [API URI Standard Proposal](API URI Standard Proposal-675743891744.md)
-  + [API Pagination Standards](API Pagination Standards-675750379523.md)
-  + [API Standard: Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)](API Standard_ Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)-675749954024.md)
-  + [API Standard: Idempotency](API Standard_ Idempotency-675769778234.md)
-  + [API Standard: Partial Resource Retrieval](API Standard_ Partial Resource Retrieval-675769581649.md)
-  + [API Standard: Delete Method](API Standard_ Delete Method-675767681290.md)
-  + [API Standard: HTTP Headers](API Standard_ HTTP Headers-675767026338.md)
-  + [API Standard: Caching & Concurrency with ETag](API Standard_ Caching & Concurrency with ETag-675767910645.md)
-  + [API Standard: Long-Runing Operations (LRO)](API Standard_ Long-Runing Operations (LRO)-675812048943.md)
-  + [API Standard: Bulk Data Transfer (Handling Massive Payloads)](API Standard_ Bulk Data Transfer (Handling Massive Payloads)-675830104066.md)
-  + [API Standard: Date & Time Naming](API Standard_ Date & Time Naming-675837837328.md)
-  + [API Standard: GET Method](API Standard_ GET Method-675848454259.md)
-  + [API Standard: POST Method](API Standard_ POST Method-675852386305.md)
-  + [API Standard: PUT Method](API Standard_ PUT Method-675851796520.md)
-  + [API Standard: PATCH Method](API Standard_ PATCH Method-675851894814.md)
-  + [API Standard: Batch Operations](API Standard_ Batch Operations-675858186277.md)
-  + [API Standard: Standardized Data Types and Formats](API Standard_ Standardized Data Types and Formats-675866542166.md)
-  + [API Standard: Rest & Resource Design](API Standard_ Rest & Resource Design-675866738817.md)
-  + [API Standard: JSON Payload](API Standard_ JSON Payload-675866051051.md)
-  + [API Versioning Strategy](API Versioning Strategy-675743498245.md)
+* [API Style Guide Governance Tracker](API%20Style%20Guide%20Governance%20Tracker-675726426458.md)
+  + [OAS Specification Best Practices](OAS%20Specification%20Best%20Practices-675743727627.md)
+  + [API URI Standard Proposal](API%20URI%20Standard%20Proposal-675743891744.md)
+  + [API Pagination Standards](API%20Pagination%20Standards-675750379523.md)
+  + [API Standard: Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)](API%20Standard_%20Lumen%20Problem%20Details%20%E2%80%94%20Minimal%20Profile%20%28LPDP-Mini%20v1.0%29-675749954024.md)
+  + [API Standard: Idempotency](API%20Standard_%20Idempotency-675769778234.md)
+  + [API Standard: Partial Resource Retrieval](API%20Standard_%20Partial%20Resource%20Retrieval-675769581649.md)
+  + [API Standard: Delete Method](API%20Standard_%20Delete%20Method-675767681290.md)
+  + [API Standard: HTTP Headers](API%20Standard_%20HTTP%20Headers-675767026338.md)
+  + [API Standard: Caching & Concurrency with ETag](API%20Standard_%20Caching%20%26%20Concurrency%20with%20ETag-675767910645.md)
+  + [API Standard: Long-Runing Operations (LRO)](API%20Standard_%20Long-Runing%20Operations%20%28LRO%29-675812048943.md)
+  + [API Standard: Bulk Data Transfer (Handling Massive Payloads)](API%20Standard_%20Bulk%20Data%20Transfer%20%28Handling%20Massive%20Payloads%29-675830104066.md)
+  + [API Standard: Date & Time Naming](API%20Standard_%20Date%20%26%20Time%20Naming-675837837328.md)
+  + [API Standard: GET Method](API%20Standard_%20GET%20Method-675848454259.md)
+  + [API Standard: POST Method](API%20Standard_%20POST%20Method-675852386305.md)
+  + [API Standard: PUT Method](API%20Standard_%20PUT%20Method-675851796520.md)
+  + [API Standard: PATCH Method](API%20Standard_%20PATCH%20Method-675851894814.md)
+  + [API Standard: Batch Operations](API%20Standard_%20Batch%20Operations-675858186277.md)
+  + [API Standard: Standardized Data Types and Formats](API%20Standard_%20Standardized%20Data%20Types%20and%20Formats-675866542166.md)
+  + [API Standard: Rest & Resource Design](API%20Standard_%20Rest%20%26%20Resource%20Design-675866738817.md)
+  + [API Standard: JSON Payload](API%20Standard_%20JSON%20Payload-675866051051.md)
+  + [API Versioning Strategy](API%20Versioning%20Strategy-675743498245.md)
 
 ## API Style Guide Governance Tracker
 <a id="api-style-guide-governance-tracker-675726426458"></a>
@@ -4242,7 +4242,7 @@ Polling is the default, but services **may** offer event-based notifications for
 1. Purpose & Scope
 ------------------
 
-This standard is an extension of the [**API Standard: Long-Running Operations (Async API Pattern)**](API Standard_ Long-Runing Operations (LRO)-675812048943.md).
+This standard is an extension of the [**API Standard: Long-Running Operations (Async API Pattern)**](API%20Standard_%20Long-Runing%20Operations%20%28LRO%29-675812048943.md).
 
 The "Long-Running" guide solves the **TIME** problem (jobs > 60 seconds). This guide solves the **SIZE** problem (payloads > 5MB).
 
@@ -4511,9 +4511,9 @@ The following schemas are required to support the `error` property above, per th
 
 This standard MUST be implemented in conjunction with the following governance standards:
 
-* [**API Standard: Long-Running Operations**](API Standard_ Long-Runing Operations (LRO)-675812048943.md): This is a required component for the asynchronous flow.
-* [**API Standard: Lumen Problem Details (LPDP-Mini v1.0)**](API Standard_ Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)-675749954024.md): This defines the mandatory error structure for a failed job.
-* [**API Standard: Pagination**](API Pagination Standards-675750379523.md): Teams should first attempt to use standard pagination to handle large *list-based* responses. This Bulk Data standard is for *single-object* massive payloads (like a generated file).
+* [**API Standard: Long-Running Operations**](API%20Standard_%20Long-Runing%20Operations%20%28LRO%29-675812048943.md): This is a required component for the asynchronous flow.
+* [**API Standard: Lumen Problem Details (LPDP-Mini v1.0)**](API%20Standard_%20Lumen%20Problem%20Details%20%E2%80%94%20Minimal%20Profile%20%28LPDP-Mini%20v1.0%29-675749954024.md): This defines the mandatory error structure for a failed job.
+* [**API Standard: Pagination**](API%20Pagination%20Standards-675750379523.md): Teams should first attempt to use standard pagination to handle large *list-based* responses. This Bulk Data standard is for *single-object* massive payloads (like a generated file).
 
 7. Automation Notes (for Governance Tools)
 ------------------------------------------
@@ -7224,7 +7224,7 @@ Details
   }
 * Api will return following information to client. it can follow current data format to be compatible with POST payload which is extension TMF payload design.
 
-  + **state/status** RUNNING, SUCCEEDED , FAILED , for status follow [API Standard: Long-Runing Operations (LRO)](API Standard_ Long-Runing Operations (LRO)-675812048943.md)
+  + **state/status** RUNNING, SUCCEEDED , FAILED , for status follow [API Standard: Long-Runing Operations (LRO)](API%20Standard_%20Long-Runing%20Operations%20%28LRO%29-675812048943.md)
 
     - Status of the order Request
   + **orderId** (88 number, once we have it available in backend or when orderRequest goes to SUCCEEDED)
@@ -7233,7 +7233,7 @@ Details
   + **serviceId** (77 number, once we have it available in backend or when orderRequest goes to SUCCEEDED)
 
     - The service id which is needed to get the information about service using serviceProvisioning API
-* Use Retry After header attributes to guide client on configurable delay, follow [API Standard: Long-Runing Operations (LRO)](API Standard_ Long-Runing Operations (LRO)-675812048943.md)
+* Use Retry After header attributes to guide client on configurable delay, follow [API Standard: Long-Runing Operations (LRO)](API%20Standard_%20Long-Runing%20Operations%20%28LRO%29-675812048943.md)
 
 ![IOD External API - Get well quick fix 11-10-2025.png](images/675856842772-1-IOD%20External%20API%20-%20Get%20well%20quick%20fix%2011-10-2025.png)
 
