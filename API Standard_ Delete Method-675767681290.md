@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675767681290, Version: 5
 
-none
-
 DELETE Method – Request and Response Standards
 ----------------------------------------------
 

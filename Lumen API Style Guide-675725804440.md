@@ -2,4 +2,25 @@
 
 > Confluence Page ID: 675725804440, Version: 5
 
-2true0
+* [API Style Guide Governance Tracker](/wiki/spaces/NAPA/pages/675726426458/API+Style+Guide+Governance+Tracker)
+  + [OAS Specification Best Practices](/wiki/spaces/NAPA/pages/675743727627/OAS+Specification+Best+Practices)
+  + [API URI Standard Proposal](/wiki/spaces/NAPA/pages/675743891744/API+URI+Standard+Proposal)
+  + [API Pagination Standards](/wiki/spaces/NAPA/pages/675750379523/API+Pagination+Standards)
+  + [API Standard: Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)](/wiki/spaces/NAPA/pages/675749954024/API+Standard+Lumen+Problem+Details+Minimal+Profile+LPDP-Mini+v1.0)
+  + [API Standard: Idempotency](/wiki/spaces/NAPA/pages/675769778234/API+Standard+Idempotency)
+  + [API Standard: Partial Resource Retrieval](/wiki/spaces/NAPA/pages/675769581649/API+Standard+Partial+Resource+Retrieval)
+  + [API Standard: Delete Method](/wiki/spaces/NAPA/pages/675767681290/API+Standard+Delete+Method)
+  + [API Standard: HTTP Headers](/wiki/spaces/NAPA/pages/675767026338/API+Standard+HTTP+Headers)
+  + [API Standard: Caching & Concurrency with ETag](/wiki/spaces/NAPA/pages/675767910645/API+Standard+Caching+Concurrency+with+ETag)
+  + [API Standard: Long-Runing Operations (LRO)](/wiki/spaces/NAPA/pages/675812048943/API+Standard+Long-Runing+Operations+LRO)
+  + [API Standard: Bulk Data Transfer (Handling Massive Payloads)](/wiki/spaces/NAPA/pages/675830104066/API+Standard+Bulk+Data+Transfer+Handling+Massive+Payloads)
+  + [API Standard: Date & Time Naming](/wiki/spaces/NAPA/pages/675837837328/API+Standard+Date+Time+Naming)
+  + [API Standard: GET Method](/wiki/spaces/NAPA/pages/675848454259/API+Standard+GET+Method)
+  + [API Standard: POST Method](/wiki/spaces/NAPA/pages/675852386305/API+Standard+POST+Method)
+  + [API Standard: PUT Method](/wiki/spaces/NAPA/pages/675851796520/API+Standard+PUT+Method)
+  + [API Standard: PATCH Method](/wiki/spaces/NAPA/pages/675851894814/API+Standard+PATCH+Method)
+  + [API Standard: Batch Operations](/wiki/spaces/NAPA/pages/675858186277/API+Standard+Batch+Operations)
+  + [API Standard: Standardized Data Types and Formats](/wiki/spaces/NAPA/pages/675866542166/API+Standard+Standardized+Data+Types+and+Formats)
+  + [API Standard: Rest & Resource Design](/wiki/spaces/NAPA/pages/675866738817/API+Standard+Rest+Resource+Design)
+  + [API Standard: JSON Payload](/wiki/spaces/NAPA/pages/675866051051/API+Standard+JSON+Payload)
+  + [API Versioning Strategy](/wiki/spaces/NAPA/pages/675743498245/API+Versioning+Strategy)

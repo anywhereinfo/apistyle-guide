@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675829907489, Version: 3
 
-none
-
 1. Introduction
 ---------------
 

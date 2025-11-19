@@ -2,12 +2,13 @@
 
 > Confluence Page ID: 675884826641, Version: 2
 
-none
-
 User Story:
 -----------
 
-GNTSARCH-516f6b00489-ed93-3bc3-8783-4866a55cbebeSystem Jira
+[GNTSARCH-516](https://lumen.atlassian.net/browse/GNTSARCH-516)
+-
+Getting issue details...
+STATUS
 
 As an API Product Manager,
 

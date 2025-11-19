@@ -2,11 +2,7 @@
 
 > Confluence Page ID: 675689955527, Version: 5
 
-none
-
 ![4layermodel.png](images/675689955527-0-4layermodel.png)
-
-API Classification Model
 
 A Layered Approach to API Design
 --------------------------------

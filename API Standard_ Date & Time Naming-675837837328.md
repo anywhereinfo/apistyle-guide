@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675837837328, Version: 2
 
-none
-
 ### **1. Purpose & Scope**
 
 This standard defines how **date and date-time fields** must be named, structured, and represented in API payloads.  

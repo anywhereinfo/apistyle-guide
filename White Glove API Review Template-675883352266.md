@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675883352266, Version: 7
 
-none
-
 The White Glove Approach: Definition and Expectations
 =====================================================
 

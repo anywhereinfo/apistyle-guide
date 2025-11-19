@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675749954024, Version: 2
 
-none
-
 Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)
 ========================================================
 

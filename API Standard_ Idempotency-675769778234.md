@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675769778234, Version: 1
 
-none
-
 1. What is Idempotency?
 -----------------------
 

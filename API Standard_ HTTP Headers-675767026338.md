@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675767026338, Version: 3
 
-none
-
 1. Naming & Formatting
 ----------------------
 

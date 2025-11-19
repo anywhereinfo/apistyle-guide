@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675752411161, Version: 2
 
-none
-
 **Thematic Roadmap**
 --------------------
 

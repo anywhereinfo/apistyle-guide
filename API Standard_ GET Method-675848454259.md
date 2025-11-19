@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675848454259, Version: 4
 
-none
-
 ### **Purpose**
 
 The `GET` method retrieves a resource or a collection of resources.  

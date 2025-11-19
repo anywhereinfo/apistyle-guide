@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675866051051, Version: 1
 
-none
-
 ### **Overview**
 
 All Lumen APIs **must use JSON** as the canonical message format for request and response bodies.  

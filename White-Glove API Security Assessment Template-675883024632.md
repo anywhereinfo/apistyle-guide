@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675883024632, Version: 1
 
-none
-
 **White-Glove API Security Assessment for <API/Product>**
 =========================================================
 

@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675813982241, Version: 2
 
-none
-
 **Story Summary**
 -----------------
 

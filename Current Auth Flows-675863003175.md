@@ -4,10 +4,6 @@
 
 There are 4 possible authentication mechanisms currently supported for External API integration.
 
-note
-
-There appear to be additional legacy flows in place
-
 There appear to be additional legacy flows in place
 
 1. App Key and Digest authentication. (Note: This method is currently listed as deprecated and is in the process of being retired by the API application teams).
@@ -17,20 +13,9 @@ There appear to be additional legacy flows in place
 
 It is critical to note that the 4 JWT flows are distinct and generate tokens independently, signed by different authorities.
 
-Detailed sequence diagrams for the assorted flow can be found here: Integrating with LIAM APIs
+Detailed sequence diagrams for the assorted flow can be found here: [Integrating with LIAM APIs](/wiki/spaces/LIAM/pages/672892944385/Integrating+with+LIAM+APIs)
 
 For the purposes of this document I will maintain focus on the go forward LIAM auth flow as highlighted in the current developer center documentation.
-
-note
-
-There is a secondary auth flow that is similar to the one outlined below but instead adds the following additional steps:
-
-* Initial client login occurs directly with Azure B2C using standard client\_credential grant type with client credential and secret
-* The B2C auth token is then presented to LIAM as client\_assertion with client\_id where it is validated by:
-
-  1. Ensuring “azp” claim equals registered client’s clientId
-  2. Uses clientId to fetch LIAM user details
-  3. Validates that environment in returned user matches current environement
 
 There is a secondary auth flow that is similar to the one outlined below but instead adds the following additional steps:
 
@@ -53,10 +38,6 @@ API credential creation
 4. Client credentials are sent to AzureB2C where they are authorized.
 5. After authentication is validated a LIAM token is generated populating claims from it’s own user info. This token is returned to the login requester.
 6. Token is then sent in the Authorization header for subsequent calls to the API where the API may enforce additional Authz.
-
-note
-
-APIs may require additional headers to be sent as part of their Authentication requirements such as x-customer-number and x-billing-account-number
 
 APIs may require additional headers to be sent as part of their Authentication requirements such as x-customer-number and x-billing-account-number
 

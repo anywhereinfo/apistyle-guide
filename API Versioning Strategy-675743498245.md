@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675743498245, Version: 5
 
-none
-
 This document outlines the proposed official strategy for versioning all public-facing REST APIs. A stable and predictable versioning strategy is critical for building trust with API consumers and ensuring a reliable developer experience.
 
 Versioning Principles

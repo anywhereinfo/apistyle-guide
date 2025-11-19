@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675768664368, Version: 2
 
-none
-
 These principles are the strategic solution to the very problems our customers and internal teams face. They provide the "North Star" that justifies our tactical API Style Guide.
 
 How to Use These Principles: A Guide for Stakeholders

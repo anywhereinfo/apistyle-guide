@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675866542166, Version: 4
 
-none
-
 ### **Purpose**
 
 To ensure consistency, readability, and interoperability across all APIs published by Lumen, this section defines the canonical data types, formats, and reusable schemas to be used in all OpenAPI 3.0.3 specifications.

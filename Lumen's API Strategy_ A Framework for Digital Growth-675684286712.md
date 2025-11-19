@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675684286712, Version: 4
 
-none
-
 This document outlines the comprehensive API strategy for Lumen. It details the core business objectives driving this initiative and the strategic framework that will guide our technology, governance, and cultural transformation. The goal is to evolve Lumen's APIs from a collection of inconsistent interfaces into a true, scalable platform that drives new revenue and delivers a world-class partner experience
 
 Strategic Business Goals (The "Why")
@@ -22,8 +20,6 @@ Our Strategic Framework
 To achieve these goals, we will implement a holistic strategy that aligns our business, governance, technology, and culture. The following diagram outlines the core components of our approach.
 
 ![API-Components.png](images/675684286712-0-API-Components.png)
-
-API Strategy Components
 
 To achieve these goals, we will implement a holistic strategy that aligns our business, governance, technology, and culture. The following framework outlines the core components of our approach.
 

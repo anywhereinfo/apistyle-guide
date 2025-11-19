@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675743727627, Version: 6
 
-none
-
 This document provides a set of standardized guidelines for creating high-quality, maintainable, and developer-friendly OpenAPI specifications. Adhering to these practices ensures consistency and clarity across all our APIs.
 
 ---

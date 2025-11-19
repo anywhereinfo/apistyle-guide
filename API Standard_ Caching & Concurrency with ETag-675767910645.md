@@ -2,8 +2,6 @@
 
 > Confluence Page ID: 675767910645, Version: 1
 
-none
-
 1. What is an ETag?
 -------------------
 
