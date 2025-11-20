@@ -20,29 +20,29 @@
   - [Proposed "Buy" Reference Architecture for Partner Integration at Lumen: The PIL Model](#proposed-buy-reference-architecture-for-partner-integration-at-lumen-the-pil-model-675690971354)
   - [API Publishing Playbook: Public vs. Internal Deployment Workflow](#api-publishing-playbook-public-vs-internal-deployment-workflow-675869589623)
 - [Lumen API Style Guide](#lumen-api-style-guide-675725804440)
+  - [API Standard: Rest & Resource Design](#api-standard-rest-resource-design-675866738817)
+  - [API Versioning Strategy](#api-versioning-strategy-675743498245)
+  - [API Standard: POST Method](#api-standard-post-method-675852386305)
+  - [API Standard: JSON Payload](#api-standard-json-payload-675866051051)
+  - [API Standard: GET Method](#api-standard-get-method-675848454259)
+  - [API Standard: Batch Operations](#api-standard-batch-operations-675858186277)
+  - [API Standard: PATCH Method](#api-standard-patch-method-675851894814)
+  - [API Standard: Caching & Concurrency with ETag](#api-standard-caching-concurrency-with-etag-675767910645)
+  - [API Standard: Long-Runing Operations (LRO)](#api-standard-long-runing-operations-lro-675812048943)
+  - [API Standard: Bulk Data Transfer (Handling Massive Payloads)](#api-standard-bulk-data-transfer-handling-massive-payloads-675830104066)
+  - [API Standard: HTTP Headers](#api-standard-http-headers-675767026338)
+  - [API Standard: Delete Method](#api-standard-delete-method-675767681290)
   - [API Style Guide Governance Tracker](#api-style-guide-governance-tracker-675726426458)
-    - [OAS Specification Best Practices](#oas-specification-best-practices-675743727627)
-    - [API URI Standard Proposal](#api-uri-standard-proposal-675743891744)
-    - [API Pagination Standards](#api-pagination-standards-675750379523)
-    - [API Standard: Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)](#api-standard-lumen-problem-details-minimal-profile-lpdp-mini-v1-0-675749954024)
-    - [API Standard: Idempotency](#api-standard-idempotency-675769778234)
-    - [API Standard: Partial Resource Retrieval](#api-standard-partial-resource-retrieval-675769581649)
-    - [API Standard: Delete Method](#api-standard-delete-method-675767681290)
-    - [API Standard: HTTP Headers](#api-standard-http-headers-675767026338)
-    - [API Standard: Caching & Concurrency with ETag](#api-standard-caching-concurrency-with-etag-675767910645)
-    - [API Standard: Long-Runing Operations (LRO)](#api-standard-long-runing-operations-lro-675812048943)
-    - [API Standard: Bulk Data Transfer (Handling Massive Payloads)](#api-standard-bulk-data-transfer-handling-massive-payloads-675830104066)
-    - [API Standard: Date & Time Naming](#api-standard-date-time-naming-675837837328)
-    - [API Standard: GET Method](#api-standard-get-method-675848454259)
-    - [API Standard: POST Method](#api-standard-post-method-675852386305)
-    - [API Standard: PUT Method](#api-standard-put-method-675851796520)
-    - [API Standard: PATCH Method](#api-standard-patch-method-675851894814)
-    - [API Standard: Batch Operations](#api-standard-batch-operations-675858186277)
-    - [API Standard: Standardized Data Types and Formats](#api-standard-standardized-data-types-and-formats-675866542166)
-    - [API Standard: Rest & Resource Design](#api-standard-rest-resource-design-675866738817)
-    - [API Standard: JSON Payload](#api-standard-json-payload-675866051051)
-    - [API Versioning Strategy](#api-versioning-strategy-675743498245)
   - [API Standard: Rate Limits & Error Handling Standard](#api-standard-rate-limits-error-handling-standard-675890790459)
+  - [OAS Specification Best Practices](#oas-specification-best-practices-675743727627)
+  - [API URI Standard Proposal](#api-uri-standard-proposal-675743891744)
+  - [API Pagination Standards](#api-pagination-standards-675750379523)
+  - [API Standard: Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)](#api-standard-lumen-problem-details-minimal-profile-lpdp-mini-v1-0-675749954024)
+  - [API Standard: Idempotency](#api-standard-idempotency-675769778234)
+  - [API Standard: Partial Resource Retrieval](#api-standard-partial-resource-retrieval-675769581649)
+  - [API Standard: Standardized Data Types and Formats](#api-standard-standardized-data-types-and-formats-675866542166)
+  - [API Standard: Date & Time Naming](#api-standard-date-time-naming-675837837328)
+  - [API Standard: PUT Method](#api-standard-put-method-675851796520)
 - [Tactical Engagements & Analysis](#tactical-engagements-analysis-675725509712)
   - [IoD API Analysis](#iod-api-analysis-675725705761)
     - [IOD APIs and Customer Interactions](#iod-apis-and-customer-interactions-675856842772)
@@ -54,6 +54,8 @@
   - [Current State Assessment (AuthN, AuthZ, Terminology)](#current-state-assessment-authn-authz-terminology-675813982241)
     - [Current Auth Flows](#current-auth-flows-675863003175)
   - [Secure API Access Model for Partner & Wholesaler Personas](#secure-api-access-model-for-partner-wholesaler-personas-675884826641)
+  - [API Security Standards](#api-security-standards-675894099976)
+    - [API Security Standard: Identity Derivation, Multi-Tenancy & Zero Trust](#api-security-standard-identity-derivation-multi-tenancy-zero-trust-675893968900)
 
 ---
 
@@ -535,6 +537,9 @@ Tracks the API's maturity and the level of governance applied.
 * `governanceLevel` (String, Required): The level of review and adherence to standards applied to this API. This informs consumer trust and risk.
 
   + **Values:** `Fully Governed`, `Partially Governed`, `Lift and Shift`, `Exception`
+* `governanceProfile` **(String, Required):** The specific ruleset or "linter profile" that automation should apply to this API. This allows developers to self-select the strictness of the review based on the API's origin.
+
+  + **Values:** `legacy` (Minimal checks for older APIs), `lift-n-shift` (Basic structural checks), `full-governance` (Strict adherence to all standards).
 * `deprecationDate` (String, Optional): (If `lifecycleStage` is "Deprecated") The date (ISO 8601) when the API will no longer be supported.
 * `sunsetDate` (String, Optional): (If `lifecycleStage` is "Deprecated") The date (ISO 8601) when the API will be shut down.
 
@@ -548,6 +553,9 @@ Captures high-level technical attributes not defined in the OAS.
 * `protocol` (String, Required): The primary protocol used.
 
   + **Values:** `HTTPS`, `WSS` (WebSockets), `AMQP` (Messaging), etc.
+* `swaggerHubName`(String, Optional)**:** The unique, URL-friendly identifier (slug) for this API in SwaggerHub. This is used by CI/CD pipelines to sync the repository OAS with the SwaggerHub catalog.
+
+  + **Example:** `customer-order-api` (Must match the SwaggerHub URL, not the display name).
 
 ### 2.5. Security & Compliance
 
@@ -564,7 +572,7 @@ Defines the overall risk and compliance posture for the API.
 
 An immutable log of the *latest* governance review. This section is updated automatically by the governance process or tooling upon a successful review.
 
-* `reviewAuditTrail` (Object, Required): A container for all review-related metadata.
+* `reviewAuditTrail` (Object, Optional): A container for all review-related metadata.
 
   + `reviewId` (String, Required): A unique identifier for the latest governance review.
   + `reviewDate` (String, Required): The timestamp (ISO 8601) when the latest review was completed.
@@ -665,10 +673,10 @@ A common concern is that `x-` tags will clutter the rendered documentation (e.g.
       "minLength": 1
     },
     "ownershipModel": {
-    "description": "Defines the ownership classification of the API. For governance scope, always 'Lumen-Owned'.",
-    "type": "string",
-    "enum": ["Lumen-Owned"]
-  },
+      "description": "Defines the ownership classification of the API. For governance scope, always 'Lumen-Owned'.",
+      "type": "string",
+      "enum": ["Lumen-Owned"]
+    },
     "assetId": {
       "type": "string",
       "minLength": 1,
@@ -730,6 +738,15 @@ A common concern is that `x-` tags will clutter the rendered documentation (e.g.
         "Retired"
       ]
     },
+    "governanceProfile": {
+      "description": "The specific ruleset or 'linter profile' that automation should apply to this API.",
+      "type": "string",
+      "enum": [
+        "legacy",
+        "lift-n-shift",
+        "full-governance"
+      ]
+    },
     "governanceLevel": {
       "description": "The level of review and adherence to standards applied to this API.",
       "type": "string",
@@ -749,6 +766,10 @@ A common concern is that `x-` tags will clutter the rendered documentation (e.g.
       "description": "The date (ISO 8601) when the API will be shut down.",
       "type": ["string", "null"],
       "format": "date-time"
+    },
+    "swaggerHubName": {
+      "description": "The unique, URL-friendly identifier (slug) for this API in SwaggerHub. Used for CI/CD sync.",
+      "type": "string"
     },
     "apiStyle": {
       "description": "The architectural style of the API.",
@@ -830,7 +851,7 @@ A common concern is that `x-` tags will clutter the rendered documentation (e.g.
     "schemaVersion",
     "apiName",
     "ownershipModel",
-    "assetId"
+    "assetId",
     "businessOwner",
     "technicalOwner",
     "developmentTeam",
@@ -838,11 +859,11 @@ A common concern is that `x-` tags will clutter the rendered documentation (e.g.
     "consumerAudience",
     "apiLayer",
     "lifecycleStage",
+    "governanceProfile",
     "governanceLevel",
     "apiStyle",
     "protocol",
-    "dataClassification",
-    "reviewAuditTrail"
+    "dataClassification"
   ],
   "additionalProperties": false
 }
@@ -2096,1416 +2117,1950 @@ Post-Publishing Lifecycle
 # Lumen API Style Guide
 <a id="lumen-api-style-guide-675725804440"></a>
 
+* [API Standard: Rest & Resource Design](API%20Standard_%20Rest%20%26%20Resource%20Design-675866738817.md)
+* [API Versioning Strategy](API%20Versioning%20Strategy-675743498245.md)
+* [API Standard: POST Method](API%20Standard_%20POST%20Method-675852386305.md)
+* [API Standard: JSON Payload](API%20Standard_%20JSON%20Payload-675866051051.md)
+* [API Standard: GET Method](API%20Standard_%20GET%20Method-675848454259.md)
+* [API Standard: Batch Operations](API%20Standard_%20Batch%20Operations-675858186277.md)
+* [API Standard: PATCH Method](API%20Standard_%20PATCH%20Method-675851894814.md)
+* [API Standard: Caching & Concurrency with ETag](API%20Standard_%20Caching%20%26%20Concurrency%20with%20ETag-675767910645.md)
+* [API Standard: Long-Runing Operations (LRO)](API%20Standard_%20Long-Runing%20Operations%20%28LRO%29-675812048943.md)
+* [API Standard: Bulk Data Transfer (Handling Massive Payloads)](API%20Standard_%20Bulk%20Data%20Transfer%20%28Handling%20Massive%20Payloads%29-675830104066.md)
+* [API Standard: HTTP Headers](API%20Standard_%20HTTP%20Headers-675767026338.md)
+* [API Standard: Delete Method](API%20Standard_%20Delete%20Method-675767681290.md)
 * [API Style Guide Governance Tracker](API%20Style%20Guide%20Governance%20Tracker-675726426458.md)
-  + [OAS Specification Best Practices](OAS%20Specification%20Best%20Practices-675743727627.md)
-  + [API URI Standard Proposal](API%20URI%20Standard%20Proposal-675743891744.md)
-  + [API Pagination Standards](API%20Pagination%20Standards-675750379523.md)
-  + [API Standard: Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)](API%20Standard_%20Lumen%20Problem%20Details%20%E2%80%94%20Minimal%20Profile%20%28LPDP-Mini%20v1.0%29-675749954024.md)
-  + [API Standard: Idempotency](API%20Standard_%20Idempotency-675769778234.md)
-  + [API Standard: Partial Resource Retrieval](API%20Standard_%20Partial%20Resource%20Retrieval-675769581649.md)
-  + [API Standard: Delete Method](API%20Standard_%20Delete%20Method-675767681290.md)
-  + [API Standard: HTTP Headers](API%20Standard_%20HTTP%20Headers-675767026338.md)
-  + [API Standard: Caching & Concurrency with ETag](API%20Standard_%20Caching%20%26%20Concurrency%20with%20ETag-675767910645.md)
-  + [API Standard: Long-Runing Operations (LRO)](API%20Standard_%20Long-Runing%20Operations%20%28LRO%29-675812048943.md)
-  + [API Standard: Bulk Data Transfer (Handling Massive Payloads)](API%20Standard_%20Bulk%20Data%20Transfer%20%28Handling%20Massive%20Payloads%29-675830104066.md)
-  + [API Standard: Date & Time Naming](API%20Standard_%20Date%20%26%20Time%20Naming-675837837328.md)
-  + [API Standard: GET Method](API%20Standard_%20GET%20Method-675848454259.md)
-  + [API Standard: POST Method](API%20Standard_%20POST%20Method-675852386305.md)
-  + [API Standard: PUT Method](API%20Standard_%20PUT%20Method-675851796520.md)
-  + [API Standard: PATCH Method](API%20Standard_%20PATCH%20Method-675851894814.md)
-  + [API Standard: Batch Operations](API%20Standard_%20Batch%20Operations-675858186277.md)
-  + [API Standard: Standardized Data Types and Formats](API%20Standard_%20Standardized%20Data%20Types%20and%20Formats-675866542166.md)
-  + [API Standard: Rest & Resource Design](API%20Standard_%20Rest%20%26%20Resource%20Design-675866738817.md)
-  + [API Standard: JSON Payload](API%20Standard_%20JSON%20Payload-675866051051.md)
-  + [API Versioning Strategy](API%20Versioning%20Strategy-675743498245.md)
 * [API Standard: Rate Limits & Error Handling Standard](API%20Standard_%20Rate%20Limits%20%26%20Error%20Handling%20Standard-675890790459.md)
+* [OAS Specification Best Practices](OAS%20Specification%20Best%20Practices-675743727627.md)
+* [API URI Standard Proposal](API%20URI%20Standard%20Proposal-675743891744.md)
+* [API Pagination Standards](API%20Pagination%20Standards-675750379523.md)
+* [API Standard: Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)](API%20Standard_%20Lumen%20Problem%20Details%20%E2%80%94%20Minimal%20Profile%20%28LPDP-Mini%20v1.0%29-675749954024.md)
+* [API Standard: Idempotency](API%20Standard_%20Idempotency-675769778234.md)
+* [API Standard: Partial Resource Retrieval](API%20Standard_%20Partial%20Resource%20Retrieval-675769581649.md)
+* [API Standard: Standardized Data Types and Formats](API%20Standard_%20Standardized%20Data%20Types%20and%20Formats-675866542166.md)
+* [API Standard: Date & Time Naming](API%20Standard_%20Date%20%26%20Time%20Naming-675837837328.md)
+* [API Standard: PUT Method](API%20Standard_%20PUT%20Method-675851796520.md)
 
-## API Style Guide Governance Tracker
-<a id="api-style-guide-governance-tracker-675726426458"></a>
+## API Standard: Rest & Resource Design
+<a id="api-standard-rest-resource-design-675866738817"></a>
 
-1. Overview
+**Purpose**
 -----------
 
-This page tracks the progress of the API Working Group in reviewing, consolidating, and approving the official Lumen API Style Guide. The goal is to create a single, unified set of standards that will be used for all API development and governance.
-
-### Status Legend
-
-* 🟩 **Approved:** The standard has been reviewed and approved by the working group.
-* 🟧 **Pending:** The standard is under review, has open issues, or is awaiting a formal decision.
-* ⬜ **Draft:** The standard exists but has not yet been formally reviewed by the group.
-
-2. Master Governance Tracker
-----------------------------
-
-|  |  |  |  |  |
-| --- | --- | --- | --- | --- |
-| Subject Area | Source | Status | Open Issues / Questions | Notes / Rationale |
-| **Principles of Cloud-First API Design** | Confluence | 🟩 **Approved** |  |  |
-| **OAS Specification Best Practices** | Confluence | 🟩 **Approved** | 3.1.x (limited support). Current support 3.0.x | Updated support for 3.0.x |
-| **API Versioning Strategy** | Confluence | 🟩 **Approved** | `Deprecation`: date format to follow RFC. `Modify status code` | Updated |
-| **API Pagination Standards** | Confluence | 🟩 **Approved** | `next/prev` is not possible at this time | Removed |
-| **API Standardized Error Responses** | Confluence | 🟩 **Approved** | `traceparent`, `9457` (RFC 9457 Problem Details) | Created RFC 9457 Problem Detail profile for Lumen |
-| **API URI Standards and Design Patterns** | Confluence | 🟩 **Approved** |  |  |
-| **API Standard: Idempotency** | Confluence | 🟩 **Approved** |  |  |
-| **API Standard: Partial Resource Retrieval** | Confluence | 🟩 **Approved** |  |  |
-| **API Standard: Delete Method** | Confluence | 🟩 **Approved** |  |  |
-| **API Standard: Caching & Concurrency** | Confluence | 🟩 **Approved** |  |  |
-| **API Standard: HTTP Headers** | Confluence | 🟩 **Approved** |  |  |
-| **API Standard: Date & Time Naming** | Confluence | 🟩 **Approved** |  |  |
-| **API Standard: Standardized Data Types** | Confluence | 🟩 **Approved** |  |  |
-| **API Standard: Rest & Resource Design** | Confluence | 🟩 **Approved** |  |  |
-| **API Standard: JSON Payload** | Confluence | 🟩 **Approved** |  | extracted date standards seperately from json payload |
-| **API Standard: GET Method** | Confluence | 🟩 **Approved** |  |  |
-| **API Standard: POST Method** | Confluence | 🟩 **Approved** |  |  |
-| **API Standard: PUT Method** | Confluence | 🟩 **Approved** |  |  |
-| **API Standard: PATCH Method** | Confluence | 🟩 **Approved** |  |  |
-| **webhook** | (New Item) | ⬜ **Draft** | `jacob(webhooks - undermetristic), casey (sre)` | Lower priority, not required for base API Styleguide |
-| **API Governance Process** | Confluence | ⬜ **Draft** |  | Lower priority, not required for base API Styleguide |
-| **API Standard: Long-Runing Operations (LRO)** | Confluence | 🟩 **Approved** |  | Lower priority, not required for base API Styleguide |
-| **API Standard: Bulk Data Transfer** | Confluence | 🟩 **Approved** |  | Lower priority, not required for base API Styleguide |
-| **API Standard: Batch Operations** | Confluence | 🟩 **Approved** |  |  |
-
-Export to Sheets
-
-### OAS Specification Best Practices
-<a id="oas-specification-best-practices-675743727627"></a>
-
-This document provides a set of standardized guidelines for creating high-quality, maintainable, and developer-friendly OpenAPI specifications. Adhering to these practices ensures consistency and clarity across all our APIs.
+This section defines how APIs at **Lumen** are structured around resources — the fundamental building blocks of RESTful architecture — ensuring consistency, discoverability, and governance automation across all API domains.
 
 ---
 
-OAS Version and Format
-----------------------
+**REST Principle — Resource-Centric Design**
+--------------------------------------------
 
-### **Adopt OAS 3.0.3 as the Standard**
+### **Governance Objective**
 
-* Utilize OAS 3.0.3 for all new API specifications to ensure alignment with ApigeeX industry practices.
-* Include the correct version declaration at the start of the document:
+APIs must be modeled around *resources*, not actions.  
+A *resource* represents a logical entity (e.g., `customer`, `order`, `connection`) that can be acted upon via standard HTTP methods.
+
+> “The key abstraction of information in REST is a resource.”  
+> — *Roy Fielding, REST Dissertation §5.2*
+
+### **Governance Rules**
+
+* Every REST API must identify its **primary resource(s)** before design begins.
+* Resources are **nouns**, not verbs.
+* CRUD behavior must be represented through **HTTP methods**, not in the URI.
+
+### **✅ Example**
+
+| Not Recommended | Recommended |
+| --- | --- |
+| `POST /createUser` | `POST /users` |
+| `POST /updateUser` | `PATCH /users/{id}` |
+| `POST /deleteUser` | `DELETE /users/{id}` |
+
+---
+
+**Resource Hierarchies and URI Scope**
+--------------------------------------
+
+### **Governance Objective**
+
+Maintain intuitive, predictable, and domain-contained URI structures.
+
+### **Governance Rules**
+
+* URIs must follow:
 
   ```
-  openapi: 3.0.3
+  /{domain}/v{n}/{resource}/{resource_id}/[subresource]
+  ```
+* Each resource belongs to **one business domain**.
+* **No cross-domain fan-out**:  
+  A resource in one domain cannot directly reference or nest resources from another.
+* URI depth must not exceed **two resource levels** (max 4 path segments after version).
+
+### **✅ Example**
+
+| Allowed | Disallowed |
+| --- | --- |
+| `/customers/v1/customers/{id}/accounts` | `/projects/{id}/tasks/{taskId}/comments/{commentId}` |
+| `/network/v1/connections/{id}` | `/billing/v1/customers/{id}/network/connections` |
+
+---
+
+**Collections vs Singleton Resources**
+--------------------------------------
+
+### **Governance Objective**
+
+Differentiate between **collections** (plural) and **singletons** (singular) to ensure consistent structure and expectations.
+
+### **Governance Rules**
+
+* **Collections:** Plural noun, contain multiple resources (e.g., `/customers`).
+* **Singletons:** Singular noun, one-per-parent (e.g., `/projects/{id}/config`).
+* **Singleton resources must not define:**
+
+  + `id` property
+  + `POST` or `DELETE` operations
+* **Singletons must define:** `GET` and `PATCH`.
+
+### **Implementation Hint**
+
+Mark singletons explicitly in OAS:
+
+```
+x-singleton: true
+```
+
+### **✅ Example**
+
+| Type | Path | Allowed Methods |
+| --- | --- | --- |
+| Collection | `/customers` | `GET`, `POST` |
+| Singleton | `/projects/{id}/config` | `GET`, `PATCH` |
+
+---
+
+**Resource Naming**
+-------------------
+
+### **Governance Objective**
+
+Enable predictable API navigation and uniform discoverability.
+
+### **Governance Rules**
+
+* Use **nouns** for resources; avoid verbs.
+* Pluralize collection names (e.g., `/users`, `/invoices`).
+* Singular for singletons (`/me`, `/company`).
+* **MUST** use `lowercase kebab-case` (`/service-offers`).
+* Resource URIs must always be **URL-safe** and **lowercase**.
+
+---
+
+**Actions on Resources (Non-CRUD)**
+-----------------------------------
+
+### **Governance Objective**
+
+Support non-CRUD operations that represent *state transitions* or *processes* without breaking REST uniformity.
+
+### **Governance Rules**
+
+* Use verbs **only** when:
+
+  + The action cannot be represented by standard HTTP methods.
+  + It represents a *state transition* or *long-running operation (LRO)*.
+* Must be scoped to a resource (not root-level).
+* Use **process/job** pattern for asynchronous operations.
+* Allowed form:
+
+  ```
+  POST /{resource}/{id}/action
   ```
 
-### **Use YAML as the Documentation Format**
+### **✅ Example**
 
-* Employ YAML for writing OAS documents for better readability and maintainability.
-* Use a consistent indentation of two spaces to structure the document clearly.
+| Not Recommended | Recommended |
+| --- | --- |
+| `POST /archiveUser` | `POST /users/{id}/archive` |
+| `POST /reprovision` | `POST /connections/{id}/reprovision` |
 
----
+If the operation is long-running, annotate:
 
-API Metadata (`info` object)
-----------------------------
-
-The `info` object is the first thing a developer sees. It must clearly articulate the API's purpose and business value.
-
-* `info.description`: This field **MUST** describe the business capability the API unlocks. It should answer the question, "What problem does this solve for the consumer?" Avoid technical jargon.
-
-  + ***Bad***: "An API for managing MCGW connections."
-  + ***Good***: "Use the Fabric Connections API to programmatically create, manage, and delete high-speed, private connections between your on-premises infrastructure and cloud providers like AWS, Azure, and GCP."
+```
+x-lro: true
+```
 
 ---
 
-API Documentation Structure (`tags` and `summary`)
---------------------------------------------------
+**Resource Identifiers (IDs)**
+------------------------------
 
-These fields control how your API is organized and displayed in documentation tools, making them critical for usability and context.
+### **Governance Objective**
 
-* `tags`: All operations **MUST** be grouped using `tags`. The tags **MUST** be based on the resource name (e.g., a "Connections" tag for all operations related to connections) to organize the API around its core business objects.
-* `summary`: Every operation **MUST** have a `summary`. It must be a short, action-oriented phrase from the user's perspective that clearly states what the endpoint does.
+Ensure resource identity is secure, unique, stable, and automation-friendly.
 
-  + *Bad*: "GET connections"
-  + *Good*: "List all active connections"
+### **Governance Rules**
+
+* **MUST be opaque** — consumers should not infer meaning from IDs.
+* **MUST be generated by provider**, never client-supplied.
+* **MUST be globally unique** within API space.
+* **MUST be URL-safe**.
+* **MUST use consistent field naming convention**: `<resource>_id`.
+* **MUST have fixed length** — changing length constitutes a breaking change.
+* **MUST NOT** use sequential IDs.
+* **MAY** use UUID v4 or Snowflake-style identifiers.
+* **MAY** use short type prefixes (e.g., `PAY_`, `ACC_`) for troubleshooting.
+
+### **Reusable Schema**
+
+```
+ResourceId:
+  type: string
+  description: >
+    Opaque, globally unique identifier for a resource.
+    Generated by the API provider. Never sequential or client-supplied.
+  pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+  example: "279fc665-d04d-4dba-bcad-17c865489dfa"
+```
 
 ---
 
-Operation IDs (`operationId`)
------------------------------
+**Resource Metadata**
+---------------------
 
-The `operationId` is used by code generation tools to create method names in SDKs. Inconsistent or missing IDs lead to messy, unpredictable code and a poor developer experience.
+### **Governance Objective**
 
-* **Requirement**: Every operation **MUST** have a unique `operationId`.
-* **Convention**: The `operationId` **MUST** follow a consistent naming convention, such as `verbResource` (e.g., `listConnections`, `createConnection`). This ensures the generated code is predictable and intuitive.
+Provide uniform lifecycle visibility (creation, updates) across all resources.
+
+### **Governance Rules**
+
+Every **collection resource** MUST include:
+
+* `id`
+* `created_at`
+* `last_updated_at`
+
+Singletons exclude these (redundant with parent).
+
+### **Reusable Schema**
+
+```
+ResourceMetadata:
+  type: object
+  required: [id, created_at, last_updated_at]
+  properties:
+    id:
+      $ref: '#/components/schemas/ResourceId'
+    created_at:
+      type: string
+      format: date-time
+      description: Creation timestamp (UTC)
+    last_updated_at:
+      type: string
+      format: date-time
+      description: Last update timestamp (UTC)
+```
 
 ---
 
-Security
---------
+**Governance Enforcement Rules**
+--------------------------------
 
-Apply security requirements at the individual path or operation level rather than globally. This approach provides precise control and accommodates varying security needs for different endpoints.
+| Rule ID | Enforcement Type | Description |
+| --- | --- | --- |
+| `path-domain-scope` | Error | Paths must begin with a domain (e.g., `/billing/`, `/network/`). |
+| `path-versioned` | Error | Paths must include major version segment (e.g., `/v1/`). |
+| `path-segment-depth` | Error | Maximum path depth = 4 segments after version. |
+| `singleton-no-post-delete` | Error | Singleton resources cannot define POST/DELETE. |
+| `id-schema-ref` | Error | All `*_id` fields must use `ResourceId` schema. |
+| `resource-metadata-required` | Warn | Collection schemas must include `ResourceMetadata`. |
+| `verb-endpoint-lro` | Error | Verbs in path allowed only if x-action: true or x-lro: true. This explicitly permits action endpoints for complex state transitions. |
+
+---
+
+**Example Resource Model**
+--------------------------
 
 ```
 paths:
-  /items:
+  /customers:
     get:
-      security:
-        - OAuth2:
-            - read
-```
-
----
-
-Reusability and Naming
-----------------------
-
-* **Reuse Schemas**: Leverage the `components` section to define and reuse schemas, parameters, and headers. This ensures consistency and makes the specification easier to maintain.
-* **Descriptive Naming Conventions**: Use meaningful names for paths, parameters, and other elements, and follow the company's established naming standard.
-
-### How to Document Reusable Components
-
-The `components` section is the central repository for all reusable definitions.
-
-#### Reusable Request Parameters (Query & Path)
-
-Define reusable query and path parameters under
-
-```
-components.parameters.
-```
-
-#### Declare Reusable Parameters example
-
-```
-components:
-  parameters:
-    ResourceId:
-      name: id
-      in: path
-      description: The unique identifier for the resource.
-      required: true
-      schema:
-        type: string
-        format: uuid
-    LimitParam:
-      name: limit
-      in: query
-      description: The maximum number of items to return per page.
-      schema:
-        type: integer
-        default: 20
-```
-
-#### Reference them in your paths
-
-```
-paths:
-  /v1/items/{id}:
-    parameters:
-      - $ref: '#/components/parameters/ResourceId'
-```
-
-#### Reusable Request Headers
-
-Request headers are treated as parameters with “in: header” and are also defined under
-
-```
-components.parameters
-```
-
-#### Define the reusable header as a parameter
-
-```
-components:
-  parameters:
-    CorrelationIdHeader:
-      name: X-Correlation-ID
-      in: header
-      description: Tracks a request across multiple services for debugging.
-      required: true
-      schema:
-        type: string
-        format: uuid
-```
-
-#### Reference it in your path
-
-```
-paths:
-  /v1/items:
-    post:
-      parameters:
-        - $ref: '#/components/parameters/CorrelationIdHeader'
-```
-
-#### Reusable Response Headers
-
-Response headers have their own dedicated section for reusability:
-
-```
-components.headers
-```
-
-#### Define the reusable response header
-
-```
-components:
-  headers:
-    RateLimitRemaining:
-      description: The number of requests left for the current time window.
-      schema:
-        type: integer
-```
-
-#### Reference it in a response definition
-
-```
-paths:
-  /v1/items:
-    get:
+      summary: List all customers
       responses:
         '200':
-          description: A successful response.
-          headers:
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimitRemaining'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: '#/components/schemas/ResourceMetadata'
+                        - type: object
+                          properties:
+                            name:
+                              type: string
+                              example: "Acme Corp"
+    post:
+      summary: Create a new customer
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+
+  /customers/{customer_id}/accounts:
+    get:
+      summary: List accounts for a customer
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ResourceId'
 ```
 
 ---
 
-Data Types and Examples
------------------------
+**Governance Rationale**
+------------------------
 
-* **Define Reusable Schemas**: Define reusable schemas for complex data types in the `components` section. Clearly specify ***data types, formats, constraints, and examples***.
-* **Provide Realistic Examples**:
+| Principle | Outcome |
+| --- | --- |
+| **Resource-centric modeling** | Aligns APIs to REST uniform interface, improving predictability. |
+| **Strict URI domain boundaries** | Enables per-domain governance, versioning, and automation. |
+| **Opaque, stable identifiers** | Ensures consistency across distributed systems and prevents information leakage. |
+| **Singleton control** | Simplifies lifecycle management for dependent configurations. |
+| **Action resource governance** | Preserves REST semantics while supporting modern async/LRO workflows. |
 
-  + Include examples that cover various real-world scenarios (common, edge, and error cases).
-  + Use the `example` or `examples` keyword within schema definitions for both requests and responses.
-  + Ensure examples use realistic and relevant data.
+---
 
-#### OAS `examples` Example
+**Summary**
+-----------
+
+This REST & Resource section moves Lumen APIs from loosely interpreted REST conventions to a **governable, automatable, and externally predictable API architecture**.
+
+* Consistent structure = easier discoverability and SDK generation.
+* Enforced ID and resource schemas = audit-ready data lineage.
+* Governed URI scope = scalable domain modeling without overlap.
+
+## API Versioning Strategy
+<a id="api-versioning-strategy-675743498245"></a>
+
+This document outlines the proposed official strategy for versioning all public-facing REST APIs. A stable and predictable versioning strategy is critical for building trust with API consumers and ensuring a reliable developer experience.
+
+Versioning Principles
+---------------------
+
+Our strategy uses both **Major** and **Minor** versions, but they are applied in different places to serve distinct purposes.
+
+### Major Versions: The Public Contract 📜
+
+The major version represents the public contract with the client and **MUST** only change when a **breaking change** is introduced.
+
+* **Implementation**: The major version **MUST** be included in the URI path and prefixed with a "v" (e.g., `v1`, `v2`).
+
+  ```
+  https://api.lumen.com/inventory/v1/connections
+  ```
+* **Client Impact**: A client's integration is tied to this major version. We guarantee that no breaking changes will be made within a given major version.
+
+### Minor Versions: The Diagnostic Tool 🩺
+
+The minor version is an internal reference used to track non-breaking, additive changes. It serves as a crucial tool for communication and diagnostics.
+
+* **Implementation**: The server **SHOULD** include the semantic version (major.minor) in an HTTP response header.
+
+  ```
+  API-Version: 1.2
+  ```
+* **Client Impact**: This has **zero impact** on the client's code. They are not required to send or parse this header. Its purpose is to provide a precise reference point for debugging, especially in distributed systems where deployment lag could lead to different nodes running different code versions.
+
+Defining Breaking vs. Non-Breaking Changes
+------------------------------------------
+
+To ensure clarity, the following examples define what constitutes a breaking change versus a non-breaking change. When in doubt, a change **SHOULD** be treated as breaking.
+
+### Breaking Changes (Requiring a New Major Version)
+
+Breaking changes are modifications that can potentially break an existing client integration.
+
+* **Request Changes:**
+
+  + Removing or renaming a parameter.
+  + Adding a new *required* parameter.
+  + Making a previously optional parameter *required*.
+  + Changing the data type of a parameter.
+  + Adding a new validation rule to an existing parameter (e.g., restricting the length of a string).
+  + Changing authentication or authorization requirements.
+* **Response Changes:**
+
+  + Removing or renaming a field in the response body.
+  + Making a previously *required* response field optional.
+  + Changing the data type of a response field (e.g., from an integer to a money object).
+  + Changing the structure of the JSON payload (e.g., nesting an existing field).
+  + Removing a value from an `enum`.
+  + Any change to the primary HTTP Status Code returned by an existing API endpoint.
+  + Adding a new value to enum
+
+### Non-Breaking Changes (Minor Version Increments)
+
+Non-breaking (additive) changes are modifications that should not break an existing integration. These changes will be available in all supported API versions.
+
+* **Request Changes:**
+
+  + Adding a new *optional* parameter.
+  + Adding a new *optional* request header.
+  + Adding an optional field in the request body
+* **Response Changes:**
+
+  + Adding a new field to the response body.
+  + Adding a new endpoint or operation.
+  + Adding a new response header.
+
+API Lifecycle Management
+------------------------
+
+### Announcing Major Changes (Pre-Release Communication)
+
+To provide our consumers with adequate time to plan and budget for upcoming migrations, breaking changes **SHOULD** be announced at least **6 months** *before* a new major version is released.
+
+* This announcement **MUST** be made through the official API changelog, documentation, and, where possible, direct email communication to affected consumers.
+* The announcement **MUST** detail the upcoming breaking changes, the reasons for them, and provide a preliminary migration guide.
+
+### Active Version Support
+
+All API products **MUST** support at least two active major versions during a migration period.
+
+* When a new REST API version with breaking changes is released, the previous API version **MUST** be supported for at least **24 more months**.
+* This overlap period allows clients to migrate at their own pace without service disruption.
+
+### **Deprecating Endpoints and Features**
+
+Deprecating an endpoint or feature requires a phased approach. The removal of any API element is a **breaking change** and can only happen in a new major version.
+
+1. **Announce (Phase 1) 📣: The endpoint remains fully functional.**
+
+   * In the OpenAPI specification, the operation **MUST** be marked with `deprecated: true`.
+   * The server **SHOULD** return a `Sunset` header (RFC 8594) containing the exact date and time when the endpoint will be fully removed.
+   * The server **SHOULD** also return a `Deprecation` header containing the date when the deprecation was announced. The format required by the RFCs is a standard **HTTP-date**, as defined in [RFC 7231](https://www.google.com/search?q=https://datatracker.ietf.org/doc/html/rfc7231%23section-7.1.1.1)
+   * The documentation **MUST** be updated to reflect the deprecation, the removal timeline, and any new preferred endpoints.
+
+   **Example HTTP Headers**
+
+   ```
+   HTTP/1.1 200 OK
+   Deprecation: Wed, 22 Oct 2025 13:30:00 GMT
+   Sunset: Fri, 22 Oct 2027 13:30:00 GMT
+   ```
+2. **Guide (Phase 2)** 🚀: Provide a clear path forward for consumers.
+
+   * If a replacement exists, the server **SHOULD** return a `Link` header pointing to the new endpoint (e.g., `Link: <.../v1/new-endpoint>; rel="alternate"`).
+   * If the feature is being removed entirely, the documentation **MUST** state this clearly.
+3. **Remove (Phase 3)** ❌: After the support window, the endpoint is removed.
+
+   * The deprecated endpoint **MUST** be completely removed in the next major version release (e.g., `/v2`).
+
+### **Sunsetting and Decommissioning a Major Version**
+
+After the mandated 24-month support window for a previous version ends, that version will be decommissioned.
+
+* **Communication**: Consumers still using the old version will be notified via multiple channels about the upcoming shutdown.
+* **Brownouts**: A "brownout" period may be implemented, where the old version is temporarily disabled for short periods to alert remaining users.
+* **Final Response**: Once decommissioned, the old version's endpoints **SHOULD** return an HTTP `410 Gone` status code to indicate that the resource is intentionally and permanently unavailable.
+
+**Handling Experimental (Beta) Features**
+-----------------------------------------
+
+To gather feedback on new features, a beta version may be released. Beta features are not bound by the standard 24-month support policy and can be changed or removed without the standard deprecation process.
+
+* **Implementation**: Beta features **SHOULD** be identified clearly, either through a beta-specific URI (e.g., `/v1-beta/new-feature`) or a version header (`API-Version: 2.1.0-beta`).
+
+**Updating Shared Data Models**
+-------------------------------
+
+Making a breaking change to a common data model (e.g., the `Address` object) across multiple APIs **MUST** be handled with the **"Expand and Contract"** pattern to avoid a disruptive, simultaneous release of new major versions for all dependent APIs.
+
+1. **Expand (Non-Breaking)**: In the current major version, add new fields as *optional* and mark the old fields as *deprecated*. The server logic is updated to handle both old and new fields.
+2. **Transition (Monitor)**: Allow consumers to migrate to the new fields over the 24-month support window. Monitor the usage of the deprecated fields.
+3. **Contract (Breaking)**: In the next major version, remove the deprecated fields entirely. The new fields can now be made *required*
+
+## API Standard: POST Method
+<a id="api-standard-post-method-675852386305"></a>
+
+**Purpose**
+-----------
+
+The `POST` method creates new resources or performs non-CRUD actions on existing resources.  
+It is **not inherently idempotent** and should be used when neither `PUT` nor `PATCH` semantics apply.
+
+This page defines the required and recommended practices for all `POST` operations across Lumen APIs, ensuring consistency, predictability, and safe retries through **idempotency keys** and **standardized responses**.
+
+---
+
+**Semantics**
+-------------
+
+| Property | Requirement |
+| --- | --- |
+| **Safe** | ❌ No, may modify server state. |
+| **Idempotent** | ⚠ No by default; **MUST** use `Idempotency-Key` if retries are expected. |
+| **Typical Use** | Resource creation or triggering an action. |
+| **Request Body** | ✅ Required, defines input parameters or resource representation. |
+| **Response Body** | ✅ Required, returns the created resource or operation result. |
+
+---
+
+**When to Use** `POST`
+----------------------
+
+| Use Case | Example | Required Behavior |
+| --- | --- | --- |
+| **Create a new resource** | `POST /v1/orders` | Returns `201 Created` + `Location` header for the new resource. |
+| **Create multiple resources (batch / composite operation)** | POST /v1/customers/batch | Performs creation of multiple items in one request. Returns **207 Multi-Status** if results are mixed, or **202 Accepted** if processed asynchronously via a job. Batch requests SHOULD complete within the synchronous timeout budget (≤ 30 s p95 / 60 s absolute) or follow the **LRO pattern**. |
+| **Trigger an action on a resource** | `POST /v1/invoices/{id}/void` | Returns `200 OK` or `202 Accepted` depending on sync vs. async. |
+| **Start an asynchronous or workflow operation** | `POST /v1/network/connections/provision` | Returns `202 Accepted` + operation URL for status tracking. |
+| **Perform search or query with complex filters** (non-CRUD) | `POST /v1/orders/search` | Allowed when query parameters are too complex for GET; must be safe and side-effect free. |
+| **Submit sensitive criteria or large query payloads (PII, account numbers, tokens, advanced filters)** | `POST /v1/customers/search` with body `{"email":"…","dob":"…"}` | Use `POST` with a **request body** instead of putting sensitive data in the URL. **MUST** be side-effect free. **MUST** set `Cache-Control: no-store`. **MUST NOT** log or echo sensitive fields. **MUST NOT** include PII or secrets in the path or query string. **SHOULD** return `413 Payload Too Large` for oversized bodies and document limits. **SHOULD** include `Vary: Authorization` for authenticated results. |
+
+### **Non-Applicable Cases**
+
+| Rule | Description |
+| --- | --- |
+| **MUST NOT** | Use `POST` for **singleton resources** (e.g., `/profile`, `/configuration`, `/status`). These resources are pre-defined by the system and not client-created. Use `GET` to retrieve and `PATCH` to update them. |
+
+#### **Why the Sensitive-Data Rule Exists**
+
+* URLs appear in logs, browser history, and referrers; request bodies do not.
+* Shared or transparent caches may store GET responses; using POST + `Cache-Control: no-store` minimizes risk.
+* Request bodies allow schema-driven validation and redaction (`x-lumen-sensitive: true` in OAS).
+
+---
+
+**Creation Semantics**
+----------------------
+
+### **Resource Creation**
+
+* **MUST** create new resource(s) under the collection URI.  
+  Example:  
+  `POST /v1/customers` → creates a customer resource.
+* **MUST** return:
+
+  + `201 Created`
+  + A `Location` header with the canonical URI of the new resource.
+  + The newly created resource in the response body.
+* **MUST NOT** use `POST` to **replace** an existing resource; use `PUT` instead.
+* **MAY** return `202 Accepted` for **asynchronous creation**
+* **MAY** return `207 Multi-Status` if a **batch request** partially succeeds.
+
+**Example:**
+
+```
+POST /v1/customers
+Content-Type: application/json
+{
+  "name": "Jane Doe",
+  "email": "jane@example.com"
+}
+
+HTTP/1.1 201 Created
+Location: /v1/customers/c123
+Content-Type: application/json
+{
+  "id": "c123",
+  "name": "Jane Doe",
+  "email": "jane@example.com"
+}
+```
+
+---
+
+**Action Semantics**
+--------------------
+
+When performing an action on an existing resource that does not map to a CRUD operation:
+
+| Rule | Description |
+| --- | --- |
+| **Pattern** | `POST /{resource}/{id}/{action}` (e.g., `/invoices/{id}/approve`). |
+| **Response** | `200 OK` for synchronous result, `202 Accepted` for async. |
+| **Body** | MAY contain parameters relevant to the action. |
+| **Idempotency** | MUST support `Idempotency-Key` to handle retries safely. |
+
+**Example:**
+
+```
+POST /v1/invoices/123/void
+Idempotency-Key: 4af7e7d9-91a6-4823-a1c0-8d112c884cb5
+HTTP/1.1 200 OK
+Content-Type: application/json
+{
+  "id": "123",
+  "status": "voided"
+}
+```
+
+---
+
+**Idempotency**
+---------------
+
+`POST` is **not idempotent by default** — but Lumen APIs must provide an idempotent experience when requests are retried.
+
+| Header | Description |
+| --- | --- |
+| `Idempotency-Key` | A client-supplied opaque UUID identifying the request. |
+| **Scope** | Applies to unsafe POSTs that could be retried. |
+| **Server Behavior** | Deduplicate requests with the same key and identical payload; replay original result. |
+| **Retention** | Store key and result for a minimum of 24 hours. |
+| **Conflict Handling** | Return `409 Conflict` if the same key is reused with a different payload. |
+
+**Example:**
+
+```
+POST /v1/payments
+Idempotency-Key: 827dcf3e-44fb-4f07-94b3-6b47cf3b813d
+
+→ 201 Created
+
+# Retry (same key)
+→ 201 Created (identical response)
+
+# Retry (same key, different payload)
+→ 409 Conflict
+```
+
+---
+
+**Headers**
+-----------
+
+| Header | Usage |
+| --- | --- |
+| `Idempotency-Key` | Ensures retry-safe behavior. |
+| `Location` | Points to newly created resource or operation resource. |
+| `Retry-After` | Used when returning `202 Accepted` for async processing. |
+| `Content-Type` | MUST be `application/json` or vendor subtype. |
+| `Accept` | MUST be `application/json` (or compatible). |
+
+---
+
+**Status Codes**
+----------------
+
+| Code | Meaning | Applies To | Notes |
+| --- | --- | --- | --- |
+| **201 Created** | Resource successfully created | ✅ Resource creation | MUST include `Location` header and representation. |
+| **202 Accepted** | Request accepted for asynchronous processing | ✅ LRO / async | MUST include operation URL in `Location`. |
+| **207 Multi-Status** | Batch/composite request produced mixed results | ✅ Bulk / composite POSTs | Use when some items succeed and others fail, body MUST include per-item statuses and summary. |
+| **200 OK** | Successful synchronous action | ✅ Resource actions | Used only for non-creation actions. |
+| **400 Bad Request** | Invalid request body or parameter | ✅ Both | Syntax or schema violation. |
+| **401 Unauthorized** | Authentication required | ✅ Both |  |
+| **403 Forbidden** | Authenticated but lacks permission | ✅ Both |  |
+| **404 Not Found** | Target resource or parent collection missing | ✅ Both |  |
+| **405 Method Not Allowed** | Wrong HTTP method used | ✅ Both |  |
+| **409 Conflict** | Resource already exists or idempotency key conflict | ✅ Creation / Action |  |
+| **422 Unprocessable Content** | Semantic validation error | ✅ Both | Schema valid but business rule failure. |
+| **500 Internal Server Error** | Unexpected server failure | ✅ Both | No internal details exposed. |
+
+---
+
+**OAS Authoring Requirements**
+------------------------------
+
+When documenting `POST` operations in OpenAPI:
 
 ```
 paths:
-  /v1/items:
+  /v1/orders:
     post:
-      summary: Create a new item
+      summary: Create an order
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          schema: { type: string, maxLength: 255 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OrderCreate' }
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              schema: { type: string, format: uri }
+        '202': { description: Accepted (async creation) }
+        '207': { description: Partial success (batch results) }
+        '400': { description: Invalid request }
+        '409': { description: Conflict (duplicate or idempotency) }
+        '422': { description: Validation failed }
+```
+
+**MUST**
+
+* Include `Idempotency-Key` header definition.
+* Include `Location` header for `201` or `202` responses.
+* Constrain response codes to the approved matrix.
+* Document LRO patterns (`202 + Location`) when applicable.
+* Reference `207` for batch/composite POSTs if supported.
+
+---
+
+**Governance Validation Checklist**
+-----------------------------------
+
+| Check | Expectation |
+| --- | --- |
+| ✅ Correct verb usage | `POST` used only for create or action semantics |
+| ✅ Location header present | For `201` and `202` responses |
+| ✅ Idempotency supported | `Idempotency-Key` required for unsafe POSTs |
+| ✅ Proper status codes | Matches approved matrix |
+| ✅ Async workflows standardized | `202 + Location` pattern used |
+| ✅ OAS validated via Spectral | Governance enforcement ready |
+
+---
+
+**Developer Summary**
+---------------------
+
+* Use `POST` to **create** new resources or **trigger** actions — never for updates.
+* Always return `201 Created` with a `Location` header for creations.
+* Use `Idempotency-Key` to protect clients from duplicate processing.
+* For asynchronous operations, return `202 Accepted` and an **operation URI**.
+* For partial batch success, return `207 Multi-Status` with `results[]` and `summary`.
+* Adhere strictly to the **approved status-code matrix**.
+* Document every `POST` in OpenAPI with consistent headers and response structure.
+
+## API Standard: JSON Payload
+<a id="api-standard-json-payload-675866051051"></a>
+
+### **Overview**
+
+All Lumen APIs **must use JSON** as the canonical message format for request and response bodies.  
+From a governance standpoint, this ensures predictable interoperability across platforms, easier validation using OpenAPI 3.0.3, and forward-compatible payload design.
+
+To achieve this, all JSON payloads must follow the structural, naming, and encoding rules defined in [RFC 7159 (JSON)](https://datatracker.ietf.org/doc/html/rfc7159) and [RFC 7493 (I-JSON)](https://datatracker.ietf.org/doc/html/rfc7493).  
+The goal is to enforce **clarity, safety, and uniformity** across all APIs regardless of team or domain.
+
+---
+
+### **Governance Principles**
+
+| **Governance Objective** | **Policy Requirement** | **Rationale** |
+| --- | --- | --- |
+| *Standardized Format* | All request and response bodies **MUST** be valid JSON objects. | Guarantees structured, parsable data with clear schema evolution paths. |
+| *I-JSON Compliance* | JSON payloads **MUST** conform to the I-JSON profile (RFC 7493). | Ensures consistent behavior across clients, SDKs, and backend systems. |
+| *Encoding* | All JSON content **MUST** use UTF-8 encoding. | Avoids encoding ambiguity and corruption across gateways. |
+| *Uniqueness of Keys* | Each JSON object **MUST** contain **unique property names**. | Prevents parser ambiguity and security issues (duplicate key override). |
+| *Content Type* | Media type **MUST** be declared as `application/json`. | Enables correct content negotiation and API discovery. |
+| *Extensibility* | Payloads **MUST** support additive evolution (new fields tolerated). | Allows forward-compatible releases without breaking clients. |
+
+---
+
+### **Structural Rules**
+
+#### **Nested Structures**
+
+**SHOULD** prefer nested, well-scoped objects over flattened key sets.  
+This improves logical grouping, maintainability, and future extensibility.
+
+✅ **Recommended**
+
+```
+{
+  "customer_id": "C123",
+  "billing_address": {
+    "line1": "100 Main St",
+    "city": "Denver",
+    "postal_code": "80202"
+  }
+}
+```
+
+❌ **Not Recommended**
+
+```
+{
+  "customer_id": "C123",
+  "billing_address_line1": "100 Main St",
+  "billing_address_city": "Denver",
+  "billing_address_postal_code": "80202"
+}
+```
+
+---
+
+#### **Field Naming Convention**
+
+Field names **MUST** follow **lower snake\_case**, matching regex:
+
+```
+^[a-z][a-z0-9_]*$
+```
+
+Rules:
+
+* First character must be lowercase.
+* Use underscores to separate words.
+* No hyphens, camelCase, or PascalCase.
+* ASCII-only.
+
+✅ **Recommended** → `customer_name`, `invoice_number`, `created_at`  
+❌ **Not Recommended** → `salesOrderId`, `CustomerName`, `sales-order-id`
+
+---
+
+#### **Array Naming Convention**
+
+Array properties **MUST** use plural names to signal multiplicity.  
+Empty arrays must be represented as `[]`, *not* `null`.
+
+✅ **Recommended**
+
+```
+{
+  "line_items": []
+}
+```
+
+❌ **Not Recommended**
+
+```
+{
+  "line_items": null
+}
+```
+
+---
+
+### **I-JSON Compliance Checklist**
+
+| **Category** | **Requirement** | **Description** |
+| --- | --- | --- |
+| **Encoding** | UTF-8 | Required for all JSON payloads. |
+| **Duplicate Keys** | Forbidden | Parsers must reject payloads where a key appears more than once in the same object. |
+| **Numbers** | Finite, safe range only | No `NaN`, `Infinity`, or numbers > 2⁵³ − 1. |
+| **Strings** | Valid Unicode scalars only | No control or invalid Unicode characters. |
+| **Top-Level Type** | Object only | Arrays, primitives, or raw strings as top-level payloads are not permitted. |
+| **Date/Time** | RFC 3339 UTC format | Example: `"2025-11-11T18:30:00Z"` |
+
+---
+
+### **Example — Valid Payload**
+
+```
+{
+  "order_id": "ORD_9876",
+  "customer": {
+    "customer_id": "C12345",
+    "name": "Acme Corp"
+  },
+  "line_items": [
+    {
+      "item_id": "I567",
+      "quantity": 3
+    }
+  ],
+  "total_amount": 1500,
+  "currency": "USD",
+  "created_at": "2025-11-11T18:30:00Z"
+}
+```
+
+---
+
+### **Example — Invalid Payloads**
+
+**Duplicate Keys**
+
+```
+{
+  "name": "Acme",
+  "name": "Acme Inc"
+}
+```
+
+**Null Array**
+
+```
+{
+  "line_items": null
+}
+```
+
+**Unsafe Number**
+
+```
+{
+  "amount": 99999999999999999
+}
+```
+
+---
+
+### **Governance Enforcement**
+
+* **Spectral Linting Rules:**  
+  Validate UTF-8 compliance, key uniqueness, and snake\_case fields.  
+  Disallow null arrays and duplicate keys.
+* **Gateway Validation:**  
+  Reject invalid or non-I-JSON payloads at request-time.
+* **Schema Linting in CI:**  
+  Automated pipelines must validate sample payloads and OpenAPI schemas for I-JSON compliance.
+* **Documentation Consistency:**  
+  All examples in the Developer Portal must use valid, lint-clean JSON payloads.
+
+---
+
+### **Summary**
+
+JSON payload hygiene directly determines API quality and interoperability.  
+Lumen APIs **must** adhere to I-JSON constraints, snake\_case naming, predictable array behavior, and consistent UTF-8 encoding.  
+This ensures that payloads are **machine-safe, forward-compatible, and consistent** across every domain and consumer.
+
+## API Standard: GET Method
+<a id="api-standard-get-method-675848454259"></a>
+
+### **Purpose**
+
+The `GET` method retrieves a resource or a collection of resources.  
+It **MUST NOT** change server state and **MUST** be safe and idempotent as defined in [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110).
+
+This page defines how to design, document, and implement `GET` operations across Lumen APIs to ensure predictable, cache-friendly, and standards-compliant behavior.
+
+---
+
+### **Semantics**
+
+| Property | Requirement |
+| --- | --- |
+| **Safe** | ✅ YES, never modifies data or triggers side effects. |
+| **Idempotent** | ✅ YES, repeating the same GET yields the same result (unless data has changed). |
+| **Request Body** | ❌ NOT ALLOWED. |
+| **Response Body** | ✅ REQUIRED for `200 OK`, MUST represent the requested resource(s). |
+| **Caching** | ✅ Strongly RECOMMENDED, use `ETag` and `Cache-Control`. |
+
+---
+
+### **URI Design**
+
+**Examples**
+
+* Single resource: `/v1/customers/{customer_id}`
+* Collection: `/v1/customers`
+* Filtered collection: `/v1/customers?status=active&country=US`
+
+**MUST**
+
+* Use plural nouns for collections.
+* Avoid action verbs (`/getCustomer`) — the HTTP verb already defines intent.
+* Preserve canonical noun hierarchy (**no verbs, no RPC style**).
+
+---
+
+### **Singleton Resources**
+
+**Definition**  
+A *singleton resource* represents a unique conceptual instance of a type that exists once per context (e.g., current user profile, organization settings, service status).  
+Singletons do not require an identifier or belong to a collection.
+
+**Examples**
+
+```
+GET /v1/profile                → current user profile
+GET /v1/organization/settings  → organization configuration
+GET /v1/configuration          → global configuration
+GET /v1/status                 → system status or health
+```
+
+**Design Guidance**
+
+| Rule | Description |
+| --- | --- |
+| **MUST** | Treat singletons as first-class nouns (`/profile`, `/settings`, `/status`). |
+| **MUST NOT** | Nest singleton resources under collections **if they represent contextual or global concepts** (e.g., avoid `/users/{id}/profile` for the authenticated user’s profile). Such resources have a single instance determined by the caller’s identity or environment — not by path variables — and therefore **belong at the root level** (e.g., `/profile`). |
+| **MAY** | Nest singleton resources **only when they are scoped to a parent resource** (e.g., `/organizations/{orgId}/settings` — one settings resource per organization). |
+| **MUST** | Support `GET` for retrieval and `PATCH` for updates (if mutable). Never use `POST` or `DELETE`. |
+| **MUST** | Return `200 OK` with a body when available; `404 Not Found` if temporarily unavailable. |
+| **SHOULD** | Include `ETag` and support `If-None-Match` for cache validation. |
+| **MUST NOT** | Return `204` for existing singletons — always return a representation unless explicitly empty. |
+
+**Example**
+
+```
+GET /v1/profile
+If-None-Match: "v12"
+
+HTTP/1.1 200 OK
+ETag: "v13"
+Cache-Control: private, max-age=60
+{
+  "id": "u123",
+  "name": "Jane Doe",
+  "email": "jane@example.com"
+}
+```
+
+```
+GET /v1/profile
+If-None-Match: "v13"
+
+HTTP/1.1 304 Not Modified
+ETag: "v13"
+```
+
+**Governance Note**  
+Singletons must be documented as distinct resources (`/profile`, `/settings`, `/status`) and enforced through Spectral rules to verify `ETag` and `If-None-Match` support.
+
+---
+
+### **Response Structure**
+
+Every successful `GET` MUST return a JSON object.
+
+#### **Single Resource**
+
+```
+{
+  "id": "c123",
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "created_at": "2025-10-20T12:34:56Z"
+}
+```
+
+#### **Collection**
+
+```
+{
+  "data": [
+    { "id": "c123", "name": "Jane Doe" },
+    { "id": "c124", "name": "John Smith" }
+  ],
+  "pagination": {
+    "limit": 20,
+    "offset": 0,
+    "total": 245
+  }
+}
+```
+
+**MUST**
+
+* Wrap collections in a `data` array to allow metadata (`pagination`, `links`) at the top level.
+* Use consistent pagination keys (`limit`, `offset`, `total`).
+
+---
+
+### **Headers and Conditional Requests**
+
+#### **ETag and Cache Validation**
+
+| Header | Usage | Example |
+| --- | --- | --- |
+| `ETag` | Server-generated version tag for the resource | `ETag: "v7a2"` |
+| `If-None-Match` | Client cache validation header | `If-None-Match: "v7a2"` |
+| Response on match | `304 Not Modified` (no body) |  |
+
+**MUST**
+
+* Return `ETag` on all cacheable responses.
+* Support `If-None-Match` on all `GET` endpoints.
+* Return `304 Not Modified` if ETag matches.
+
+**SHOULD**
+
+* Add `Cache-Control` (e.g., `private, max-age=60`) to define freshness.
+* Include `Last-Modified` when available for weak validation.
+
+---
+
+### **Query Parameters and Filtering**
+
+| Principle | Guidance |
+| --- | --- |
+| **Predictability** | Parameter names must be consistent across APIs (`status`, `sort`, `limit`, `offset`). |
+| **Multiple Filters** | Use `&` separated query pairs. |
+| **Sorting** | `?sort=+name` ascending, `?sort=-created_at` descending. |
+| **Pagination** | Refer to pagination standards. |
+| **Empty Results** | Return `200 OK` with an empty `data` array, not `404`. |
+| **Invalid Filters** | Return `400 Bad Request` with Problem Details. |
+
+---
+
+### **Status Codes**
+
+| Code | Meaning | Applies To | Usage Notes |
+| --- | --- | --- | --- |
+| **200 OK** | Successful retrieval | ✅ Single / ✅ Collection | Always return for successful GETs; include response body. |
+| **304 Not Modified** | Resource unchanged since client cache | ✅ Single / ✅ Collection | Used with `If-None-Match`, no body. |
+| **400 Bad Request** | Invalid query or parameter | ✅ Single / ✅ Collection | Syntactic or invalid filter errors. |
+| **401 Unauthorized** | Authentication required or invalid | ✅ Both |  |
+| **403 Forbidden** | Authorized but lacks permission | ✅ Both |  |
+| **404 Not Found** | Resource not found | ✅ Single | Never use for empty collections. |
+| **405 Method Not Allowed** | HTTP verb not supported | ✅ Both |  |
+| **422 Unprocessable Content** | Valid syntax but invalid semantic input | ✅ Both |  |
+| **500 Internal Server Error** | Unexpected server failure | ✅ Both | No stack traces exposed. |
+
+---
+
+### **Example Request / Response Set**
+
+**Request**
+
+```
+GET /v1/customers/123
+If-None-Match: "v5"
+Accept: application/json
+```
+
+**Response (Resource Updated)**
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+ETag: "v6"
+Cache-Control: private, max-age=60
+{
+ "id": "123",
+ "name": "Jane Doe",
+ "email": "jane@example.com"
+}
+```
+
+**Response (Not Modified)**
+
+```
+HTTP/1.1 304 Not Modified
+ETag: "v6"
+```
+
+---
+
+### **OAS Authoring Requirements**
+
+```
+paths:
+  /v1/customers/{id}:
+    get:
+      summary: Retrieve customer by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+        - in: header
+          name: If-None-Match
+          schema: { type: string }
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            ETag:
+              description: Entity tag for versioning
+              schema: { type: string }
+        '304':
+          description: Not Modified
+        '400': { description: Invalid request }
+        '404': { description: Not found }
+```
+
+**MUST**
+
+* Include `ETag` in `200` response headers.
+* Include `If-None-Match` parameter.
+* Restrict status codes to the approved matrix.
+* Return `application/json`.
+
+---
+
+### **Governance Checklist**
+
+| Check | Validation |
+| --- | --- |
+| ✅ `GET` defined as safe and idempotent | No side effects |
+| ✅ `ETag` header returned | Required for cacheable responses |
+| ✅ `If-None-Match` supported | Enables `304 Not Modified` |
+| ✅ No request body allowed | Specification enforces it |
+| ✅ Proper status codes used | 200/304/400/401/403/404/405/422/500 only |
+| ✅ OAS validated via Spectral rules | Governance automation ready |
+
+---
+
+### **Developer Summary**
+
+* Use `GET` exclusively for read-only operations.
+* Never require or process a body in `GET`.
+* Always include `ETag` and handle `If-None-Match` for conditional caching.
+* Return `200 OK` for success, `304` for cache hits, `404` only for missing single resources.
+* Treat collection queries as successful even when empty.
+* Keep response structure predictable (`data`, `pagination`).
+* Follow the approved status-code matrix and Problem Details format.
+
+## API Standard: Batch Operations
+<a id="api-standard-batch-operations-675858186277"></a>
+
+1. Purpose
+----------
+
+Batch operations enable clients to perform **the same action on multiple resources** in a single request (e.g., create, update, or trigger actions across many items).  
+This guide defines **Lumen’s governance standards** for batch APIs—latency thresholds, idempotency, status codes, response shape, and OpenAPI documentation.
+
+Batch APIs must behave **predictably**, support **safe retries**, and meet **bounded synchronous latency**. If those guarantees can’t be met, use the **Long-Running Operation (LRO)** pattern.
+
+---
+
+2. Semantics
+------------
+
+| Property | Requirement |
+| --- | --- |
+| Verb | `POST` |
+| Safe | ❌ No — modifies server state |
+| Idempotent | ⚠ Recommended for synchronous; **required** for asynchronous |
+| Response Type | `application/json` |
+| Behavior | Processes multiple items of the same resource type atomically **per item** (not per batch) |
+
+---
+
+3. When to Use Batch Operations
+-------------------------------
+
+| Use Case | Example | Behavior |
+| --- | --- | --- |
+| Batch Create or Update | `POST /v1/customers/batch` | **201** if all succeed, **207** if mixed results, **202** if deferred. |
+| Batch Action | `POST /v1/invoices/batch/void` | **200/207/202** depending on outcome. |
+| Large Imports / Heavy Processing | `POST /v1/orders/import` | **202 Accepted** + `Location` to a job; follow the LRO guide. |
+
+---
+
+4. Execution Policy
+-------------------
+
+### 4.1 Synchronous Mode
+
+A batch **may** execute synchronously when:
+
+* **Predictable latency:** ≤ **30 s p95 / 60 s absolute**
+* **Deterministic outcome:** same input → same observable result (conflicts included)
+* **Retry safety (recommended):** supports `Idempotency-Key` for deduping retries
+
+### 4.2 Asynchronous Mode
+
+If synchronous boundaries can’t be guaranteed:
+
+* Return `202 Accepted`
+* Include `Location` to a job resource
+* Follow the **LRO Style Guide** for polling, job states, lifecycle
+
+---
+
+5. Status Codes
+---------------
+
+| Code | Meaning | Applies To | Notes |
+| --- | --- | --- | --- |
+| **201 Created** | All items created | Batch create | May return representation or summary |
+| **200 OK** | All items succeeded (non-create) | Batch action | Uniform success |
+| **207 Multi-Status** | Mixed outcomes | Create/action | Return per-item results + summary |
+| **202 Accepted** | Deferred job | Any | `Location` → job URI |
+| **4xx/5xx** | Uniform failure | Any | Use RFC 7807 Problem Details |
+
+**Rules:** Use **207** only when per-item outcomes differ. Use **201/200** for uniform success. Use **202** when work is deferred.
+
+---
+
+6. Response Structure
+---------------------
+
+### 6.1 207 Multi-Status (Partial Success)
+
+```
+HTTP/1.1 207 Multi-Status
+Content-Type: application/json
+{
+  "results": [
+    { "id": "c101", "status": 201, "message": "Created" },
+    { "id": "c102", "status": 409, "message": "Duplicate customer" }
+  ],
+  "summary": { "total": 2, "succeeded": 1, "failed": 1 }
+}
+```
+
+**Rules**
+
+* **MUST** include `summary` (total/succeeded/failed)
+* **MUST** use numeric HTTP status codes (100–599) for each item’s `status` field
+* **MAY** include `message` or failure details
+* **MAY** offer **compact** (failures-only) vs **full** modes
+* **MUST NOT** truncate without pagination metadata
+* **MAY** expose a **results** endpoint (optional, use-case dependent)
+
+---
+
+7. 202 Accepted (Asynchronous Jobs)
+-----------------------------------
+
+**Submit**
+
+```
+POST /v1/customers/batch
+→ 202 Accepted
+Location: /v1/jobs/9827
+Retry-After: 10
+```
+
+**Poll**
+
+```
+GET /v1/jobs/9827
+→ 200 OK
+{
+  "id": "9827",
+  "state": "in_progress",
+  "accepted": 1000,
+  "processed": 300,
+  "succeeded": 295,
+  "failed": 5,
+  "links": {
+    "results": "/v1/jobs/9827/results"
+  }
+}
+```
+
+**Rules**
+
+* **MUST** include `Location`
+* **SHOULD** include `Retry-After`
+* **MUST** dedupe via `Idempotency-Key` (same key + payload → same job)
+* **MUST NOT** embed resource URIs or per-item data in Job
+* See **LRO Style Guide** for states & polling
+
+---
+
+8. Headers
+----------
+
+| Header | Usage |
+| --- | --- |
+| **Idempotency-Key** | Required for all unsafe batch POSTs; dedupes retries |
+| **Location** | Required for 201/202 |
+| **Retry-After** | Recommended for 202/throttling |
+| **Cache-Control** | `no-store` for sensitive/transient results |
+| **Vary** | Include `Authorization` when results depend on user context |
+
+---
+
+9. Idempotency
+--------------
+
+| Requirement | Description |
+| --- | --- |
+| **MUST** | Deduplicate by `(method, canonical path, Idempotency-Key, request hash)` |
+| **MUST** | Return identical outcome on same key + payload |
+| **MUST** | Retain key + response metadata ≥ 24h (72h recommended for async) |
+| **MUST** | `409 Conflict` if key reused with **different** payload |
+| **RECOMMENDED** | `Retry-After` on transient failures |
+
+Async specifics:
+
+* Same key+payload while job queued/in-progress → **return same job** (don’t create a new one)
+* After completion → **replay** stored outcome / job status
+
+---
+
+10. OpenAPI Authoring (Using Reusable Schemas)
+----------------------------------------------
+
+### 10.1 Batch Endpoint (sync/async)
+
+```
+paths:
+  /v1/customers/batch:
+    post:
+      summary: Create multiple customers
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: { type: string, maxLength: 255 }
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Item'
-            examples:
-              # First example: A simple item with only required fields
-              simpleItem:
-                summary: A basic item
-                description: An example of creating an item with the minimum required information.
-                value:
-                  name: "Standard Widget"
-                  price: 19.99
-
-              # Second example: An item with optional fields included
-              itemWithOptionalFields:
-                summary: An item with optional data
-                description: An example of creating an item that includes optional fields like a description and SKU.
-                value:
-                  name: "Premium Widget"
-                  price: 29.99
-                  description: "A high-quality, durable widget."
-                  sku: "PREM-WID-001"
+              type: array
+              items: { $ref: '#/components/schemas/CustomerCreate' }
+      responses:
+        '201': { description: All created successfully }
+        '200': { description: All items succeeded (non-creation action)' }
+        '207':
+          description: Partial success (mixed outcomes)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchMultiStatusResponseCompact'
+        '202':
+          description: Accepted for asynchronous processing
+          headers:
+            Location:
+              schema: { type: string, format: uri }
+            Retry-After:
+              schema: { type: integer, minimum: 1 }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
+        '400': { description: Invalid input or schema error }
+        '409': { description: Conflict or idempotency-key mismatch }
 ```
 
-Casing Requirements
--------------------
+> If you also support **full** results inline for small batches, offer an alternate 207 response using `BatchMultiStatusResponseFull`.
 
-Schema objects defined in the `components` section **MUST** use **PascalCase** (also known as UpperCamelCase). This convention makes it easy to distinguish schema objects from `snake_case` field names within the specification.
+### 10.2 Job Polling
 
 ```
-# ✅ Good: Uses PascalCase
-CustomerOrder:
-  type: object
-  properties:
-    order_id:
-      type: string
-# ❌ Bad: Uses snake_case
-customer_details:
-  type: object
+paths:
+  /v1/jobs/{jobId}:
+    get:
+      summary: Get job status
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Job status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
 ```
 
----
-
-Best Practices for Naming
--------------------------
-
-### Use Singular Nouns
-
-Schema object names **MUST** represent a single instance of that object. Use singular nouns for clarity. The concept of a collection is handled by defining an `array` that references the singular object.
-
-* *Good*: `Customer`, `Order`, `Invoice`
-* *Bad*: `Customers`, `OrdersList`
-
-### Be Descriptive and Unambiguous
-
-Names should be clear and specific, avoiding generic or vague terms that could cause confusion.
-
-* *Good*: `BillingAddress`, `ShippingAddress`, `ProductInventory`
-* *Bad*: `Data`, `Items`, `Record`, `Object`
-
-### Avoid Jargon and Abbreviations
-
-Names **SHOULD** use simple, common terms and avoid internal project codenames, jargon, or unnecessary abbreviations.
-
-* *Good*: `MultiCloudGateway`, `Invoice`
-* *Bad*: `McgwObject`, `BillingRecord`
-
-### Use Suffixes for Clarity
-
-When a schema has different variations (e.g., for requests vs. responses), use consistent suffixes to distinguish them.
-
-* **For Create/Update Operations**: Use suffixes like `Request` or `Update`.
-
-  + `CreateCustomerRequest`
-  + `UpdateCustomerRequest`
-* **For Different Views**: Use suffixes that describe the context.
-
-  + `CustomerSummary`
-  + `CustomerDetails`
-
-### Use API Prefixes to Prevent Namespace Collisions
-
-To prevent conflicts when developers generate code from multiple OAS files, all schema names **MUST** be prefixed with a short, unique **API Prefix**.
-
-An **API Prefix** is a short identifier, unique to an API, that is added to the beginning of every schema object's name. Its purpose is to guarantee that all generated class names will be unique, even when a developer consumes multiple APIs that have schemas with similar names.
-
-* **The Problem**: If the MCGW API has an `Order` schema and the IOD API also has an `Order` schema, code generation tools will create two different classes with the same name, causing a conflict.
-* **The Solution**: By using prefixes, the schemas are named `McgwOrder` and `IodOrder`, which generate unique and conflict-free classes.
-
-### API URI Standard Proposal
-<a id="api-uri-standard-proposal-675743891744"></a>
-
-Overview & Purpose
-------------------
-
-This document proposes a standardized URI structure for Lumen APIs. The goal is to create a consistent, predictable, and governable namespace that clarifies the purpose and scope of each API, supports different customer segments (Enterprise vs. Wholesale), and facilitates platform evolution.
-
-Core URI Structure
-------------------
-
-The proposed core structure follows a `{domain}/{version}/{resource}` pattern:
-
-* `{domain}`: Identifies the primary functional area or customer segment (e.g., `product`, `business-function`, `wholesale`).
-* `{version}`: The major API version (e.g., `v1`, `v2`).
-* `{resource}`: The specific resource (noun) being acted upon (e.g., `users`, `keys`, `orders`).
-
-Proposed API Domains
---------------------
-
-The following top-level domains are proposed to categorize Lumen APIs:
-
-### Product Function APIs
-
-* **Description:** Enterprise APIs performing product-specific functions.
-* **URI Template:** `/{product}/{version}/{resource}`
-* **Example:** `/fabric/v1/ports`, `/mcgw/v1/connections`
-
-### Business Function APIs
-
-* **Description:** Enterprise APIs performing cross-cutting business functions (e.g., identity, billing, ordering).
-* **URI Template:** `/{business-function}/{version}/{resource}`
-* **Example:** `/admin/v1/users`, `/ordering/v1/orders`
-* **Note:** If a specific business function needs product-specific variations (e.g., inventory responses differing by product), a separate URI within the function domain might be necessary, rather than embedding product names directly.
-
-### Wholesale APIs
-
-* **Description:** A dedicated domain for APIs serving wholesale customers, covering both product and business functions.
-* **URI Templates:**
-
-  + `/wholesale/{product}/{version}/{resource}`
-  + `/wholesale/{business-function}/{version}/{resource}`
-* **Rationale:** Provides a distinct namespace for wholesale use cases. This enables:
-
-  + **Impact Isolation:** Separates wholesale traffic from enterprise traffic.
-  + **Tailored SLOs:** Allows different performance characteristics (e.g., higher timeouts for bulk wholesale orders).
-  + **Targeted Auditing & Metrics:** Simplifies tracking of wholesale usage.
-* **Implementation Note:** While the gateway URI is separate, a Wholesale API *can* potentially route to the same backend implementation as an Enterprise API to avoid code duplication where functionality aligns.
-* **Cost Implication:** Each distinct gateway deployment (like `/wholesale/...`) may incur separate proxy deployment costs in Apigee X.
-
-### Partner APIs (Open Question)
-
-* **Discussion Needed:** Do we need a distinct `/partner/...` domain? What specific use cases (Pricing, Quoting, Marketplace integration, shared customer experiences) fall under this category? What are the partner types (Indirect, Hyperscalers, VARs)? This requires further discussion.
-
-Examples: Business Function APIs
---------------------------------
-
-This table illustrates how common business functions might map to the proposed URI structure. *Note: Many comments and questions here require discussion by the working group.*
-
-|  |  |  |  |  |
-| --- | --- | --- | --- | --- |
-| **Business Function** | **API Name** | **Comment / Questions** | **Method** | **Proposed URI** |
-| **User Administration** | *(N/A - UI Only?)* | New User Setup and role change not supported through API? Functions performed by admin in UI? | - | - |
-|  | `resetUserPassword` |  | `POST` | `/admin/v1/user/{user_id}/password` |
-|  | `deactivateUser` |  | `POST` | `/admin/v1/user/{user_id}/accounts` *(Note: URI seems mismatched? Should it be* `/admin/v1/users/{user_id}/status`*?)* |
-|  | `listEntitlements` | Enables customers to consume on-demand products. Should this be administered through UI only? | `GET` | `/admin/v1/user/entitlements` *(Note: Per user or all? Needs clarification -* `/admin/v1/users/{user_id}/entitlements`*?)* |
-|  | `addEntitlement` | Add entitlement to a user | `POST` | `/admin/v1/user/entitlements/{entitlement_id}` *(Note: Needs user context -* `/admin/v1/users/{user_id}/entitlements`*?)* |
-|  | `removeEntitlement` | Remove entitlement from a user | `DELETE` | `/admin/v1/user/entitlements/{entitlement_id}` *(Note: Needs user context -* `/admin/v1/users/{user_id}/entitlements/{entitlement_id}`*?)* |
-| **API Key Management** | `createAPIKey` | Create API Key. Requires existing key for admin APIs? Need mapping of key to allowed endpoints/methods. | `POST` | `/api-key/v1/keys` |
-|  | `getAPIKeyList` | List all API Keys for a given user. | `GET` | `/api-key/v1/keys` |
-|  | `getAPIkeyDetails` | List APIs a key is allowed to access. | `GET` | `/api-key/v1/keys/{api_key}` |
-|  | `deleteAPIKey` | Delete an API key. | `DELETE` | `/api-key/v1/keys/{api_key}` |
-| **Authorization** | `requestAccessToken` | Needs API Key. No user/pass auth. Key created via platform or API. | `POST` | `/oauth/v2/token` |
-| **Service Availability** | `listServicesAvailableAtAddress` | Replaces current location API. Use address, not MasterSiteID. | `GET` | `/services/v1/availability` |
-| **Inventory Management** | `getAvailableInventoryByLocation` | Get list of available product inventory at a location. | `GET` | `/inventory/v1/product` *(Note: Ambiguous URI? Needs location?* `/inventory/v1/locations/{loc_id}/products`*?)* |
-|  | `getAvailableInventoryByProduct` | Get list of available product inventory (globally?). Priority for MCGW. Dependency on Blue Planet migration? | `GET` | `/inventory/v1/product` *(Note: Ambiguous URI? Needs product filter?* `/inventory/v1/products/{prod_id}/locations`*?)* |
-|  | `getAvailableInventoryByProductByLocation` | Get list of available product inventory at a given location. | `GET` | `/inventory/v1/product` *(Note: Ambiguous URI? Needs both filters?* `/inventory/v1/locations/{loc_id}/products/{prod_id}`*?)* |
-| **Pricing** | `getPricing` | Unauthenticated standard pricing. Covers most on-demand products. | `GET` | `/pricing/v1/catalogue` |
-| **Quoting** | `createQuote` | Custom pricing for authenticated customers. More for classic products? Wholesale only? | `POST` | `/quoting/v1/price-request` |
-|  | `saveQuote` | Save a quote. | `POST` | `/quoting/v1/price-request/{quote_id}` |
-|  | `retrieveQuotes` | Get list of saved quotes. | `GET` | `/quoting/v1/price-request` |
-| **Ordering** | `createOrder` | Creates order from saved quote (classic products). On-demand service order created behind the scenes. Wholesale only? | `POST` | `/ordering/v1/order` |
-|  | `getOrdersList` |  | `GET` | `/ordering/v1/order` |
-|  | `getOrderDetails` |  | `GET` | `/ordering/v1/order/{order_id}` |
-|  | `checkOrderStatus` |  | `GET` | `/order/v1/order-status/{order_id}` |
-|  | `cancelOrder` |  | `POST` | `/order/v1/resource` *(Note: URI seems incorrect?* `/ordering/v1/orders/{order_id}/cancel`*?)* |
-| **Service Management** | `getServiceLists` | High Priority for MCGW | `GET` | `/services/v1/services` |
-|  | `getServiceDetails` | Including usage, alerts. What does "service" mean? Align with Portal view. | `GET` | `/services/v1/services/{service_id}` |
-|  | `runServiceDiagnostic` |  | `POST` | `/services/v1/services/{service_id}/diagnostics` *(Proposed)* |
-|  | `createServiceTicket` |  | `POST` | `/support/v1/tickets` *(Proposed)* |
-|  | `listServiceTickets` |  | `GET` | `/support/v1/tickets` *(Proposed)* |
-|  | `checkServiceTicketStatus` |  | `GET` | `/support/v1/tickets/{ticket_id}/status` *(Proposed)* |
-|  | `cancelServiceTicket` |  | `POST` | `/support/v1/tickets/{ticket_id}/cancel` *(Proposed)* |
-| **Scheduled Maintenance** | *(TBD)* |  |  |  |
-| **Billing** | *(TBD)* |  |  |  |
-| **Telemetry** | *(TBD)* | APIs monitoring and usage |  |  |
-
-Refined Business Function Categories Proposed
----------------------------------------------
-
-This is an atttempt to group the functions into clearer, more standard domains:
-
-* `identity`: Covers users, authentication, authorization, API keys, and entitlements. (Replaces `User Administration`, `API Key Management`, `Authorization`, parts of `admin`).
-* `catalog (or offerings)`: Focuses on discovering *what* services are available *where*. (Replaces `Service Availability`).
-* `inventory`: Manages the status and details of specific network resources/assets.
-* `pricing`: Handles retrieval of standard pricing information.
-* `quoting`: Manages the creation and retrieval of customer-specific quotes.
-* `ordering`: Handles the submission and tracking of orders.
-* `services`: Manages *provisioned* or *active* customer services (post-order). (Replaces `Service Management`).
-* `support`: Manages trouble tickets and diagnostics related to active services. (Extracted from `Service Management`).
-* `billing`: (Kept from original TBD).
-
-Improved URIs Based on Refined Categories
------------------------------------------
-
-|  |  |  |  |  |
-| --- | --- | --- | --- | --- |
-| **Business Function (Domain)** | **API Name / Action** | **Method** | **Proposed URI** | **Original URI Notes Addressed** |
-| **Identity** | Reset User Password | `POST` | `/identity/v1/users/{user_id}/actions/reset-password` | Uses action pattern, clearer than `/password`. |
-|  | Deactivate User | `PATCH` | `/identity/v1/users/{user_id}` (Body: `{"status": "inactive"}`) | Uses `PATCH` for state change, corrects mismatched `/accounts` URI. |
-|  | List User Entitlements | `GET` | `/identity/v1/users/{user_id}/entitlements` | Clarifies per-user scope. |
-|  | Add Entitlement to User | `POST` | `/identity/v1/users/{user_id}/entitlements` (Body: `{"entitlement_id": "...", ...}`) | Creates an entitlement *assignment*. |
-|  | Remove Entitlement from User | `DELETE` | `/identity/v1/users/{user_id}/entitlements/{entitlement_id}` | Deletes the *assignment*. |
-|  | Create API Key for User | `POST` | `/identity/v1/users/{user_id}/api-keys` | Assumes keys belong to users. |
-|  | List User's API Keys | `GET` | `/identity/v1/users/{user_id}/api-keys` |  |
-|  | Get API Key Details | `GET` | `/identity/v1/users/{user_id}/api-keys/{key_id}` |  |
-|  | Delete API Key | `DELETE` | `/identity/v1/users/{user_id}/api-keys/{key_id}` |  |
-| **(Standard OAuth)** | Request Access Token | `POST` | `/oauth/v2/token` | Kept standard URI. |
-| **Catalog/** **Offerings** | Check Service Offering Availability | `GET` | `/catalog/v1/availability?address=...` (or other filters) |  |
-| **Inventory** | Get Product Inventory | `GET` | `/inventory/v1/product-inventory?location_id=...&product_id=...` | Uses query parameters for flexible filtering by location, product, or both. Addresses ambiguity. Resource named `product-inventory`. |
-| **Pricing** | Get Price Catalog | `GET` | `/pricing/v1/rates` |  |
-| **Quote** | Create Quote | `POST` | `/quote/v1/quotes` |  |
-|  | Save/Update Quote | `PUT` / `PATCH` | `/quote/v1/quotes/{quote_id}` |  |
-|  | Retrieve Quotes | `GET` | `/quote/v1/quotes` |  |
-|  | Retrieve Specific Quote | `GET` | `/quote/v1/quotes/{quote_id}` |  |
-| **Order** | Create Order | `POST` | `/order/v1/orders` (Body includes `quote_id` if needed) |  |
-|  | List Orders | `GET` | `/order/v1/orders` |  |
-|  | Get Order Details | `GET` | `/order/v1/orders/{order_id}` |  |
-|  | Cancel Order | `POST` | `/order/v1/orders/{order_id}/actions/cancel` |  |
-| **Services (Provisioned)** | List Services | `GET` | `/services/v1/services` |  |
-|  | Get Service Details | `GET` | `/services/v1/services/{service_id}` | (Includes usage, status, alerts etc.). |
-|  | Run Service Diagnostic | `POST` | `/services/v1/services/{service_id}/actions/run-diagnostics` | Uses action pattern. |
-| **Support** | Create Support Ticket | `POST` | `/support/v1/tickets` | Moved ticketing to dedicated domain. |
-|  | List Support Tickets | `GET` | `/support/v1/tickets` |  |
-|  | Get Ticket Details | `GET` | `/support/v1/tickets/{ticket_id}` | (Includes status). |
-|  | Cancel Support Ticket | `POST` | `/support/v1/tickets/{ticket_id}/actions/cancel` | Uses action pattern. |
-| **Billing** | *(TBD)* | *(TBD)* | *(TBD)* |  |
-
-Open Issues & Discussion Points for Working Group
--------------------------------------------------
-
-* **Partner APIs:** Confirm need, scope, and URI structure (`/partner/...`?).
-* **Wholesale Exclusivity:** Confirm if Quoting/Ordering APIs are truly Wholesale-only or need Enterprise equivalents.
-* **Product-Specific Business Functions:** Finalize approach for handling variations within business functions (e.g., Inventory).
-* **UI vs. API Scope:** Clarify which functions (like User Admin, Entitlements) are intentionally UI-only vs. candidates for APIs.
-* **Inventory API Structure:** Proposed URIs seem ambiguous and need refinement to properly filter by location/product. Confirm dependency on Blue Planet migration.
-* **Service Management Scope:** Define "service" clearly (align with Portal?). Refine proposed URIs for diagnostics/ticketing.
-* **URI Mismatches:** Review URIs noted in the table above (e.g., `deactivateUser`, `cancelOrder`) for correctness.
-* **Authentication/Authorization Details:** Clarify API Key management flow, especially creation and permissions mapping.
-
-Next Steps
-----------
-
-1. Review proposed domain structure (`product`, `business-function`, `wholesale`).
-2. Discuss and decide on the "Partner API" question.
-3. Review the Business Function examples, address embedded questions, and refine URIs for clarity and consistency.
-4. Assign owners/actions for resolving open issues.
-5. Formalize approved structure in the main API Style Guide.
-
-### API Pagination Standards
-<a id="api-pagination-standards-675750379523"></a>
-
-**1. Introduction**
--------------------
-
-Pagination is the process of dividing a large set of data into smaller, discrete pages. Proper pagination is essential for creating APIs that are performant, scalable, and easy for our customers and partners to consume. Failure to implement a consistent pagination strategy leads to slow response times, server strain, and a poor developer experience.
-
-This document establishes the proposed official standards for implementing pagination within Lumen's API ecosystem. All development teams are required to adhere to these guidelines to ensure a cohesive and predictable platform.
-
----
-
-**2. The Default Standard: Offset-Based Pagination**
-----------------------------------------------------
-
-For the vast majority of use cases, **Offset-based pagination** should be the default method. It is intuitive, flexible, and meets the needs of most applications where users need to navigate to specific pages.
-
-### **Query Parameters**
-
-Paginated endpoints MUST accept the following query parameters:
-
-* `limit`: An integer specifying the maximum number of items to return per page.
-
-  + If not provided, the API MUST default to `25`.
-  + The API MUST enforce a maximum value of `100`. Requests for more than 100 items should result in a `400 Bad Request` error.
-* `offset`: An integer specifying the number of records to skip. This is how the client navigates to subsequent pages.
-
-  + If not provided, the API MUST default to `0` (the first page).
-
-**Example Request:** `GET /v1/services?limit=50&offset=100` (Returns 50 services, starting after the 100th service).
-
-### **Response Structure**
-
-The response body for a paginated request MUST be a JSON object containing two top-level keys: `data` and `pagination`.
-
-* `data`: An array containing the resource objects for the current page.
-* `pagination`: An object containing the following metadata fields:
-
-  + `total`: The total number of items available in the entire collection.
-  + `limit`: The `limit` value used for the current page.
-  + `offset`: The `offset` value used for the current page.
-
-**Example Response:**
+### 10.3 (Optional) Exported Full Results
 
 ```
-{
-  "data": [
-    { "id": "svc-abc-101", "name": "Service 101" },
-    // ... 49 more items
-    { "id": "svc-xyz-150", "name": "Service 150" }
-  ],
-  "pagination": {
-    "total": 473,
-    "limit": 50,
-    "offset": 100
-  }
-}
+paths:
+  /v1/exports/{exportId}:
+    get:
+      summary: Download exported batch results
+      parameters:
+        - in: path
+          name: exportId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Export ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportManifest'
+        '202': { description: Still generating; retry later }
+        '410': { description: Export expired }
 ```
 
 ---
 
-**3. High-Performance Standard: Keyset (Cursor-Based) Pagination**
-------------------------------------------------------------------
-
-For endpoints that expose very large datasets (millions of records) or data that changes frequently (e.g., event logs, real-time data), **Keyset pagination** MUST be used. This method is more performant and provides a stable window into the data, avoiding issues where items are skipped or repeated as new data is added.
-
-### **Query Parameters**
-
-* `limit`: Same definition as in Offset pagination (default `25`, max `100`).
-* `after`: A string representing an opaque cursor that points to the last item of the previous page. The API will return items that come after this cursor.
-
-**Example Request:** `GET /v1/events?limit=50&after=NGM5YTYxYjItM2RiYi00YjU4LTg5ZmMtMTdiYmI5ZjIzMjc5`
-
-### **Response Structure**
-
-The response structure for Keyset pagination is simplified to facilitate "infinite scroll" style navigation.
-
-* `data`: An array containing the resource objects for the current page.
-* `pagination`: An object containing the following metadata:
-
-  + `next_cursor`: The cursor string for the next page of results. This value is passed into the `after` parameter in the subsequent request. It is `null` if there are no more pages.
-  + `has_next_page`: A boolean indicating if more pages are available.
-  + `next`: A full URL string pointing to the next page of results, including the `after` parameter.
-
-**Example Response:**
-
-```
-JSON
-```
-
-```
-{
-  "data": [
-    { "id": "evt-123", "timestamp": "2025-10-15T14:30:00Z" },
-    // ... 49 more items
-    { "id": "evt-456", "timestamp": "2025-10-15T14:28:00Z" }
-  ],
-  "pagination": {
-    "next_cursor": "ZjkzMjc5YTYxYjItM2RiYi00YjU4LTg5ZmMtMTdiYmI5Zj",
-    "has_next_page": true,
-    "next": "https://api.lumen.com/v1/events?limit=50&after=ZjkzMjc5YTYxYjItM2RiYi00YjU4LTg5ZmMtMTdiYmI5Zj"
-  }
-}
-```
-
----
-
-**4. Summary of Guidance**
---------------------------
-
-1. **Default to Offset:** Use Offset pagination for all standard resource collections.
-2. **Use Keyset for Scale:** Use Keyset (Cursor) pagination for event streams, logs, and any dataset exceeding one million records where performance and data consistency are critical.
-3. **Provide Hypermedia Links:** Always include fully-qualified URLs for `next` and `previous` links. This reduces the burden on the client and makes the API more discoverable (HATEOAS).
-4. **Enforce Limits:** Always enforce a default and maximum `limit` to protect the API from misuse.
-5. **Document Clearly:** The chosen pagination method and its parameters must be clearly documented in the OpenAPI specification for every applicable endpoint.
-
-### API Standard: Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)
-<a id="api-standard-lumen-problem-details-minimal-profile-lpdp-mini-v1-0-675749954024"></a>
-
-Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)
-========================================================
-
-### Purpose
-
-Provide a **lightweight, RFC 9457-compliant** error envelope that’s consistent across all Lumen APIs.  
-It focuses on three essentials — `code`, `message`, and optional `meta` — while letting teams extend `meta` per API as needed.
-
----
-
-Profile Summary
----------------
-
-| **Design Goal** | **Description** |
-| --- | --- |
-| **Simplicity** | Practical & viable RFC 9457 extension that developers can implement correctly. |
-| **Stability** | `code` is machine-readable and stable across languages and messages. |
-| **Extensibility** | `meta` can be open, omitted, or refined per API. |
-| **Security** | No PII, credentials, or stack traces in error payloads. |
-| **Compliance** | Fully aligns with [RFC 9457 – Problem Details for HTTP APIs](https://datatracker.ietf.org/doc/html/rfc9457). |
-
----
-
-Core Structure (Org-wide Standard)
-----------------------------------
-
-### Media Type
-
-All error responses **MUST** use:  
-`Content-Type: application/problem+json`
-
-### JSON Schema (OpenAPI fragment)
+11. Reusable Schemas (Components)
+---------------------------------
 
 ```
 components:
   schemas:
-    LpdpProblem:
-      type: object
-      additionalProperties: false
-      description: Minimal Problem-Details envelope (RFC 9457-compliant)
-      properties:
-        title:
-          type: string
-          description: Short, human-readable summary.
-        detail:
-          type: string
-          description: Optional longer explanation.
-        errors:
-          type: array
-          minItems: 1
-          items: { $ref: '#/components/schemas/LpdpError' }
-      required: [ title, errors ]
 
-    LpdpError:
+    BatchSummary:
       type: object
-      additionalProperties: false
-      description: Individual error item.
+      description: Counts for a batch operation
+      required: [total, succeeded, failed]
       properties:
+        total: { type: integer, minimum: 0 }
+        succeeded: { type: integer, minimum: 0 }
+        failed: { type: integer, minimum: 0 }
+
+    BatchFailure:
+      type: object
+      description: Per-item failure record (used in compact and full)
+      required: [index, status, code, message]
+      properties:
+        index:
+          type: integer
+          minimum: 0
+          description: Zero-based position of the item in the submitted array
+        id:
+          type: string
+          nullable: true
+          description: Server-assigned or client key if available
+        status:
+          type: integer
+          description: HTTP status for this item (e.g., 409, 412, 422)
         code:
           type: string
-          description: Stable, machine-readable identifier (string form preferred).
+          description: Stable application error code (string, not numeric)
         message:
           type: string
-          description: Human-readable explanation of the issue.
-        meta:
-          type: object
-          description: >
-            Optional unregulated extension for machine-readable context.
-            Lumen does not prescribe its structure. Teams may define custom
-            schemas if needed.
-          additionalProperties: true
-      required: [ code, message ]
-```
+          description: Human-readable summary (safe for logs)
+        details:
+          $ref: '#/components/schemas/ProblemDetails'
 
----
-
-RFC 9457 Alignment
-------------------
-
-| RFC 9457 Member | LPDP-Mini Treatment | Rationale |
-| --- | --- | --- |
-| `type` | Optional / constant URI | RFC 9457 §3.1.1 allows omission. |
-| `title` | Required | Short human summary. |
-| `status` | Omitted | HTTP status line authoritative. |
-| `detail` | Optional | Narrative text. |
-| `instance` | Optional | Rarely used. |
-| `errors` | Extension (§3.2) | Array of per-error details. |
-| `code`,`message`,`meta` | Extensions | Fully compliant. |
-
----
-
-`code` — Role and Representation
---------------------------------
-
-### What `code` is
-
-A **stable, machine-readable key** identifying the error category; independent of message wording or localization.
-
-### Naming Convention
-
-`<domain>.<category>.<reason>`  
-Examples: `auth.missing`, `resource.not_found`, `dependency.failed`.
-
-### Why string codes are standard
-
-| Aspect | String (`auth.missing`) | Numeric (`1043`) |
-| --- | --- | --- |
-| Readability | Human-friendly in logs | Opaque |
-| Namespacing | Simple (`auth.*`) | None |
-| Client branching | Safe (`if code==…`) | Ambiguous |
-| Governance | Regex enforceable | Central registry needed |
-| Size | Slightly larger | Smaller |
-| Interop | Locale-agnostic | Requires catalog |
-| HTTP overlap | Distinct from status codes | Confusing |
-
-> **Recommendation:**  
-> Lumen should use **string codes** exclusively.  
-> Numeric identifiers, if required for backward compatibility, appear only as `meta.legacy_code`.
-
----
-
-`meta` — Optional and Team-Defined
-----------------------------------
-
-### Guidance
-
-* Optional, uncontracted unless a team defines its own schema.
-* **Never** include secrets, internal identifiers, hostnames, stack traces, PII, or full payloads.
-* Keep small (< 4 KB) and limited to relevant machine context.
-* Teams may narrow `meta` locally if they need a structured contract.
-
-### Example of Per-API Override
-
-```
-components:
-  schemas:
-    LpdpError_MCGW_V1:
-      allOf:
-        - $ref: '#/components/schemas/LpdpError'
-        - type: object
-          properties:
-            meta:
-              $ref: '#/components/schemas/McgwErrorMetaV1'
-
-    McgwErrorMetaV1:
+    BatchSuccess:
       type: object
-      additionalProperties: false
-      description: Meta structure specific to MCGW v1 APIs.
+      description: Per-item success record (used only in 'full' view)
+      required: [index, status]
       properties:
-        subsystem: { type: string }
-        operation: { type: string }
-        cause:
+        index:
+          type: integer
+          minimum: 0
+        id:
           type: string
-          enum: [timeout, unavailable, error, authorization, unknown]
-      required: [ subsystem, cause ]
+          nullable: true
+          description: Created/affected resource identifier if available
+        status:
+          type: integer
+          description: HTTP status for this item (e.g., 200, 201)
+        resource:
+          type: object
+          additionalProperties: true
+          description: Optional representation of the created/updated resource (domain-specific)
+
+    BatchMultiStatusResponseCompact:
+      type: object
+      description: Default compact batch response (summary + failures only)
+      required: [summary]
+      properties:
+        summary:
+          $ref: '#/components/schemas/BatchSummary'
+        failures:
+          type: array
+          description: Failed items only (paged if large)
+          items: { $ref: '#/components/schemas/BatchFailure' }
+        page:
+          $ref: '#/components/schemas/PageMeta' # refer to pagination style guide
+
+    BatchMultiStatusResponseFull:
+      type: object
+      description: Full batch response (summary + successes + failures). Use only for small batches or exports.
+      required: [summary]
+      properties:
+        summary:
+          $ref: '#/components/schemas/BatchSummary'
+        successes:
+          type: array
+          description: Successful items (optional and typically limited)
+          items: { $ref: '#/components/schemas/BatchSuccess' }
+        failures:
+          type: array
+          description: Failed items (may be paged)
+          items: { $ref: '#/components/schemas/BatchFailure' }
+        page:
+          $ref: '#/components/schemas/PageMeta' # refer to pagination style guide
+
+    JobStatus:
+      type: object
+      description: Operational status for an asynchronous batch job (no per-item data)
+      required: [id, state, submitted_at, progress, links]
+      properties:
+        id: { type: string }
+        type: { type: string, enum: [batch] }
+        state: { type: string, enum: [queued, in_progress, completed, failed, canceled] }
+        submitted_at: { type: string, format: date-time }
+        progress:
+          type: object
+          required: [total, processed, succeeded, failed]
+          properties:
+            total: { type: integer, minimum: 0 }
+            processed: { type: integer, minimum: 0 }
+            succeeded: { type: integer, minimum: 0 }
+            failed: { type: integer, minimum: 0 }
+        links:
+          type: object
+          required: [self]
+          properties:
+            self:
+              type: string
+              format: uri
+              description: Canonical job URI for polling
+            results:
+              type: string
+              format: uri
+              nullable: true
+              description: Optional link to compact or exported results (no per-item payload inline)
+        idempotency_key:
+          type: string
+          description: Echo of the submission key to support replay semantics
+        request_hash:
+          type: string
+          description: Hash/fingerprint of original request body for conflict detection
+        error:
+          $ref: '#/components/schemas/ProblemDetails' # refer to LPDP  
+
+    ExportManifest:
+      type: object
+      description: Descriptor for large exported batch results
+      required: [id, state]
+      properties:
+        id: { type: string }
+        state: { type: string, enum: [pending, generating, completed, failed, expired] }
+        file_type: { type: string, enum: [application/jsonl, application/json, text/csv] }
+        size_bytes: { type: integer, minimum: 0 }
+        expires_at: { type: string, format: date-time }
+        download_url: { type: string, format: uri }
+        error:
+          $ref: '#/components/schemas/ProblemDetails'
 ```
 
 ---
 
-Canonical Examples and HTTP Status Mapping
-------------------------------------------
+12. Governance Validation Checklist
+-----------------------------------
 
-| **Use Case** | **Status** | **Example Summary** |
-| --- | --- | --- |
-| **Malformed Request** | **400 Bad Request** | Invalid JSON or schema syntax. |
-| **Unauthorized / Forbidden** | **401 / 403** | Missing credentials / insufficient rights. |
-| **Validation Errors** | **422 Unprocessable Entity** | Field-level or semantic violations. |
-| **Resource Not Found** | **404 Not Found** | Composite key absent. |
-| **Ambiguous Match / Conflict** | **409 Conflict** | Multiple resource matches or conflicting state. |
-| **Dependency Failure** | **424 Failed Dependency** (alt 502/503/504) | Downstream timeout / failure. |
-| **Internal Failure / Unknown Cause** | **500 Internal Server Error** | Unexpected system condition. |
+* ✅ Latency boundaries: ≤ 30 s p95 / ≤ 60 s absolute (else LRO)
+* ✅ Status codes: 200 / 201 / 207 / 202 only
+* ✅ 207 response uses **BatchMultiStatusResponseCompact** (or **…Full** when allowed)
+* ✅ Idempotency: `Idempotency-Key` required (async); recommended (sync)
+* ✅ OAS coverage: 201 + 207 + 202 documented; job uses **JobStatus** schema
+* ✅ Spectral rules: enforce headers, responses, and schemas
 
----
+## API Standard: PATCH Method
+<a id="api-standard-patch-method-675851894814"></a>
 
-### (a) Validation Error — 422
+**Purpose**
+-----------
 
-```
-{
-  "title": "Validation failed",
-  "errors": [
-    { "code": "string.min", "message": "[name] must be at least 3 characters.", "meta": { "min": 3, "actual": 2 } },
-    { "code": "cidr.invalid", "message": "[ip_address] must be a valid IPv4 CIDR.", "meta": { "expected": "IPv4 CIDR, e.g., 192.168.1.0/24" } }
-  ]
-}
-```
+The `PATCH` method partially updates an existing resource at its canonical URI.  
+Unlike `PUT`, it does not require the full representation, only the fields being changed.  
+`PATCH` is **not inherently idempotent**, but can be made so when combined with `If-Match` and deterministic patch semantics.
 
-### (b) Dependency Failure — 503
-
-```
-{
-  "title": "Backend dependency failed",
-  "errors": [
-    {
-      "code": "dependency.failed",
-      "message": "VRF service did not respond.",
-      "meta": { "subsystem": "VRFService", "operation": "lookupVrf", "resource": "vrf", "cause": "timeout" }
-    }
-  ]
-}
-```
-
-### (c) Composite Key Not Found — 404
-
-```
-{
-  "title": "VRF not found",
-  "errors": [
-    { "code": "resource.not_found", "message": "No VRF matched the provided name and customer.", "meta": { "resource": "vrf" } }
-  ]
-}
-```
-
-### (d) Ambiguous Resource — 409
-
-```
-{
-  "title": "VRF selection is ambiguous",
-  "errors": [
-    { "code": "resource.ambiguous", "message": "More than one VRF matches the provided criteria.", "meta": { "resource": "vrf", "candidates": 3 } }
-  ]
-}
-```
-
-### (e) Unknown Failure — 500
-
-```
-{
-  "title": "Unable to fetch VRF information",
-  "errors": [
-    { "code": "resource.lookup_failed", "message": "VRF information could not be retrieved.", "meta": { "subsystem": "VRFService", "cause": "unknown" } }
-  ]
-}
-```
-
-### (f) Auth Failures — 401 / 403
-
-```
-{
-  "title": "Unauthorized",
-  "errors": [ { "code": "auth.missing", "message": "Authorization header is required." } ]
-}
-```
-
-```
-{
-  "title": "Forbidden",
-  "errors": [ { "code": "auth.forbidden", "message": "Caller not permitted to perform this operation." } ]
-}
-```
-
-### (g) Malformed Request — 400
-
-```
-{
-  "title": "Malformed request",
-  "errors": [ { "code": "request.invalid_json", "message": "Request body is not valid JSON." } ]
-}
-```
+This page defines Lumen’s governance requirements and best practices for designing, documenting, and implementing `PATCH` operations across APIs.
 
 ---
 
-Governance Rules
-----------------
+**Semantics**
+-------------
 
-1. All 4xx / 5xx responses → `application/problem+json`.
-2. Each error → `code` and `message`.
-3. `code` → **string** form only; numeric legacy values in `meta.legacy_code`.
-4. `meta` → optional; must exclude sensitive or internal data.
-5. Per-API teams may narrow `meta` via local schemas without breaking the global profile.
+| Property | Requirement |
+| --- | --- |
+| **Safe** | ❌ No, modifies server state. |
+| **Idempotent** | ⚠ Not guaranteed, SHOULD use `If-Match` for concurrency control. |
+| **Typical Use** | Partial modification of resource fields. |
+| **Request Body** | ✅ Required, describes changes to apply. |
+| **Response Body** | ✅ Required for `200 OK`, returns updated representation. |
 
 ---
 
-### Summary
-
-| **Field** | **Required** | **Purpose** |
-| --- | --- | --- |
-| `title` | ✅ | Human-readable summary |
-| `errors` | ✅ | Array of issues |
-| `code` | ✅ | String identifier (machine key) |
-| `message` | ✅ | Human explanation |
-| `meta` | ⚙️ | Optional contextual data |
-| `detail`, `instance`, `type` | ⚙️ | Optional per RFC |
-| `status`, `trace_id` | ❌ | Omitted |
-| Rate-limit info | — | Conveyed via headers only |
-
-### API Standard: Idempotency
-<a id="api-standard-idempotency-675769778234"></a>
-
-1. What is Idempotency?
+**When to Use** `PATCH`
 -----------------------
 
-An **idempotent** operation is an operation that can be performed multiple times without changing the result beyond the initial application.
-
-In the context of a REST API, this means that making the same request multiple times (e.g., due to a network error and retry) will produce the same result and system state as making it just once.
-
-2. Why is Idempotency a Standard?
----------------------------------
-
-Idempotency is not an optional feature; it is a **critical component of a robust and reliable API platform.** Clients (mobile apps, web frontends, other services) operate on unreliable networks. A client may send a request, the server may process it, but the response may be lost before it reaches the client.
-
-Without idempotency, this client has no safe way to recover.
-
-* **The Risk:** The client doesn't know if the request succeeded.If it retries a `POST /users` request, it may create two identical users. If it retries a `POST /charges` request, it may charge the customer twice.
-* **The Solution:** This standard ensures all endpoints are safe to retry, protecting our systems and our customers from data duplication and unintended side effects.
-
-3. Idempotency by HTTP Method
------------------------------
-
-This standard defines the required behavior for each HTTP method.
-
-|  |  |  |
+| Use Case | Example | Required Behavior |
 | --- | --- | --- |
-| **Method** | **Idempotent by Standard?** | **Notes** |
-| `GET` | **MUST** | `GET` requests are *safe* (they don't change state) and must be idempotent. |
-| `PUT` | **MUST** | A `PUT` request replaces a resource. `PUT /users/123` twice is the same as once. |
-| `DELETE` | **MUST** | A `DELETE` request deletes a resource. The first call deletes it (returning `204`). The second call (and all subsequent) should return `404 Not Found`. The system state remains the same ("deleted"). |
-| `PATCH` | **MUST** | A `PATCH` operation must be idempotent. Server logic must ensure that re-applying the same patch does not produce a different result. (e.g., `PATCH /item/123 {"name": "new"}` twice is fine). |
-| `POST` | **MUST** support idempotency | `POST` is not naturally idempotent. This standard **requires** all `POST` endpoints to support an idempotency-key mechanism to *make* them idempotent. |
+| **Modify selected fields** | `PATCH /v1/customers/{id}` | Updates only given attributes; returns `200 OK` with updated object. |
+| **Change workflow state** | `PATCH /v1/orders/{id}` | Updates only `status` or `stage`. |
+| **Partial configuration change** | `PATCH /v1/configurations/{id}` | Applies incremental changes. |
+| **Partial update of singleton** | `PATCH /v1/organization/settings` | Updates subset of fields in a singleton resource. |
 
 ---
 
-4. `POST` Idempotency: The `idempotency-key` Header
----------------------------------------------------
+### ⚖️ **Governance Note — When PATCH Is Business-Critical**
 
-Since `POST` requests create new resources, they are the highest risk for duplication. To mitigate this, all `POST` endpoints that create resources **MUST** support idempotency via a request header.
+> The `PATCH` method **MUST NOT** be used merely for developer convenience.  
+> Teams **SHOULD use** `PATCH` **only when partial updates are business-critical** — meaning that sending or overwriting the entire resource representation (via `PUT`) would introduce data-loss, concurrency, or operational issues.
 
-### The Standard
+**PATCH is business-critical when:**
 
-`POST` endpoints **MUST** honor the `idempotency-key` header.
+* Multiple systems or users own different parts of a resource (e.g., shared ownership of a profile).
+* Partial mutation prevents overwriting external or read-only fields.
+* Resource size or update frequency makes `PUT` inefficient.
+* Incremental updates are required for workflows, IoT configuration, or multi-step state transitions.
 
-### Client Responsibility
+**PATCH is** ***not*** **business-critical when:**
 
-When a client sends a `POST` request, it **SHOULD** generate a unique key (e.g., a **UUID**) and send it in the `idempotency-key` header.
+* The resource is small and easily replaced with `PUT`.
+* The update semantics are simple (single owner, no concurrency risk).
+* PATCH is used only to avoid sending redundant fields.
+
+| Situation | Recommended Method | Rationale |
+| --- | --- | --- |
+| Toggle a single user preference or flag | **PATCH** | Partial update is isolated and critical to UX. |
+| Update multiple independent fields in a shared resource | **PATCH** | Prevents data overwrite from concurrent systems. |
+| Replace a complete entity such as customer, invoice, or address | **PUT** | Simple and predictable full-replacement semantics. |
+| Minor API optimization (no concurrency risk) | **PUT** | Avoids unnecessary PATCH complexity. |
+
+---
+
+**Singleton Resources**
+-----------------------
+
+### **Definition**
+
+A singleton resource (e.g., `/configuration`, `/profile`, `/settings`, `/status`) represents a unique, addressable entity that may be mutable.
+
+### **Guidance**
+
+| Rule | Description |
+| --- | --- |
+| **MAY use PATCH** | For partial updates to existing or pre-created singletons. |
+| **MAY use PUT** | When replacing the entire representation. |
+| **MUST include If-Match** | To prevent overwriting concurrent changes. |
+| **MUST return 200 OK** | With updated representation on success. |
+| **MUST return 412 Precondition Failed** | If `If-Match` does not match current ETag. |
+| **SHOULD include ETag** | Every GET/PATCH response must include new ETag. |
+| **MUST NOT** | Use PATCH to create a singleton — creation uses PUT. |
+
+**Example**
 
 ```
-HTTP
-```
-
-```
-POST /v1/customers
-idempotency-key: a8b4-12a8-8f81-9b48-18e0-128a
+PATCH /v1/organization/settings
+If-Match: "v1"
 Content-Type: application/json
 
 {
-  "name": "Jane Doe",
-  "email": "jane.doe@example.com"
+  "auto_approve": false
+}
+
+HTTP/1.1 200 OK
+ETag: "v2"
+Content-Type: application/json
+{
+  "auto_approve": false,
+  "timezone": "America/Chicago"
 }
 ```
 
-If the client suffers a network error and needs to retry, it **MUST** send the *exact same* `idempotency-key` with the retry request.
+---
 
-### Server Responsibility
-
-The server **MUST** perform the following logic for any `POST` request containing an `Idempotency-Key`:
-
-1. **Check for Key:** The server checks an internal cache (e.g., Redis) for this key.
-2. **Key Not Found (New Request):**
-
-   * This is the first time this request has been seen.
-   * The server processes the request as normal (e.g., creates the customer in the database).
-   * The server then **stores the HTTP response** (e.g., the `201 Created` status and the JSON body) in the cache, using the `Idempotency-Key` as the cache key.
-   * The server returns the response to the client.
-3. **Key is Found (Retry):**
-
-   * This is a retry. The server **MUST NOT** re-process the request.
-   * It immediately fetches the *original, saved response* from the cache.
-   * It returns that exact same response to the client.
-
-This flow guarantees that a client can safely retry a `POST` without fear of creating duplicate resources.
-
-### Key Details
-
-* **Key Format:** `idempotency-key` values **SHOULD** be a **UUID** to ensure uniqueness.
-* **Key Lifecycle:** The server **SHOULD** store idempotency keys for at least **24 hours** to allow clients ample time to retry failed requests.
-
-### API Standard: Partial Resource Retrieval
-<a id="api-standard-partial-resource-retrieval-675769581649"></a>
-
-Purpose
--------
-
-This page extends the **Lumen API Style Guide (v1.0)** to define a standard for **partial resource retrieval** — enabling clients to request only the fields they need, reducing payload size and latency for high-volume NaaS APIs (e.g., telemetry, connections, interfaces).
-
-Guiding Principle
------------------
-
-> “Always return full canonical resources **by default**, but allow clients to **opt-in** to partial responses using explicit field projection.”
-
-Partial retrieval improves performance and bandwidth efficiency without changing the canonical model or breaking API contracts.
-
-Standard Definition
+**Patch Semantics**
 -------------------
 
-| Category | Rule | Requirement |
-| --- | --- | --- |
-| **Parameter Name** | `fields` | **MUST** |
-| **Location** | Query Parameter | **MUST** |
-| **Type** | Comma-separated list of field names (no spaces) | **MUST** |
-| **Behavior** | Return only specified fields; ignore unknown ones or return `400` | **MUST** |
-| **Default** | Full resource if `fields` not provided | **MUST** |
-| **Case Sensitivity** | Field names are case-sensitive and match the schema exactly | **SHOULD** |
-| **Nested Objects** | Use dot notation for sub-fields (e.g., `location.city`) | **MAY** |
-| **Error Handling** | Return `400 Bad Request` with `problem+json` if invalid field names supplied | **SHOULD** |
+### **JSON Merge Patch (RFC 7396) — Preferred**
 
-Example: Fabric Connection Service
-----------------------------------
-
-### 🔹 Full Resource
+Simplified document-based merge:  
+present keys → overwrite,  
+`null` → delete,  
+absent → no change.
 
 ```
-GET /fabric/v1/connections/12345
+PATCH /v1/customers/123
+Content-Type: application/merge-patch+json
+
+{ "status": "inactive" }
 ```
 
-**Response**
+---
+
+### **JSON Patch (RFC 6902) — Optional**
+
+Explicit, ordered operations for atomic control.
 
 ```
-{
-  "id": "12345",
-  "name": "AWS-Transit-Connect",
-  "status": "active",
-  "bandwidth": {
-    "committed_mbps": 1000,
-    "burst_mbps": 2000
-  },
-  "location": {
-    "city": "Denver",
-    "region": "US-CENTRAL-1"
-  },
-  "provider": "aws",
-  "tags": ["gold", "naas"]
-}
+PATCH /v1/customers/123
+Content-Type: application/json-patch+json
+
+[
+  { "op": "replace", "path": "/status", "value": "inactive" },
+  { "op": "remove", "path": "/temporary_flag" }
+]
 ```
 
-### 🔹 Partial Resource (Using `fields`)
+---
 
-```
-GET /fabric/v1/connections/12345?fields=id,name,status
-```
+### ⚖️ **Governance Callout — PATCH Format Standards**
 
-**Response**
+> **Lumen Default Standard:**  
+> All Lumen APIs **MUST** implement `PATCH` using **JSON Merge Patch (RFC 7396)** with  
+> `Content-Type: application/merge-patch+json`.
 
-```
-{
-  "id": "12345",
-  "name": "AWS-Transit-Connect",
-  "status": "active"
-}
-```
+**Rationale**
 
-Nested Field Example – MCGW Interface
--------------------------------------
+* Aligns with standard REST partial-update semantics.
+* Easy for developers; payload mirrors resource shape.
+* Fully idempotent when combined with `ETag + If-Match`.
 
-```
-GET /mcgw/v1/interfaces/7df9a?fields=id,device.name,device.state
-```
+**Optional Alternative (Advanced Use Only)**  
+`application/json-patch+json` (**RFC 6902**) **MAY** be supported for:
 
-**Response**
+* Explicit `add` / `remove` / `replace` operations.
+* Ordered multi-field or audited mutations.
+* Complex structured documents.
 
-```
-{
-  "id": "7df9a",
-  "device": {
-    "name": "edge-router-01",
-    "state": "up"
-  }
-}
-```
+**Governance Enforcement**
 
-Validation & Governance Automation
-----------------------------------
-
-| Tool | Rule | Example |
-| --- | --- | --- |
-| **Spectral Linter** | Ensure `fields` is declared in GET operations where allowed | `oas-parameter-name: fields` |
-| **Governance Rule** | Lint rule `naas-partial-response-allowed` | Enforced only for `GET` endpoints returning resources > 10 fields |
-
-Performance Considerations
---------------------------
-
-* Reduces payload size by **30–80 %** for high-volume telemetry endpoints.
-* Lowers serialization/deserialization overhead in API Gateway and MCGW controllers.
-* Prevents over-fetching in portal UI and CLI integrations.
-
-Security & Compliance
----------------------
-
-* Projection **cannot** bypass authorization. The API MUST validate that each requested field is permitted under the caller’s security scope.
-
-Summary
--------
-
-| Benefit | Impact |
+| Rule | Description |
 | --- | --- |
-| Reduced payloads and latency | Better API responsiveness for UI and CLI clients |
-| Standardized pattern across products | Consistent developer experience |
-| Governance-ready | Easily enforced via OAS and Spectral rules |
+| **MUST** | Default `Content-Type` = `application/merge-patch+json`. |
+| **MAY** | Support `application/json-patch+json` only after design review. |
+| **MUST NOT** | Implicitly accept both without declaring them in OAS. |
+| **MUST** | Validate PATCH media type via Spectral rule. |
 
-### API Standard: Delete Method
-<a id="api-standard-delete-method-675767681290"></a>
+**Spectral Example**
 
-DELETE Method – Request and Response Standards
-----------------------------------------------
+```
+rules:
+  patch-must-use-merge-patch:
+    description: "PATCH operations must default to application/merge-patch+json"
+    given: "$.paths[*].patch.requestBody.content"
+    then:
+      field: "application/merge-patch+json"
+      function: truthy
+```
 
-### **Summary**
+**Summary**
 
-DELETE represents a request to remove the entire resource identified by the URI.  
-It is *not* intended for partial removal, filtered deletion, or passing instruction payloads.
+| Aspect | Governance Standard |
+| --- | --- |
+| Default RFC | **RFC 7396 — JSON Merge Patch** |
+| Optional RFC | RFC 6902 — JSON Patch |
+| Default Content-Type | `application/merge-patch+json` |
+| Optional Content-Type | `application/json-patch+json` (advanced) |
+| Idempotency | `ETag + If-Match` required |
+| Documentation | OAS MUST explicitly list supported types |
 
 ---
 
-### **Request Rules**
+**Conditional Requests & Concurrency**
+--------------------------------------
 
-| Rule | Requirement | Rationale |
+| Header | Usage | Example |
 | --- | --- | --- |
-| **MUST NOT include a request body** | DELETE has undefined semantics for a body per RFC 9110 §9.3.5 | Ensures predictable behavior across proxies, SDKs, and gateways |
-| **MUST target a single resource URI** | DELETE /{resource}/{id} | Full deletion semantics, not partial update |
-| **MUST NOT support conditional filters or lists in the body** | Use PATCH or POST /{resource}:delete instead | Keeps REST semantics pure and idempotent |
-| **MUST be idempotent** | Multiple identical DELETEs should have the same effect | Required for retry safety |
+| `ETag` | Returned with GET/PATCH responses. | `ETag: "v10"` |
+| `If-Match` | Required for optimistic concurrency. | `If-Match: "v10"` |
+
+**Rules**
+
+* **MUST** return new ETag after successful PATCH.
+* **MUST** reject updates without `If-Match` when concurrent writes possible.
+* **MUST** return `412 Precondition Failed` on mismatch.
+* **MUST NOT** overwrite concurrent updates.
 
 ---
 
-#### 🧾 **Example (Correct)**
+**Idempotency**
+---------------
 
-```
-DELETE /fabric/v1/connections/12345
-```
+`PATCH` is not guaranteed idempotent but SHOULD be made so where possible.
 
-**Response**
-
-```
-HTTP/1.1 204 No Content
-```
+| Technique | Description |
+| --- | --- |
+| **ETag + If-Match** | Ensures update applies only to current version. |
+| **Idempotency-Key** | Optional for safe retry behavior. |
+| **Deterministic Patch** | Same payload → same final state. |
 
 ---
 
-#### 🚫 **Example (Incorrect)**
+**Example**
+-----------
 
 ```
-DELETE /mcgw/v1/routes
+PATCH /v1/customers/123
+If-Match: "v4"
+Content-Type: application/merge-patch+json
+
+{
+  "email": "jane.doe@example.com",
+  "status": "inactive"
+}
+
+HTTP/1.1 200 OK
 Content-Type: application/json
+ETag: "v5"
 
 {
-  "routeIds": ["r1","r2","r3"]
+  "id": "123",
+  "name": "Jane Doe",
+  "email": "jane.doe@example.com",
+  "status": "inactive"
 }
 ```
 
-**Why This Is Non-Compliant:**  
-This DELETE request attempts partial modification via a request body, which has no defined semantics under RFC 9110.  
-Use PATCH or a POST action endpoint instead.
-
 ---
 
-### **Response Rules**
-
-| Status Code | Meaning | Use Case |
-| --- | --- | --- |
-| **204 No Content** | ✅ Successful deletion Or Resource does not exist | Resource deleted successfully Or Target resource already deleted or invalid |
-| **400 Bad Request** | Invalid URI, malformed query parameter | Syntax or parameter validation failure |
-| **401 Unauthorized** | Authentication required | Caller not authenticated |
-| **403 Forbidden** | Insufficient permission | Caller lacks permission to delete |
-| **405 Method Not Allowed** | DELETE not supported for this resource | Used when DELETE not implemented |
-| **409 Conflict** | Discouraged. If 409 is possible during delete, model it as POST with cancel action. | e.g., “Resource locked” or “pending operation” |
-| **422 Unprocessable Content** | Discouraged. If 422 is possible during delete, model it as POST with cancel action. | e.g., “Cannot delete active policy” — prefer PATCH or POST action |
-| **500 Internal Server Error** | Platform/system failure | Server-side unexpected error |
-
----
-
-### **Response Body Rules**
-
-* **MUST NOT** include a response body for Delete.
-
-### **Alternatives for Non-Standard Deletion Use Cases**
-
-| Use Case | Recommended Design | Example |
-| --- | --- | --- |
-| Delete subset of items | PATCH with remove operation | `PATCH /mcgw/v1/routes { "remove": ["r1","r2"] }` |
-| Batch or filtered deletion | POST to action endpoint | `POST /fabric/v1/connections:delete { "ids": ["c1","c2"] }` |
-| Conditional deletion | POST to /{resource}:terminate with conditions | `POST /mcgw/v1/sessions:terminate { "force": true }` |
-
----
-
-### **Governance Enforcement Examples**
-
-**Rule 1 – No DELETE Request Body**
-
-```
-rules:
-  lumen-no-delete-body:
-    description: "DELETE requests must not define requestBody"
-    given: "$.paths[*].delete"
-    then:
-      field: requestBody
-      function: falsy
-```
-
-**Rule 2 – Valid DELETE Responses**
-
-```
-rules:
-  lumen-delete-status-codes:
-    description: "Allowed HTTP status codes for DELETE"
-    given: "$.paths[*].delete.responses"
-    then:
-      function: lumen-validate-status-code
-      functionOptions:
-        validCodes: [204, 400, 401, 403, 404, 405, 500]
-```
-
----
-
-### **Summary Table**
-
-| Category | Guideline |
-| --- | --- |
-| **Request** | DELETE must target a single resource and have no body |
-| **Response** | Use only predefined codes (204, 400–500) |
-| **Governance** | Enforced via Spectral rules for DELETE behavior and status codes |
-
----
-
-### **Key Takeaways**
-
-* DELETE is for **entire resource removal only** — not partial, conditional, or batch operations.
-* No request body allowed — maintain idempotency and HTTP compliance.
-* Use **PATCH** for partial deletion or **POST :action** for complex or conditional deletions.
-* Responses should be predictable and minimal (typically `204 No Content`).
-* All error responses should follow **RFC 7807** for consistency and automation.
-
-### API Standard: HTTP Headers
-<a id="api-standard-http-headers-675767026338"></a>
-
-1. Naming & Formatting
-----------------------
-
-* **MUST** use lowercase kebab-case ASCII for all HTTP header names.
-
-  + ✅ `idempotency-key`, `traceparent`, `content-type`, `if-match`
-  + ❌ `X_Lumen_Entity_ID`, `X-Lumen-Entity-Id`, `RequestId`, non-ASCII
-* **MUST NOT** use the legacy `x-` prefix for new headers (per RFC 6648).
-* **MUST** document any legacy interoperability exceptions in the API's local specification.
-
----
-
-2. Header Registry (Allow-list)
--------------------------------
-
-To ensure client simplicity and enforceable governance, APIs **MUST** restrict headers to the following allow-list. Additions require a formal exception via the API Governance process.
-
-### 2.1 Standard Headers (Allowed)
-
-* **Content & Negotiation:** `accept`, `content-type`, `content-length`, `content-encoding`
-* **Authentication:** `authorization`
-* **Caching:** `cache-control`, `etag`, `last-modified`, `expires`, `vary`
-* **Conditional Requests:** `if-match`, `if-none-match`, `if-modified-since`, `if-unmodified-since`
-* **Conformance & Links:** `link`, `location`, `retry-after`, `date`
-* **Range (when applicable):** `range`, `content-range`
-* **Tracing & Correlation:** `traceparent`, `tracestate` (W3C)
-
-Any new custom headers **MUST** be defined with a purpose, schema, max length, examples, and security considerations before being added to this list.
-
----
-
-3. Authentication & Security
-----------------------------
-
-* **MUST** use `authorization: Bearer <access_token>` for OAuth2/JWT authentication.
-* **MUST NOT** introduce proprietary authentication headers without a formal review from the Security team.
-* **MUST NOT** place secrets or PII in headers or URLs. Always use request bodies over TLS.
-* **SHOULD** include the `traceparent` in all responses for correlation.
-
----
-
-4. Content Negotiation & Errors
--------------------------------
-
-* **Clients SHOULD** send `accept: application/json`. Clients must only request media types the API supports.
-* **Servers MUST** set `content-type: application/json` for all JSON response bodies.
-* **Servers MUST** use `content-type: application/problem+json` and conform to **RFC 9457 (Problem Details)** for all 4xx and 5xx error responses.
-* **Servers MUST** return a `406 Not Acceptable` if the client's `accept` header does not match a supported media type.
-
----
-
-5. Caching & Conditional Requests
----------------------------------
-
-* `ETag`: Servers **MUST** include an `ETag` header on all `GET` responses for cacheable resources. This is preferred over `Last-Modified`.
-* `If-None-Match`: Servers **MUST** honor the `If-None-Match` request header, returning a `304 Not Modified` if the `ETag` matches.
-* `If-Match`: Servers **MUST** use the `If-Match` header to enable optimistic concurrency control for `PATCH`, `PUT`, or `DELETE` requests.
-* `Cache-Control`: **MUST** be set according to the resource's caching policy (e.g., `no-store` for sensitive data, `max-age` for public metadata).
-* `Location`: **MUST** be returned with a `201 Created` response, containing the canonical URI of the newly created resource.
-
----
-
-6. Observability & Correlation
-------------------------------
-
-* **MUST** implement W3C Trace Context (`traceparent`, `tracestate`).
-* **Clients SHOULD** generate and send the `traceparent` header.
-* **Gateways MUST** ensure every request has a `traceparent`. If a client request is missing the `traceparent` header, the gateway **MUST** generate one before forwarding the request to internal services.
-* **Servers MUST** propagate the `traceparent` header across all internal service boundaries.
-* **Servers MUST** include the `traceparent` value in all error responses for end-to-end tracing.
-
----
-
-7. Rate Limiting
+**Status Codes**
 ----------------
 
-Gateway should handle ratelimiting and use below headers.
-
-* **SHOULD** use the IETF-standardized `RateLimit` response fields:
-
-  + `ratelimit-limit`: The quota for the time window.
-  + `ratelimit-remaining`: The number of requests remaining.
-  + `ratelimit-reset`: The remaining time in seconds until the quota resets.
-* **MUST** include the `Retry-After` header (in seconds) when returning a `429 Too Many Requests` or `503 Service Unavailable` status due to throttling.
-
----
-
-8. Size Constraints
--------------------
-
-* **Size Limits:** Header values **MUST** be ASCII. Total header size **SHOULD** remain within gateway limits (e.g., 8KB).
+| Code | Meaning | Applies To | Notes |
+| --- | --- | --- | --- |
+| **200 OK** | Resource partially updated | ✅ Existing | MUST return updated representation. |
+| **204 No Content** | Update succeeded (no body) | ⚠ Optional | Only if representation unchanged. |
+| **400 Bad Request** | Invalid JSON or schema | ✅ Both | Syntax errors. |
+| **401 Unauthorized** | Authentication required | ✅ Both |  |
+| **403 Forbidden** | Authenticated but not permitted | ✅ Both |  |
+| **404 Not Found** | Resource missing | ✅ Both |  |
+| **405 Method Not Allowed** | Wrong verb | ✅ Both |  |
+| **409 Conflict** | Version/state conflict | ✅ Both | Patch cannot apply. |
+| **412 Precondition Failed** | `If-Match` mismatch | ✅ Both | Stale ETag. |
+| **422 Unprocessable Content** | Semantic validation failure | ✅ Both | Violates business rule. |
+| **500 Internal Server Error** | Unexpected failure | ✅ Both | No internal details. |
 
 ---
 
-9. Governance & Linting (Spectral Snippets)
--------------------------------------------
-
-The following Spectral rules SHOULD be used to enforce these header standards.
-
-### Header Name Format
+**OAS Authoring Requirements**
+------------------------------
 
 ```
-rules:
-  lumen-header-name-format:
-    given: "$..parameters[?(@.in=='header')].name"
-    then:
-      function: pattern
-      functionOptions: { match: "^[a-z][a-z0-9-]*$" }
+paths:
+  /v1/customers/{id}:
+    patch:
+      summary: Partially update customer
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+        - in: header
+          name: If-Match
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema: { $ref: '#/components/schemas/CustomerPatch' }
+      responses:
+        '200':
+          description: Successful partial update
+          headers:
+            ETag:
+              description: Entity tag for versioning
+              schema: { type: string }
+        '412': { description: Precondition failed (stale ETag) }
+        '400': { description: Invalid request }
+        '404': { description: Not found }
 ```
 
 ---
 
-10. Change Control
-------------------
+**Governance Checklist**
+------------------------
 
-* Additions to the allow-list or new custom headers **MUST** go through API Governance with Security review.
+| Check | Validation |
+| --- | --- |
+| ✅ Partial update only | PATCH does not require full resource. |
+| ✅ Concurrency control | `ETag` + `If-Match` required. |
+| ✅ Media type governed | Default RFC 7396 only. |
+| ✅ Status codes approved | 200/204/400/401/403/404/405/409/412/422/500. |
+| ✅ Error model compliant | RFC 7807 Problem Details. |
+| ✅ OAS validated via Spectral | Governance automation ready. |
 
-### API Standard: Caching & Concurrency with ETag
+---
+
+**Developer Summary**
+---------------------
+
+* Use `PATCH` for **partial updates** only.
+* Default to **JSON Merge Patch (RFC 7396)**.
+* Use `If-Match` and `ETag` for safe concurrency.
+* Return `200 OK` with updated representation or `204 No Content` if unchanged.
+* For **singleton resources**, use PATCH for partial changes, PUT for full replacement.
+* Follow approved status codes and RFC 7807 error structure.
+* Declare supported patch type(s) explicitly in OAS.
+* All `PATCH` endpoints must pass Spectral linting for governance compliance.
+
+## API Standard: Caching & Concurrency with ETag
 <a id="api-standard-caching-concurrency-with-etag-675767910645"></a>
 
 1. What is an ETag?
@@ -3681,7 +4236,7 @@ paths:
                 $ref: '#/components/schemas/Problem'
 ```
 
-### API Standard: Long-Runing Operations (LRO)
+## API Standard: Long-Runing Operations (LRO)
 <a id="api-standard-long-runing-operations-lro-675812048943"></a>
 
 1. Summary
@@ -4238,7 +4793,7 @@ Polling is the default, but services **may** offer event-based notifications for
 * **Payload:** The event payload **should** match the Operation schema.
 * **Webhooks:** If webhooks are used, the service **must** provide a way for clients to register a callback URL and **must** use an HMAC signature (e.g., in `Webhook-Signature` header) for verification.
 
-### API Standard: Bulk Data Transfer (Handling Massive Payloads)
+## API Standard: Bulk Data Transfer (Handling Massive Payloads)
 <a id="api-standard-bulk-data-transfer-handling-massive-payloads-675830104066"></a>
 
 1. Purpose & Scope
@@ -4551,2636 +5106,303 @@ This is the standard, non-negotiable pattern used by all major cloud providers t
 
 By adopting this standard, we are aligning with industry best practices for building stable, secure, and scalable services.
 
-### API Standard: Date & Time Naming
-<a id="api-standard-date-time-naming-675837837328"></a>
+## API Standard: HTTP Headers
+<a id="api-standard-http-headers-675767026338"></a>
 
-### **1. Purpose & Scope**
-
-This standard defines how **date and date-time fields** must be named, structured, and represented in API payloads.  
-Consistent date naming and typing improves discoverability, reduces ambiguity, and enables automated validation through governance tools such as **Spectral**.
-
-This convention applies to:
-
-* All API resource representations (request and response payloads)
-* Both system metadata (e.g., auditing fields) and business fields (e.g., expiration, activation)
-* All date and date-time fields defined in OpenAPI specifications
-
----
-
-### **2. Core Rules**
-
-#### **2.1 Field Naming Suffixes**
-
-| **Suffix** | **Meaning** | **OpenAPI Format** | **Example** |
-| --- | --- | --- | --- |
-| `_at` | Timestamp with time component (RFC 3339 `date-time`) | `format: date-time` | `created_at`, `updated_at`, `starts_at` |
-| `_on` | Calendar date only (RFC 3339 `date`) | `format: date` | `effective_on`, `expires_on` |
-| `*_from` / `*_until` | Time or date ranges | `format: date-time` or `date` | `valid_from`, `valid_until` |
-
-> ⚠️ The OpenAPI schema **MUST** align the suffix to its proper format:  
-> `_at → format: date-time`, `_on → format: date`.
-
----
-
-### **2.2 State vs Schedule Semantics**
-
-Use timestamp names that clearly express **intent** — whether the value represents a **state change** (what has happened) or a **scheduled event** (what will happen).
-
-| **Category** | **Description** | **Examples** | **Verb Tense** | **Mutability** |
-| --- | --- | --- | --- | --- |
-| **State-based** | Reflect past events that changed system state. Used for audit, versioning, or ordering. | `created_at`, `updated_at`, `deleted_at`, `completed_at` | Past | Immutable |
-| **Schedule-based** | Define future or ongoing timeframes within a business process. | `starts_at`, `ends_at`, `expires_at`, `effective_on`, `renews_on` | Present / Future | Mutable |
-| **Range-based** | Define valid windows for temporal entities. | `valid_from`, `valid_until` | Mixed | Usually Mutable |
-
-> 💬 **Clarification:**
->
-> * *State fields* answer “**When did this happen?**”
-> * *Schedule fields* answer “**When will or should this occur?**”
-
----
-
-### **2.3 Examples**
-
-#### ✅ **Recommended**
-
-```
-{
-  "created_at": "2025-10-12T15:45:33Z",
-  "updated_at": "2025-10-15T19:02:11Z",
-  "starts_at": "2025-11-01T00:00:00Z",
-  "ends_at": "2025-11-30T23:59:59Z",
-  "valid_from": "2025-11-01T00:00:00Z",
-  "valid_until": "2026-01-01T00:00:00Z"
-}
-```
-
-#### ❌ **Not Recommended**
-
-```
-{
-  "created": "2025-10-12",
-  "modification_date": "2025-10-15T19:02:11Z",
-  "start_date": "2025-11-01",
-  "expire_at": "2025-11-30"
-}
-```
-
-**Issues:**
-
-* Mixed and inconsistent suffixes (`_date`, `_at`)
-* Some fields missing time component where expected
-* Ambiguous intent (is `expire_at` a schedule or state?)
-
----
-
-### **3. Governance & Enforcement (Spectral Rule)**
-
-The following Spectral rule enforces this convention during API design-time validation.
-
-#### **Rule ID:** `lumen-date-field-naming`
-
-```
-rules:
-  lumen-date-field-naming:
-    description: "Date/time fields must use '_at' for RFC 3339 date-time and '_on' for RFC 3339 date."
-    message: >-
-      "{{property}} field name does not follow Lumen Date/Time naming convention.
-       Use '_at' for RFC 3339 date-time, '_on' for RFC 3339 date.
-       For ranges, use *_from / *_until."
-    given: "$.components.schemas.*.properties.*"
-    severity: warn
-    then:
-      - function: pattern
-        field: "@key"
-        functionOptions:
-          match: ".*(_at|_on|_from|_until)$"
-      - function: truthy
-        field: "format"
-      - function: enumeration
-        field: "format"
-        functionOptions:
-          values:
-            - date
-            - date-time
-```
-
-✅ **What it checks:**
-
-* Ensures all date-related fields end with `_at`, `_on`, `_from`, or `_until`.
-* Validates that `_at` fields use `format: date-time`.
-* Validates that `_on` fields use `format: date`.
-* Flags inconsistent or ambiguous names (`created`, `start_date`, `expire_at`).
-
----
-
-### **4. Automation Notes**
-
-* Integrate this rule into the **Spectral ruleset** used by the API linter in the CI pipeline.
-* Apply it to all repositories that define OpenAPI 3.x specifications.
-* Violations are classified as **warnings** (initial rollout) and will be escalated to **errors** once adoption reaches >80%.
-
----
-
-### **5. Related Standards**
-
-* [RFC 3339: Date and Time on the Internet](https://www.rfc-editor.org/rfc/rfc3339)
-
-### API Standard: GET Method
-<a id="api-standard-get-method-675848454259"></a>
-
-### **Purpose**
-
-The `GET` method retrieves a resource or a collection of resources.  
-It **MUST NOT** change server state and **MUST** be safe and idempotent as defined in [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110).
-
-This page defines how to design, document, and implement `GET` operations across Lumen APIs to ensure predictable, cache-friendly, and standards-compliant behavior.
-
----
-
-### **Semantics**
-
-| Property | Requirement |
-| --- | --- |
-| **Safe** | ✅ YES, never modifies data or triggers side effects. |
-| **Idempotent** | ✅ YES, repeating the same GET yields the same result (unless data has changed). |
-| **Request Body** | ❌ NOT ALLOWED. |
-| **Response Body** | ✅ REQUIRED for `200 OK`, MUST represent the requested resource(s). |
-| **Caching** | ✅ Strongly RECOMMENDED, use `ETag` and `Cache-Control`. |
-
----
-
-### **URI Design**
-
-**Examples**
-
-* Single resource: `/v1/customers/{customer_id}`
-* Collection: `/v1/customers`
-* Filtered collection: `/v1/customers?status=active&country=US`
-
-**MUST**
-
-* Use plural nouns for collections.
-* Avoid action verbs (`/getCustomer`) — the HTTP verb already defines intent.
-* Preserve canonical noun hierarchy (**no verbs, no RPC style**).
-
----
-
-### **Singleton Resources**
-
-**Definition**  
-A *singleton resource* represents a unique conceptual instance of a type that exists once per context (e.g., current user profile, organization settings, service status).  
-Singletons do not require an identifier or belong to a collection.
-
-**Examples**
-
-```
-GET /v1/profile                → current user profile
-GET /v1/organization/settings  → organization configuration
-GET /v1/configuration          → global configuration
-GET /v1/status                 → system status or health
-```
-
-**Design Guidance**
-
-| Rule | Description |
-| --- | --- |
-| **MUST** | Treat singletons as first-class nouns (`/profile`, `/settings`, `/status`). |
-| **MUST NOT** | Nest singleton resources under collections **if they represent contextual or global concepts** (e.g., avoid `/users/{id}/profile` for the authenticated user’s profile). Such resources have a single instance determined by the caller’s identity or environment — not by path variables — and therefore **belong at the root level** (e.g., `/profile`). |
-| **MAY** | Nest singleton resources **only when they are scoped to a parent resource** (e.g., `/organizations/{orgId}/settings` — one settings resource per organization). |
-| **MUST** | Support `GET` for retrieval and `PATCH` for updates (if mutable). Never use `POST` or `DELETE`. |
-| **MUST** | Return `200 OK` with a body when available; `404 Not Found` if temporarily unavailable. |
-| **SHOULD** | Include `ETag` and support `If-None-Match` for cache validation. |
-| **MUST NOT** | Return `204` for existing singletons — always return a representation unless explicitly empty. |
-
-**Example**
-
-```
-GET /v1/profile
-If-None-Match: "v12"
-
-HTTP/1.1 200 OK
-ETag: "v13"
-Cache-Control: private, max-age=60
-{
-  "id": "u123",
-  "name": "Jane Doe",
-  "email": "jane@example.com"
-}
-```
-
-```
-GET /v1/profile
-If-None-Match: "v13"
-
-HTTP/1.1 304 Not Modified
-ETag: "v13"
-```
-
-**Governance Note**  
-Singletons must be documented as distinct resources (`/profile`, `/settings`, `/status`) and enforced through Spectral rules to verify `ETag` and `If-None-Match` support.
-
----
-
-### **Response Structure**
-
-Every successful `GET` MUST return a JSON object.
-
-#### **Single Resource**
-
-```
-{
-  "id": "c123",
-  "name": "Jane Doe",
-  "email": "jane@example.com",
-  "created_at": "2025-10-20T12:34:56Z"
-}
-```
-
-#### **Collection**
-
-```
-{
-  "data": [
-    { "id": "c123", "name": "Jane Doe" },
-    { "id": "c124", "name": "John Smith" }
-  ],
-  "pagination": {
-    "limit": 20,
-    "offset": 0,
-    "total": 245
-  }
-}
-```
-
-**MUST**
-
-* Wrap collections in a `data` array to allow metadata (`pagination`, `links`) at the top level.
-* Use consistent pagination keys (`limit`, `offset`, `total`).
-
----
-
-### **Headers and Conditional Requests**
-
-#### **ETag and Cache Validation**
-
-| Header | Usage | Example |
-| --- | --- | --- |
-| `ETag` | Server-generated version tag for the resource | `ETag: "v7a2"` |
-| `If-None-Match` | Client cache validation header | `If-None-Match: "v7a2"` |
-| Response on match | `304 Not Modified` (no body) |  |
-
-**MUST**
-
-* Return `ETag` on all cacheable responses.
-* Support `If-None-Match` on all `GET` endpoints.
-* Return `304 Not Modified` if ETag matches.
-
-**SHOULD**
-
-* Add `Cache-Control` (e.g., `private, max-age=60`) to define freshness.
-* Include `Last-Modified` when available for weak validation.
-
----
-
-### **Query Parameters and Filtering**
-
-| Principle | Guidance |
-| --- | --- |
-| **Predictability** | Parameter names must be consistent across APIs (`status`, `sort`, `limit`, `offset`). |
-| **Multiple Filters** | Use `&` separated query pairs. |
-| **Sorting** | `?sort=+name` ascending, `?sort=-created_at` descending. |
-| **Pagination** | Refer to pagination standards. |
-| **Empty Results** | Return `200 OK` with an empty `data` array, not `404`. |
-| **Invalid Filters** | Return `400 Bad Request` with Problem Details. |
-
----
-
-### **Status Codes**
-
-| Code | Meaning | Applies To | Usage Notes |
-| --- | --- | --- | --- |
-| **200 OK** | Successful retrieval | ✅ Single / ✅ Collection | Always return for successful GETs; include response body. |
-| **304 Not Modified** | Resource unchanged since client cache | ✅ Single / ✅ Collection | Used with `If-None-Match`, no body. |
-| **400 Bad Request** | Invalid query or parameter | ✅ Single / ✅ Collection | Syntactic or invalid filter errors. |
-| **401 Unauthorized** | Authentication required or invalid | ✅ Both |  |
-| **403 Forbidden** | Authorized but lacks permission | ✅ Both |  |
-| **404 Not Found** | Resource not found | ✅ Single | Never use for empty collections. |
-| **405 Method Not Allowed** | HTTP verb not supported | ✅ Both |  |
-| **422 Unprocessable Content** | Valid syntax but invalid semantic input | ✅ Both |  |
-| **500 Internal Server Error** | Unexpected server failure | ✅ Both | No stack traces exposed. |
-
----
-
-### **Example Request / Response Set**
-
-**Request**
-
-```
-GET /v1/customers/123
-If-None-Match: "v5"
-Accept: application/json
-```
-
-**Response (Resource Updated)**
-
-```
-HTTP/1.1 200 OK
-Content-Type: application/json
-ETag: "v6"
-Cache-Control: private, max-age=60
-{
- "id": "123",
- "name": "Jane Doe",
- "email": "jane@example.com"
-}
-```
-
-**Response (Not Modified)**
-
-```
-HTTP/1.1 304 Not Modified
-ETag: "v6"
-```
-
----
-
-### **OAS Authoring Requirements**
-
-```
-paths:
-  /v1/customers/{id}:
-    get:
-      summary: Retrieve customer by ID
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
-        - in: header
-          name: If-None-Match
-          schema: { type: string }
-      responses:
-        '200':
-          description: Successful response
-          headers:
-            ETag:
-              description: Entity tag for versioning
-              schema: { type: string }
-        '304':
-          description: Not Modified
-        '400': { description: Invalid request }
-        '404': { description: Not found }
-```
-
-**MUST**
-
-* Include `ETag` in `200` response headers.
-* Include `If-None-Match` parameter.
-* Restrict status codes to the approved matrix.
-* Return `application/json`.
-
----
-
-### **Governance Checklist**
-
-| Check | Validation |
-| --- | --- |
-| ✅ `GET` defined as safe and idempotent | No side effects |
-| ✅ `ETag` header returned | Required for cacheable responses |
-| ✅ `If-None-Match` supported | Enables `304 Not Modified` |
-| ✅ No request body allowed | Specification enforces it |
-| ✅ Proper status codes used | 200/304/400/401/403/404/405/422/500 only |
-| ✅ OAS validated via Spectral rules | Governance automation ready |
-
----
-
-### **Developer Summary**
-
-* Use `GET` exclusively for read-only operations.
-* Never require or process a body in `GET`.
-* Always include `ETag` and handle `If-None-Match` for conditional caching.
-* Return `200 OK` for success, `304` for cache hits, `404` only for missing single resources.
-* Treat collection queries as successful even when empty.
-* Keep response structure predictable (`data`, `pagination`).
-* Follow the approved status-code matrix and Problem Details format.
-
-### API Standard: POST Method
-<a id="api-standard-post-method-675852386305"></a>
-
-**Purpose**
------------
-
-The `POST` method creates new resources or performs non-CRUD actions on existing resources.  
-It is **not inherently idempotent** and should be used when neither `PUT` nor `PATCH` semantics apply.
-
-This page defines the required and recommended practices for all `POST` operations across Lumen APIs, ensuring consistency, predictability, and safe retries through **idempotency keys** and **standardized responses**.
-
----
-
-**Semantics**
--------------
-
-| Property | Requirement |
-| --- | --- |
-| **Safe** | ❌ No, may modify server state. |
-| **Idempotent** | ⚠ No by default; **MUST** use `Idempotency-Key` if retries are expected. |
-| **Typical Use** | Resource creation or triggering an action. |
-| **Request Body** | ✅ Required, defines input parameters or resource representation. |
-| **Response Body** | ✅ Required, returns the created resource or operation result. |
-
----
-
-**When to Use** `POST`
+1. Naming & Formatting
 ----------------------
 
-| Use Case | Example | Required Behavior |
-| --- | --- | --- |
-| **Create a new resource** | `POST /v1/orders` | Returns `201 Created` + `Location` header for the new resource. |
-| **Create multiple resources (batch / composite operation)** | POST /v1/customers/batch | Performs creation of multiple items in one request. Returns **207 Multi-Status** if results are mixed, or **202 Accepted** if processed asynchronously via a job. Batch requests SHOULD complete within the synchronous timeout budget (≤ 30 s p95 / 60 s absolute) or follow the **LRO pattern**. |
-| **Trigger an action on a resource** | `POST /v1/invoices/{id}/void` | Returns `200 OK` or `202 Accepted` depending on sync vs. async. |
-| **Start an asynchronous or workflow operation** | `POST /v1/network/connections/provision` | Returns `202 Accepted` + operation URL for status tracking. |
-| **Perform search or query with complex filters** (non-CRUD) | `POST /v1/orders/search` | Allowed when query parameters are too complex for GET; must be safe and side-effect free. |
-| **Submit sensitive criteria or large query payloads (PII, account numbers, tokens, advanced filters)** | `POST /v1/customers/search` with body `{"email":"…","dob":"…"}` | Use `POST` with a **request body** instead of putting sensitive data in the URL. **MUST** be side-effect free. **MUST** set `Cache-Control: no-store`. **MUST NOT** log or echo sensitive fields. **MUST NOT** include PII or secrets in the path or query string. **SHOULD** return `413 Payload Too Large` for oversized bodies and document limits. **SHOULD** include `Vary: Authorization` for authenticated results. |
+* **MUST** use lowercase kebab-case ASCII for all HTTP header names.
 
-### **Non-Applicable Cases**
-
-| Rule | Description |
-| --- | --- |
-| **MUST NOT** | Use `POST` for **singleton resources** (e.g., `/profile`, `/configuration`, `/status`). These resources are pre-defined by the system and not client-created. Use `GET` to retrieve and `PATCH` to update them. |
-
-#### **Why the Sensitive-Data Rule Exists**
-
-* URLs appear in logs, browser history, and referrers; request bodies do not.
-* Shared or transparent caches may store GET responses; using POST + `Cache-Control: no-store` minimizes risk.
-* Request bodies allow schema-driven validation and redaction (`x-lumen-sensitive: true` in OAS).
+  + ✅ `idempotency-key`, `traceparent`, `content-type`, `if-match`
+  + ❌ `X_Lumen_Entity_ID`, `X-Lumen-Entity-Id`, `RequestId`, non-ASCII
+* **MUST NOT** use the legacy `x-` prefix for new headers (per RFC 6648).
+* **MUST** document any legacy interoperability exceptions in the API's local specification.
 
 ---
 
-**Creation Semantics**
-----------------------
-
-### **Resource Creation**
-
-* **MUST** create new resource(s) under the collection URI.  
-  Example:  
-  `POST /v1/customers` → creates a customer resource.
-* **MUST** return:
-
-  + `201 Created`
-  + A `Location` header with the canonical URI of the new resource.
-  + The newly created resource in the response body.
-* **MUST NOT** use `POST` to **replace** an existing resource; use `PUT` instead.
-* **MAY** return `202 Accepted` for **asynchronous creation**
-* **MAY** return `207 Multi-Status` if a **batch request** partially succeeds.
-
-**Example:**
-
-```
-POST /v1/customers
-Content-Type: application/json
-{
-  "name": "Jane Doe",
-  "email": "jane@example.com"
-}
-
-HTTP/1.1 201 Created
-Location: /v1/customers/c123
-Content-Type: application/json
-{
-  "id": "c123",
-  "name": "Jane Doe",
-  "email": "jane@example.com"
-}
-```
-
----
-
-**Action Semantics**
---------------------
-
-When performing an action on an existing resource that does not map to a CRUD operation:
-
-| Rule | Description |
-| --- | --- |
-| **Pattern** | `POST /{resource}/{id}/{action}` (e.g., `/invoices/{id}/approve`). |
-| **Response** | `200 OK` for synchronous result, `202 Accepted` for async. |
-| **Body** | MAY contain parameters relevant to the action. |
-| **Idempotency** | MUST support `Idempotency-Key` to handle retries safely. |
-
-**Example:**
-
-```
-POST /v1/invoices/123/void
-Idempotency-Key: 4af7e7d9-91a6-4823-a1c0-8d112c884cb5
-HTTP/1.1 200 OK
-Content-Type: application/json
-{
-  "id": "123",
-  "status": "voided"
-}
-```
-
----
-
-**Idempotency**
----------------
-
-`POST` is **not idempotent by default** — but Lumen APIs must provide an idempotent experience when requests are retried.
-
-| Header | Description |
-| --- | --- |
-| `Idempotency-Key` | A client-supplied opaque UUID identifying the request. |
-| **Scope** | Applies to unsafe POSTs that could be retried. |
-| **Server Behavior** | Deduplicate requests with the same key and identical payload; replay original result. |
-| **Retention** | Store key and result for a minimum of 24 hours. |
-| **Conflict Handling** | Return `409 Conflict` if the same key is reused with a different payload. |
-
-**Example:**
-
-```
-POST /v1/payments
-Idempotency-Key: 827dcf3e-44fb-4f07-94b3-6b47cf3b813d
-
-→ 201 Created
-
-# Retry (same key)
-→ 201 Created (identical response)
-
-# Retry (same key, different payload)
-→ 409 Conflict
-```
-
----
-
-**Headers**
------------
-
-| Header | Usage |
-| --- | --- |
-| `Idempotency-Key` | Ensures retry-safe behavior. |
-| `Location` | Points to newly created resource or operation resource. |
-| `Retry-After` | Used when returning `202 Accepted` for async processing. |
-| `Content-Type` | MUST be `application/json` or vendor subtype. |
-| `Accept` | MUST be `application/json` (or compatible). |
-
----
-
-**Status Codes**
-----------------
-
-| Code | Meaning | Applies To | Notes |
-| --- | --- | --- | --- |
-| **201 Created** | Resource successfully created | ✅ Resource creation | MUST include `Location` header and representation. |
-| **202 Accepted** | Request accepted for asynchronous processing | ✅ LRO / async | MUST include operation URL in `Location`. |
-| **207 Multi-Status** | Batch/composite request produced mixed results | ✅ Bulk / composite POSTs | Use when some items succeed and others fail, body MUST include per-item statuses and summary. |
-| **200 OK** | Successful synchronous action | ✅ Resource actions | Used only for non-creation actions. |
-| **400 Bad Request** | Invalid request body or parameter | ✅ Both | Syntax or schema violation. |
-| **401 Unauthorized** | Authentication required | ✅ Both |  |
-| **403 Forbidden** | Authenticated but lacks permission | ✅ Both |  |
-| **404 Not Found** | Target resource or parent collection missing | ✅ Both |  |
-| **405 Method Not Allowed** | Wrong HTTP method used | ✅ Both |  |
-| **409 Conflict** | Resource already exists or idempotency key conflict | ✅ Creation / Action |  |
-| **422 Unprocessable Content** | Semantic validation error | ✅ Both | Schema valid but business rule failure. |
-| **500 Internal Server Error** | Unexpected server failure | ✅ Both | No internal details exposed. |
-
----
-
-**OAS Authoring Requirements**
-------------------------------
-
-When documenting `POST` operations in OpenAPI:
-
-```
-paths:
-  /v1/orders:
-    post:
-      summary: Create an order
-      parameters:
-        - in: header
-          name: Idempotency-Key
-          schema: { type: string, maxLength: 255 }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/OrderCreate' }
-      responses:
-        '201':
-          description: Created
-          headers:
-            Location:
-              schema: { type: string, format: uri }
-        '202': { description: Accepted (async creation) }
-        '207': { description: Partial success (batch results) }
-        '400': { description: Invalid request }
-        '409': { description: Conflict (duplicate or idempotency) }
-        '422': { description: Validation failed }
-```
-
-**MUST**
-
-* Include `Idempotency-Key` header definition.
-* Include `Location` header for `201` or `202` responses.
-* Constrain response codes to the approved matrix.
-* Document LRO patterns (`202 + Location`) when applicable.
-* Reference `207` for batch/composite POSTs if supported.
-
----
-
-**Governance Validation Checklist**
------------------------------------
-
-| Check | Expectation |
-| --- | --- |
-| ✅ Correct verb usage | `POST` used only for create or action semantics |
-| ✅ Location header present | For `201` and `202` responses |
-| ✅ Idempotency supported | `Idempotency-Key` required for unsafe POSTs |
-| ✅ Proper status codes | Matches approved matrix |
-| ✅ Async workflows standardized | `202 + Location` pattern used |
-| ✅ OAS validated via Spectral | Governance enforcement ready |
-
----
-
-**Developer Summary**
----------------------
-
-* Use `POST` to **create** new resources or **trigger** actions — never for updates.
-* Always return `201 Created` with a `Location` header for creations.
-* Use `Idempotency-Key` to protect clients from duplicate processing.
-* For asynchronous operations, return `202 Accepted` and an **operation URI**.
-* For partial batch success, return `207 Multi-Status` with `results[]` and `summary`.
-* Adhere strictly to the **approved status-code matrix**.
-* Document every `POST` in OpenAPI with consistent headers and response structure.
-
-### API Standard: PUT Method
-<a id="api-standard-put-method-675851796520"></a>
-
-**Purpose**
------------
-
-The `PUT` method **replaces the full representation** of a resource at its canonical URI.  
-It is **idempotent** — identical requests produce the same final state.
-
-This page defines Lumen’s standards for designing, documenting, and implementing `PUT` operations, including creation semantics, conditional updates, and approved response codes.
-
----
-
-**Semantics**
--------------
-
-| Property | Requirement |
-| --- | --- |
-| **Safe** | ❌ No, modifies server state. |
-| **Idempotent** | ✅ Yes, repeating the same request yields the same result. |
-| **Typical Use** | Full replacement of a resource. |
-| **Request Body** | ✅ Required, represents the complete, updated resource. |
-| **Response Body** | ✅ Required for `200 OK`, returns the latest representation. |
-
----
-
-**When to Use** `PUT`
----------------------
-
-| Use Case | Example | Required Behavior |
-| --- | --- | --- |
-| **Replace an existing resource completely** | `PUT /v1/customers/{id}` | Replaces the full customer object with the provided payload; returns `200 OK` and the updated resource. |
-| **Create a resource at a client-known URI (rare)** | `PUT /v1/buckets/{id}` | MAY be used if the client controls ID generation. Return `201 Created` if the resource did not exist before. |
-| **Update large static configurations or documents** | `PUT /v1/configurations/{id}` | Appropriate when sending an entire configuration file or template. |
-| **Atomic overwrite of immutable document** | `PUT /v1/policies/{id}` | Old version replaced entirely, new ETag generated. |
-
----
-
-**Singleton Resources**
------------------------
-
-### **Definition**
-
-A **singleton resource** represents a unique instance that exists once per logical context (for example, `/configuration`, `/profile`, `/settings`, `/status`, `/organization/{id}/policy`).  
-It is not part of a collection. A singleton **may or may not pre-exist** , if it does not, the client can create it by `PUT`ting a full representation at its canonical URI.
-
----
-
-### **Guidance**
-
-| Rule | Description |
-| --- | --- |
-| **MAY use PUT to create a singleton** | When the resource has a known, fixed URI and does not yet exist. `PUT` is idempotent, repeating the same request yields the same result. Return **201 Created** on first creation, **200 OK** on subsequent replacements. |
-| **MUST** | Require `If-Match` on updates when the singleton already exists to prevent concurrent overwrites. |
-| **MUST return 201 Created** | When the singleton did not exist previously and has now been created. |
-| **MUST return 200 OK** | When replacing an existing singleton with a new representation. |
-| **SHOULD include ETag** | Every GET and PUT response for a singleton must include an ETag for version control. |
-| **MUST NOT** | Use PUT for actions or only for full replacement. Use PATCH for partial updates. |
-| **MUST NOT** | Allow DELETE on singleton endpoints. |
-
----
-
-### **Examples**
-
-**Create (first-time PUT)**
-
-```
-PUT /v1/organization/settings
-Content-Type: application/json
-
-{
-  "auto_approve": true,
-  "timezone": "America/Chicago"
-}
-
-HTTP/1.1 201 Created
-ETag: "v1"
-Location: /v1/organization/settings
-```
-
-**Replace (subsequent update)**
-
-```
-PUT /v1/organization/settings
-If-Match: "v1"
-Content-Type: application/json
-
-{
-  "auto_approve": false,
-  "timezone": "America/Chicago"
-}
-
-HTTP/1.1 200 OK
-ETag: "v2"
-```
-
-**Conflict (stale ETag)**
-
-```
-HTTP/1.1 412 Precondition Failed
-Content-Type: application/problem+json
-{
-  "type": "https://api.lumen.com/errors/conflict",
-  "title": "Precondition Failed",
-  "status": 412,
-  "detail": "The resource has been modified by another client."
-}
-```
-
----
-
-### **Governance Note**
-
-* Singleton `PUT` operations follow the same idempotency, full-replacement, and ETag/If-Match rules as normal resources.
-* Example Spectral validation:
-
-```
-rules:
-  singleton-put-must-support-etag:
-    given: "$.paths[?(@property.match(/^\\/v1\\/(configuration|profile|settings|status|organization\\/[^/]+\\/policy)/))].put"
-    then:
-      field: "responses['200'].headers.ETag"
-      function: truthy
-```
-
-**Summary**
-
-> Singleton resources can be created or replaced using PUT when they have a fixed URI and no existing representation.  
-> Return 201 on first creation, 200 on subsequent updates.  
-> Always include ETag and require If-Match for concurrency control.
-
----
-
-**General Rules**
------------------
-
-| Rule | Description |
-| --- | --- |
-| **MUST** | Replace the **entire resource representation**; omitted fields are treated as deleted. |
-| **SHOULD NOT** | Use PUT for partial updates — use PATCH instead. |
-| **MUST** | Return the updated resource in the response body. |
-| **MUST** | Preserve the resource identifier and canonical URI. |
-| **MUST NOT** | Allow structural mutations (e.g., changing resource type or parent linkage). |
-| **MUST** | Be **idempotent** — re-submitting the same payload must not create duplicates. |
-
----
-
-**Conditional Requests & ETag**
+2. Header Registry (Allow-list)
 -------------------------------
 
-| Header | Usage | Example |
-| --- | --- | --- |
-| `ETag` | Returned with GET/PUT responses. | `ETag: "v12"` |
-| `If-Match` | Required header for optimistic concurrency. | `If-Match: "v12"` |
+To ensure client simplicity and enforceable governance, APIs **MUST** restrict headers to the following allow-list. Additions require a formal exception via the API Governance process.
 
-**Rules**
+### 2.1 Standard Headers (Allowed)
 
-* **MUST** return a new ETag on every successful modification.
-* **SHOULD** reject updates without If-Match when concurrent edits are possible.
-* **MUST** return 412 Precondition Failed if If-Match does not match.
-* **MUST NOT** accept stale updates.
+* **Content & Negotiation:** `accept`, `content-type`, `content-length`, `content-encoding`
+* **Authentication:** `authorization`
+* **Caching:** `cache-control`, `etag`, `last-modified`, `expires`, `vary`
+* **Conditional Requests:** `if-match`, `if-none-match`, `if-modified-since`, `if-unmodified-since`
+* **Conformance & Links:** `link`, `location`, `retry-after`, `date`
+* **Range (when applicable):** `range`, `content-range`
+* **Tracing & Correlation:** `traceparent`, `tracestate` (W3C)
 
----
-
-**Example**
------------
-
-```
-PUT /v1/customers/c123
-If-Match: "v4"
-Content-Type: application/json
-
-{
-  "id": "c123",
-  "name": "Jane Doe",
-  "email": "jane@example.com",
-  "status": "active"
-}
-```
-
-```
-HTTP/1.1 200 OK
-Content-Type: application/json
-ETag: "v5"
-Cache-Control: private, max-age=60
-
-{
-  "id": "c123",
-  "name": "Jane Doe",
-  "email": "jane@example.com",
-  "status": "active"
-}
-```
+Any new custom headers **MUST** be defined with a purpose, schema, max length, examples, and security considerations before being added to this list.
 
 ---
 
-**Status Codes**
-----------------
+3. Authentication & Security
+----------------------------
 
-| Code | Meaning | Applies To | Notes |
-| --- | --- | --- | --- |
-| **200 OK** | Resource successfully replaced | ✅ Existing resource | MUST include updated representation. |
-| **201 Created** | Resource newly created at client-specified URI or singleton first creation | ✅ Creation | MUST include Location header. |
-| **204 No Content** | Update succeeded, no body returned | ⚠ Optional | Only if representation unchanged. |
-| **400 Bad Request** | Invalid or missing fields | ✅ Both | Schema/validation errors. |
-| **401 Unauthorized** | Authentication required | ✅ Both |  |
-| **403 Forbidden** | Authenticated but not allowed | ✅ Both |  |
-| **404 Not Found** | Resource does not exist | ✅ Both |  |
-| **405 Method Not Allowed** | Wrong HTTP verb | ✅ Both |  |
-| **409 Conflict** | Version/state conflict | ✅ Both | For concurrent updates or integrity violations. |
-| **412 Precondition Failed** | If-Match mismatch | ✅ Both | Stale ETag. |
-| **422 Unprocessable Content** | Semantically invalid | ✅ Both | Valid JSON, violates business rule. |
-| **500 Internal Server Error** | Unexpected server failure | ✅ Both | No internal details exposed. |
+* **MUST** use `authorization: Bearer <access_token>` for OAuth2/JWT authentication.
+* **MUST NOT** introduce proprietary authentication headers without a formal review from the Security team.
+* **MUST NOT** place secrets or PII in headers or URLs. Always use request bodies over TLS.
+* **SHOULD** include the `traceparent` in all responses for correlation.
 
 ---
 
-**Headers**
------------
-
-| Header | Usage |
-| --- | --- |
-| `If-Match` | Required for conditional updates. |
-| `ETag` | Returned in every successful PUT. |
-| `Cache-Control` | MUST specify `private` or `no-store`. |
-| `Content-Type` | MUST be `application/json`. |
-| `Accept` | MUST be `application/json` or compatible. |
-
----
-
-**OAS Authoring Requirements**
-------------------------------
-
-```
-paths:
-  /v1/customers/{id}:
-    put:
-      summary: Replace a customer resource
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
-        - in: header
-          name: If-Match
-          schema: { type: string }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/Customer' }
-      responses:
-        '200':
-          description: Successful replacement
-          headers:
-            ETag:
-              description: Entity tag for versioning
-              schema: { type: string }
-        '201': { description: Created (first-time PUT) }
-        '412': { description: Precondition failed (stale ETag) }
-        '400': { description: Invalid request }
-        '404': { description: Not found }
-```
-
-**MUST**
-
-* Define `If-Match` and `ETag` headers.
-* Restrict status codes to the approved matrix.
-* Use `application/json`.
-
----
-
-**Governance Checklist**
-------------------------
-
-| Check | Validation |
-| --- | --- |
-| ✅ Idempotency guaranteed | PUT deterministically replaces the same resource |
-| ✅ Full resource in body | Required |
-| ✅ Returns updated representation | Required |
-| ✅ ETag / If-Match implemented | Required for concurrency control |
-| ✅ Proper status codes used | 200/201/204/400/401/403/404/405/409/412/422/500 |
-| ✅ Singleton creation allowed via PUT | 201 Created on first creation |
-| ✅ OAS validated via Spectral | Governance automation ready |
-
----
-
-**Developer Summary**
----------------------
-
-* Use **PUT** for full resource replacement or idempotent creation at a known URI.
-* Include the entire object; missing fields imply deletion.
-* Support **ETag** and **If-Match** for concurrency safety.
-* Return `201 Created` on first creation, `200 OK` on updates.
-* Ensure idempotency — repeated identical requests yield identical state.
-* Use **PATCH** for partial updates.
-* Follow the approved status-code matrix and RFC 7807 error model.
-* For **singleton resources**, PUT can create or replace them at a fixed URI; always include ETag and If-Match.
-
----
-
-**Conditional Update Decision Tree**
-------------------------------------
-
-```
-                   ┌────────────────────────────┐
-                   │      Is this a change?      │
-                   └──────────────┬──────────────┘
-                                  │
-                     ┌────────────┴────────────┐
-                     │                         │
-               No → Use GET              Yes → Modify state
-                                              │
-                                  ┌───────────┴───────────┐
-                                  │                       │
-                      Is it a new resource?         Existing resource?
-                                  │                       │
-                    ┌─────────────┘                       └──────────────┐
-                    │                                                  │
-           Use POST (create)                             Replace or update?
-                                                                   │
-                                           ┌───────────────────────┴────────────────────────┐
-                                           │                                              │
-                                  Replace full representation?                Modify partial fields only?
-                                           │                                              │
-                                 ┌─────────┘                                              └──────────┐
-                                 │                                                             │
-                        ✅ Use PUT with If-Match                                 ✅ Use PATCH with If-Match
-```
-
-### API Standard: PATCH Method
-<a id="api-standard-patch-method-675851894814"></a>
-
-**Purpose**
------------
-
-The `PATCH` method partially updates an existing resource at its canonical URI.  
-Unlike `PUT`, it does not require the full representation, only the fields being changed.  
-`PATCH` is **not inherently idempotent**, but can be made so when combined with `If-Match` and deterministic patch semantics.
-
-This page defines Lumen’s governance requirements and best practices for designing, documenting, and implementing `PATCH` operations across APIs.
-
----
-
-**Semantics**
--------------
-
-| Property | Requirement |
-| --- | --- |
-| **Safe** | ❌ No, modifies server state. |
-| **Idempotent** | ⚠ Not guaranteed, SHOULD use `If-Match` for concurrency control. |
-| **Typical Use** | Partial modification of resource fields. |
-| **Request Body** | ✅ Required, describes changes to apply. |
-| **Response Body** | ✅ Required for `200 OK`, returns updated representation. |
-
----
-
-**When to Use** `PATCH`
------------------------
-
-| Use Case | Example | Required Behavior |
-| --- | --- | --- |
-| **Modify selected fields** | `PATCH /v1/customers/{id}` | Updates only given attributes; returns `200 OK` with updated object. |
-| **Change workflow state** | `PATCH /v1/orders/{id}` | Updates only `status` or `stage`. |
-| **Partial configuration change** | `PATCH /v1/configurations/{id}` | Applies incremental changes. |
-| **Partial update of singleton** | `PATCH /v1/organization/settings` | Updates subset of fields in a singleton resource. |
-
----
-
-### ⚖️ **Governance Note — When PATCH Is Business-Critical**
-
-> The `PATCH` method **MUST NOT** be used merely for developer convenience.  
-> Teams **SHOULD use** `PATCH` **only when partial updates are business-critical** — meaning that sending or overwriting the entire resource representation (via `PUT`) would introduce data-loss, concurrency, or operational issues.
-
-**PATCH is business-critical when:**
-
-* Multiple systems or users own different parts of a resource (e.g., shared ownership of a profile).
-* Partial mutation prevents overwriting external or read-only fields.
-* Resource size or update frequency makes `PUT` inefficient.
-* Incremental updates are required for workflows, IoT configuration, or multi-step state transitions.
-
-**PATCH is** ***not*** **business-critical when:**
-
-* The resource is small and easily replaced with `PUT`.
-* The update semantics are simple (single owner, no concurrency risk).
-* PATCH is used only to avoid sending redundant fields.
-
-| Situation | Recommended Method | Rationale |
-| --- | --- | --- |
-| Toggle a single user preference or flag | **PATCH** | Partial update is isolated and critical to UX. |
-| Update multiple independent fields in a shared resource | **PATCH** | Prevents data overwrite from concurrent systems. |
-| Replace a complete entity such as customer, invoice, or address | **PUT** | Simple and predictable full-replacement semantics. |
-| Minor API optimization (no concurrency risk) | **PUT** | Avoids unnecessary PATCH complexity. |
-
----
-
-**Singleton Resources**
------------------------
-
-### **Definition**
-
-A singleton resource (e.g., `/configuration`, `/profile`, `/settings`, `/status`) represents a unique, addressable entity that may be mutable.
-
-### **Guidance**
-
-| Rule | Description |
-| --- | --- |
-| **MAY use PATCH** | For partial updates to existing or pre-created singletons. |
-| **MAY use PUT** | When replacing the entire representation. |
-| **MUST include If-Match** | To prevent overwriting concurrent changes. |
-| **MUST return 200 OK** | With updated representation on success. |
-| **MUST return 412 Precondition Failed** | If `If-Match` does not match current ETag. |
-| **SHOULD include ETag** | Every GET/PATCH response must include new ETag. |
-| **MUST NOT** | Use PATCH to create a singleton — creation uses PUT. |
-
-**Example**
-
-```
-PATCH /v1/organization/settings
-If-Match: "v1"
-Content-Type: application/json
-
-{
-  "auto_approve": false
-}
-
-HTTP/1.1 200 OK
-ETag: "v2"
-Content-Type: application/json
-{
-  "auto_approve": false,
-  "timezone": "America/Chicago"
-}
-```
-
----
-
-**Patch Semantics**
--------------------
-
-### **JSON Merge Patch (RFC 7396) — Preferred**
-
-Simplified document-based merge:  
-present keys → overwrite,  
-`null` → delete,  
-absent → no change.
-
-```
-PATCH /v1/customers/123
-Content-Type: application/merge-patch+json
-
-{ "status": "inactive" }
-```
-
----
-
-### **JSON Patch (RFC 6902) — Optional**
-
-Explicit, ordered operations for atomic control.
-
-```
-PATCH /v1/customers/123
-Content-Type: application/json-patch+json
-
-[
-  { "op": "replace", "path": "/status", "value": "inactive" },
-  { "op": "remove", "path": "/temporary_flag" }
-]
-```
-
----
-
-### ⚖️ **Governance Callout — PATCH Format Standards**
-
-> **Lumen Default Standard:**  
-> All Lumen APIs **MUST** implement `PATCH` using **JSON Merge Patch (RFC 7396)** with  
-> `Content-Type: application/merge-patch+json`.
-
-**Rationale**
-
-* Aligns with standard REST partial-update semantics.
-* Easy for developers; payload mirrors resource shape.
-* Fully idempotent when combined with `ETag + If-Match`.
-
-**Optional Alternative (Advanced Use Only)**  
-`application/json-patch+json` (**RFC 6902**) **MAY** be supported for:
-
-* Explicit `add` / `remove` / `replace` operations.
-* Ordered multi-field or audited mutations.
-* Complex structured documents.
-
-**Governance Enforcement**
-
-| Rule | Description |
-| --- | --- |
-| **MUST** | Default `Content-Type` = `application/merge-patch+json`. |
-| **MAY** | Support `application/json-patch+json` only after design review. |
-| **MUST NOT** | Implicitly accept both without declaring them in OAS. |
-| **MUST** | Validate PATCH media type via Spectral rule. |
-
-**Spectral Example**
-
-```
-rules:
-  patch-must-use-merge-patch:
-    description: "PATCH operations must default to application/merge-patch+json"
-    given: "$.paths[*].patch.requestBody.content"
-    then:
-      field: "application/merge-patch+json"
-      function: truthy
-```
-
-**Summary**
-
-| Aspect | Governance Standard |
-| --- | --- |
-| Default RFC | **RFC 7396 — JSON Merge Patch** |
-| Optional RFC | RFC 6902 — JSON Patch |
-| Default Content-Type | `application/merge-patch+json` |
-| Optional Content-Type | `application/json-patch+json` (advanced) |
-| Idempotency | `ETag + If-Match` required |
-| Documentation | OAS MUST explicitly list supported types |
-
----
-
-**Conditional Requests & Concurrency**
---------------------------------------
-
-| Header | Usage | Example |
-| --- | --- | --- |
-| `ETag` | Returned with GET/PATCH responses. | `ETag: "v10"` |
-| `If-Match` | Required for optimistic concurrency. | `If-Match: "v10"` |
-
-**Rules**
-
-* **MUST** return new ETag after successful PATCH.
-* **MUST** reject updates without `If-Match` when concurrent writes possible.
-* **MUST** return `412 Precondition Failed` on mismatch.
-* **MUST NOT** overwrite concurrent updates.
-
----
-
-**Idempotency**
----------------
-
-`PATCH` is not guaranteed idempotent but SHOULD be made so where possible.
-
-| Technique | Description |
-| --- | --- |
-| **ETag + If-Match** | Ensures update applies only to current version. |
-| **Idempotency-Key** | Optional for safe retry behavior. |
-| **Deterministic Patch** | Same payload → same final state. |
-
----
-
-**Example**
------------
-
-```
-PATCH /v1/customers/123
-If-Match: "v4"
-Content-Type: application/merge-patch+json
-
-{
-  "email": "jane.doe@example.com",
-  "status": "inactive"
-}
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-ETag: "v5"
-
-{
-  "id": "123",
-  "name": "Jane Doe",
-  "email": "jane.doe@example.com",
-  "status": "inactive"
-}
-```
-
----
-
-**Status Codes**
-----------------
-
-| Code | Meaning | Applies To | Notes |
-| --- | --- | --- | --- |
-| **200 OK** | Resource partially updated | ✅ Existing | MUST return updated representation. |
-| **204 No Content** | Update succeeded (no body) | ⚠ Optional | Only if representation unchanged. |
-| **400 Bad Request** | Invalid JSON or schema | ✅ Both | Syntax errors. |
-| **401 Unauthorized** | Authentication required | ✅ Both |  |
-| **403 Forbidden** | Authenticated but not permitted | ✅ Both |  |
-| **404 Not Found** | Resource missing | ✅ Both |  |
-| **405 Method Not Allowed** | Wrong verb | ✅ Both |  |
-| **409 Conflict** | Version/state conflict | ✅ Both | Patch cannot apply. |
-| **412 Precondition Failed** | `If-Match` mismatch | ✅ Both | Stale ETag. |
-| **422 Unprocessable Content** | Semantic validation failure | ✅ Both | Violates business rule. |
-| **500 Internal Server Error** | Unexpected failure | ✅ Both | No internal details. |
-
----
-
-**OAS Authoring Requirements**
-------------------------------
-
-```
-paths:
-  /v1/customers/{id}:
-    patch:
-      summary: Partially update customer
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: string }
-        - in: header
-          name: If-Match
-          schema: { type: string }
-      requestBody:
-        required: true
-        content:
-          application/merge-patch+json:
-            schema: { $ref: '#/components/schemas/CustomerPatch' }
-      responses:
-        '200':
-          description: Successful partial update
-          headers:
-            ETag:
-              description: Entity tag for versioning
-              schema: { type: string }
-        '412': { description: Precondition failed (stale ETag) }
-        '400': { description: Invalid request }
-        '404': { description: Not found }
-```
-
----
-
-**Governance Checklist**
-------------------------
-
-| Check | Validation |
-| --- | --- |
-| ✅ Partial update only | PATCH does not require full resource. |
-| ✅ Concurrency control | `ETag` + `If-Match` required. |
-| ✅ Media type governed | Default RFC 7396 only. |
-| ✅ Status codes approved | 200/204/400/401/403/404/405/409/412/422/500. |
-| ✅ Error model compliant | RFC 7807 Problem Details. |
-| ✅ OAS validated via Spectral | Governance automation ready. |
-
----
-
-**Developer Summary**
----------------------
-
-* Use `PATCH` for **partial updates** only.
-* Default to **JSON Merge Patch (RFC 7396)**.
-* Use `If-Match` and `ETag` for safe concurrency.
-* Return `200 OK` with updated representation or `204 No Content` if unchanged.
-* For **singleton resources**, use PATCH for partial changes, PUT for full replacement.
-* Follow approved status codes and RFC 7807 error structure.
-* Declare supported patch type(s) explicitly in OAS.
-* All `PATCH` endpoints must pass Spectral linting for governance compliance.
-
-### API Standard: Batch Operations
-<a id="api-standard-batch-operations-675858186277"></a>
-
-1. Purpose
-----------
-
-Batch operations enable clients to perform **the same action on multiple resources** in a single request (e.g., create, update, or trigger actions across many items).  
-This guide defines **Lumen’s governance standards** for batch APIs—latency thresholds, idempotency, status codes, response shape, and OpenAPI documentation.
-
-Batch APIs must behave **predictably**, support **safe retries**, and meet **bounded synchronous latency**. If those guarantees can’t be met, use the **Long-Running Operation (LRO)** pattern.
-
----
-
-2. Semantics
-------------
-
-| Property | Requirement |
-| --- | --- |
-| Verb | `POST` |
-| Safe | ❌ No — modifies server state |
-| Idempotent | ⚠ Recommended for synchronous; **required** for asynchronous |
-| Response Type | `application/json` |
-| Behavior | Processes multiple items of the same resource type atomically **per item** (not per batch) |
-
----
-
-3. When to Use Batch Operations
+4. Content Negotiation & Errors
 -------------------------------
 
-| Use Case | Example | Behavior |
-| --- | --- | --- |
-| Batch Create or Update | `POST /v1/customers/batch` | **201** if all succeed, **207** if mixed results, **202** if deferred. |
-| Batch Action | `POST /v1/invoices/batch/void` | **200/207/202** depending on outcome. |
-| Large Imports / Heavy Processing | `POST /v1/orders/import` | **202 Accepted** + `Location` to a job; follow the LRO guide. |
+* **Clients SHOULD** send `accept: application/json`. Clients must only request media types the API supports.
+* **Servers MUST** set `content-type: application/json` for all JSON response bodies.
+* **Servers MUST** use `content-type: application/problem+json` and conform to **RFC 9457 (Problem Details)** for all 4xx and 5xx error responses.
+* **Servers MUST** return a `406 Not Acceptable` if the client's `accept` header does not match a supported media type.
 
 ---
 
-4. Execution Policy
--------------------
-
-### 4.1 Synchronous Mode
-
-A batch **may** execute synchronously when:
-
-* **Predictable latency:** ≤ **30 s p95 / 60 s absolute**
-* **Deterministic outcome:** same input → same observable result (conflicts included)
-* **Retry safety (recommended):** supports `Idempotency-Key` for deduping retries
-
-### 4.2 Asynchronous Mode
-
-If synchronous boundaries can’t be guaranteed:
-
-* Return `202 Accepted`
-* Include `Location` to a job resource
-* Follow the **LRO Style Guide** for polling, job states, lifecycle
-
----
-
-5. Status Codes
----------------
-
-| Code | Meaning | Applies To | Notes |
-| --- | --- | --- | --- |
-| **201 Created** | All items created | Batch create | May return representation or summary |
-| **200 OK** | All items succeeded (non-create) | Batch action | Uniform success |
-| **207 Multi-Status** | Mixed outcomes | Create/action | Return per-item results + summary |
-| **202 Accepted** | Deferred job | Any | `Location` → job URI |
-| **4xx/5xx** | Uniform failure | Any | Use RFC 7807 Problem Details |
-
-**Rules:** Use **207** only when per-item outcomes differ. Use **201/200** for uniform success. Use **202** when work is deferred.
-
----
-
-6. Response Structure
----------------------
-
-### 6.1 207 Multi-Status (Partial Success)
-
-```
-HTTP/1.1 207 Multi-Status
-Content-Type: application/json
-{
-  "results": [
-    { "id": "c101", "status": 201, "message": "Created" },
-    { "id": "c102", "status": 409, "message": "Duplicate customer" }
-  ],
-  "summary": { "total": 2, "succeeded": 1, "failed": 1 }
-}
-```
-
-**Rules**
-
-* **MUST** include `summary` (total/succeeded/failed)
-* **MUST** use numeric HTTP status codes (100–599) for each item’s `status` field
-* **MAY** include `message` or failure details
-* **MAY** offer **compact** (failures-only) vs **full** modes
-* **MUST NOT** truncate without pagination metadata
-* **MAY** expose a **results** endpoint (optional, use-case dependent)
-
----
-
-7. 202 Accepted (Asynchronous Jobs)
------------------------------------
-
-**Submit**
-
-```
-POST /v1/customers/batch
-→ 202 Accepted
-Location: /v1/jobs/9827
-Retry-After: 10
-```
-
-**Poll**
-
-```
-GET /v1/jobs/9827
-→ 200 OK
-{
-  "id": "9827",
-  "state": "in_progress",
-  "accepted": 1000,
-  "processed": 300,
-  "succeeded": 295,
-  "failed": 5,
-  "links": {
-    "results": "/v1/jobs/9827/results"
-  }
-}
-```
-
-**Rules**
-
-* **MUST** include `Location`
-* **SHOULD** include `Retry-After`
-* **MUST** dedupe via `Idempotency-Key` (same key + payload → same job)
-* **MUST NOT** embed resource URIs or per-item data in Job
-* See **LRO Style Guide** for states & polling
-
----
-
-8. Headers
-----------
-
-| Header | Usage |
-| --- | --- |
-| **Idempotency-Key** | Required for all unsafe batch POSTs; dedupes retries |
-| **Location** | Required for 201/202 |
-| **Retry-After** | Recommended for 202/throttling |
-| **Cache-Control** | `no-store` for sensitive/transient results |
-| **Vary** | Include `Authorization` when results depend on user context |
-
----
-
-9. Idempotency
---------------
-
-| Requirement | Description |
-| --- | --- |
-| **MUST** | Deduplicate by `(method, canonical path, Idempotency-Key, request hash)` |
-| **MUST** | Return identical outcome on same key + payload |
-| **MUST** | Retain key + response metadata ≥ 24h (72h recommended for async) |
-| **MUST** | `409 Conflict` if key reused with **different** payload |
-| **RECOMMENDED** | `Retry-After` on transient failures |
-
-Async specifics:
-
-* Same key+payload while job queued/in-progress → **return same job** (don’t create a new one)
-* After completion → **replay** stored outcome / job status
-
----
-
-10. OpenAPI Authoring (Using Reusable Schemas)
-----------------------------------------------
-
-### 10.1 Batch Endpoint (sync/async)
-
-```
-paths:
-  /v1/customers/batch:
-    post:
-      summary: Create multiple customers
-      parameters:
-        - in: header
-          name: Idempotency-Key
-          required: true
-          schema: { type: string, maxLength: 255 }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items: { $ref: '#/components/schemas/CustomerCreate' }
-      responses:
-        '201': { description: All created successfully }
-        '200': { description: All items succeeded (non-creation action)' }
-        '207':
-          description: Partial success (mixed outcomes)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BatchMultiStatusResponseCompact'
-        '202':
-          description: Accepted for asynchronous processing
-          headers:
-            Location:
-              schema: { type: string, format: uri }
-            Retry-After:
-              schema: { type: integer, minimum: 1 }
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/JobStatus'
-        '400': { description: Invalid input or schema error }
-        '409': { description: Conflict or idempotency-key mismatch }
-```
-
-> If you also support **full** results inline for small batches, offer an alternate 207 response using `BatchMultiStatusResponseFull`.
-
-### 10.2 Job Polling
-
-```
-paths:
-  /v1/jobs/{jobId}:
-    get:
-      summary: Get job status
-      parameters:
-        - in: path
-          name: jobId
-          required: true
-          schema: { type: string }
-      responses:
-        '200':
-          description: Job status
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/JobStatus'
-```
-
-### 10.3 (Optional) Exported Full Results
-
-```
-paths:
-  /v1/exports/{exportId}:
-    get:
-      summary: Download exported batch results
-      parameters:
-        - in: path
-          name: exportId
-          required: true
-          schema: { type: string }
-      responses:
-        '200':
-          description: Export ready
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExportManifest'
-        '202': { description: Still generating; retry later }
-        '410': { description: Export expired }
-```
-
----
-
-11. Reusable Schemas (Components)
+5. Caching & Conditional Requests
 ---------------------------------
 
-```
-components:
-  schemas:
-
-    BatchSummary:
-      type: object
-      description: Counts for a batch operation
-      required: [total, succeeded, failed]
-      properties:
-        total: { type: integer, minimum: 0 }
-        succeeded: { type: integer, minimum: 0 }
-        failed: { type: integer, minimum: 0 }
-
-    BatchFailure:
-      type: object
-      description: Per-item failure record (used in compact and full)
-      required: [index, status, code, message]
-      properties:
-        index:
-          type: integer
-          minimum: 0
-          description: Zero-based position of the item in the submitted array
-        id:
-          type: string
-          nullable: true
-          description: Server-assigned or client key if available
-        status:
-          type: integer
-          description: HTTP status for this item (e.g., 409, 412, 422)
-        code:
-          type: string
-          description: Stable application error code (string, not numeric)
-        message:
-          type: string
-          description: Human-readable summary (safe for logs)
-        details:
-          $ref: '#/components/schemas/ProblemDetails'
-
-    BatchSuccess:
-      type: object
-      description: Per-item success record (used only in 'full' view)
-      required: [index, status]
-      properties:
-        index:
-          type: integer
-          minimum: 0
-        id:
-          type: string
-          nullable: true
-          description: Created/affected resource identifier if available
-        status:
-          type: integer
-          description: HTTP status for this item (e.g., 200, 201)
-        resource:
-          type: object
-          additionalProperties: true
-          description: Optional representation of the created/updated resource (domain-specific)
-
-    BatchMultiStatusResponseCompact:
-      type: object
-      description: Default compact batch response (summary + failures only)
-      required: [summary]
-      properties:
-        summary:
-          $ref: '#/components/schemas/BatchSummary'
-        failures:
-          type: array
-          description: Failed items only (paged if large)
-          items: { $ref: '#/components/schemas/BatchFailure' }
-        page:
-          $ref: '#/components/schemas/PageMeta' # refer to pagination style guide
-
-    BatchMultiStatusResponseFull:
-      type: object
-      description: Full batch response (summary + successes + failures). Use only for small batches or exports.
-      required: [summary]
-      properties:
-        summary:
-          $ref: '#/components/schemas/BatchSummary'
-        successes:
-          type: array
-          description: Successful items (optional and typically limited)
-          items: { $ref: '#/components/schemas/BatchSuccess' }
-        failures:
-          type: array
-          description: Failed items (may be paged)
-          items: { $ref: '#/components/schemas/BatchFailure' }
-        page:
-          $ref: '#/components/schemas/PageMeta' # refer to pagination style guide
-
-    JobStatus:
-      type: object
-      description: Operational status for an asynchronous batch job (no per-item data)
-      required: [id, state, submitted_at, progress, links]
-      properties:
-        id: { type: string }
-        type: { type: string, enum: [batch] }
-        state: { type: string, enum: [queued, in_progress, completed, failed, canceled] }
-        submitted_at: { type: string, format: date-time }
-        progress:
-          type: object
-          required: [total, processed, succeeded, failed]
-          properties:
-            total: { type: integer, minimum: 0 }
-            processed: { type: integer, minimum: 0 }
-            succeeded: { type: integer, minimum: 0 }
-            failed: { type: integer, minimum: 0 }
-        links:
-          type: object
-          required: [self]
-          properties:
-            self:
-              type: string
-              format: uri
-              description: Canonical job URI for polling
-            results:
-              type: string
-              format: uri
-              nullable: true
-              description: Optional link to compact or exported results (no per-item payload inline)
-        idempotency_key:
-          type: string
-          description: Echo of the submission key to support replay semantics
-        request_hash:
-          type: string
-          description: Hash/fingerprint of original request body for conflict detection
-        error:
-          $ref: '#/components/schemas/ProblemDetails' # refer to LPDP  
-
-    ExportManifest:
-      type: object
-      description: Descriptor for large exported batch results
-      required: [id, state]
-      properties:
-        id: { type: string }
-        state: { type: string, enum: [pending, generating, completed, failed, expired] }
-        file_type: { type: string, enum: [application/jsonl, application/json, text/csv] }
-        size_bytes: { type: integer, minimum: 0 }
-        expires_at: { type: string, format: date-time }
-        download_url: { type: string, format: uri }
-        error:
-          $ref: '#/components/schemas/ProblemDetails'
-```
+* `ETag`: Servers **MUST** include an `ETag` header on all `GET` responses for cacheable resources. This is preferred over `Last-Modified`.
+* `If-None-Match`: Servers **MUST** honor the `If-None-Match` request header, returning a `304 Not Modified` if the `ETag` matches.
+* `If-Match`: Servers **MUST** use the `If-Match` header to enable optimistic concurrency control for `PATCH`, `PUT`, or `DELETE` requests.
+* `Cache-Control`: **MUST** be set according to the resource's caching policy (e.g., `no-store` for sensitive data, `max-age` for public metadata).
+* `Location`: **MUST** be returned with a `201 Created` response, containing the canonical URI of the newly created resource.
 
 ---
 
-12. Governance Validation Checklist
------------------------------------
-
-* ✅ Latency boundaries: ≤ 30 s p95 / ≤ 60 s absolute (else LRO)
-* ✅ Status codes: 200 / 201 / 207 / 202 only
-* ✅ 207 response uses **BatchMultiStatusResponseCompact** (or **…Full** when allowed)
-* ✅ Idempotency: `Idempotency-Key` required (async); recommended (sync)
-* ✅ OAS coverage: 201 + 207 + 202 documented; job uses **JobStatus** schema
-* ✅ Spectral rules: enforce headers, responses, and schemas
-
-### API Standard: Standardized Data Types and Formats
-<a id="api-standard-standardized-data-types-and-formats-675866542166"></a>
-
-### **Purpose**
-
-To ensure consistency, readability, and interoperability across all APIs published by Lumen, this section defines the canonical data types, formats, and reusable schemas to be used in all OpenAPI 3.0.3 specifications.
-
----
-
-### **Principles**
-
-* APIs **MUST** use only the data types and formats listed here.
-* All fields that accept structured values (e.g., country, currency, language, etc.) **MUST** include:
-
-  + a `description` explaining the expected standard,
-  + a `pattern` (regex) to make the rule self-explanatory to external developers, and
-  + an `example` value.
-* Custom `format` identifiers (e.g., `country-code`) are **advisory only**.
-
-  + They are intended for internal governance, linting, and future migration to OAS 3.1.
-  + External consumers should be able to use the schema **without** referencing any style guide.
-
----
-
-### **Rationale: Custom** `format` **vs Regex**
-
-| Aspect | Custom `format` | Regex + Example |
-| --- | --- | --- |
-| **Purpose** | Governance keyword for Spectral, SDKs, portals | Human & machine validation rule |
-| **External Developer Value** | Low – tooling hint only | High – immediately clear |
-| **Governance Value** | High – centralized semantics | Medium – must duplicate everywhere |
-| **Recommended Use** | Together – `format` + `pattern` + `example` |  |
-
----
-
-### **Standard Data Types (OAS 3.0.3)**
-
-| Type | OAS `type` | OAS `format` | Description | Example |
-| --- | --- | --- | --- | --- |
-| Boolean | `boolean` | — | `true` or `false` | `true` |
-| Integer (32 bit) | `integer` | `int32` | −2,147,483,648 … 2,147,483,647 | `42` |
-| Integer (64 bit) | `integer` | `int64` | −9,223,372,… 7, use ≤ `2^53 – 1` for I-JSON | `9007199254740991` |
-| Number (float) | `number` | `float` | IEEE-754 single precision | `3.14` |
-| Number (double) | `number` | `double` | IEEE-754 double precision | `3.1415926535` |
-| String | `string` | — | UTF-8 text | `"Lumen rocks!"` |
-| Date | `string` | `date` | RFC 3339 date | `"2025-11-11"` |
-| Date-Time | `string` | `date-time` | RFC 3339 timestamp (UTC `Z`) | `"2025-11-11T14:05:00Z"` |
-| Byte (Base64) | `string` | `byte` | Base64 RFC 4648 § 4 | `"VGVzdA=="` |
-| Binary | `string` | `binary` | Raw octet stream (upload/download) | *(file body)* |
-
----
-
-### **Custom (Governed) Formats**
-
-> ✅ These are optional keywords for internal tooling and do **not** alter wire format.
-
-| Logical Type | OAS `type` | OAS `format` | Description / Rule | Example |
-| --- | --- | --- | --- | --- |
-| URI | `string` | `uri` | URI per RFC 3986 | `"https://example.com/x"` |
-| Email | `string` | `email` | RFC 5322 address | `"user@example.com"` |
-| UUID | `string` | `uuid` | RFC 4122 UUID | `"279fc665-d04d-4dba-bcad-17c865489dfa"` |
-| Time | `string` | `time` | RFC 3339 partial time | `"08:26:40Z"` |
-| Decimal | `string` | `decimal-string` | Arbitrary precision string | `"1234.5678"` |
-| Language | `string` | `language-tag` | ISO 639-1 / BCP 47 code | `"en-US"` |
-| Country | `string` | `country-code` | ISO 3166-1 alpha-2 uppercase | `"US"` |
-| Currency | `string` | `currency-code` | ISO 4217 alpha-3 uppercase | `"USD"` |
-
-Each field **must also define a pattern and example** so the meaning is clear even if clients ignore `format`.
-
----
-
-### **Reusable Schema Definitions**
-
-#### **CountryCode**
-
-```
-CountryCode:
-  type: string
-  description: ISO 3166-1 alpha-2 country code (uppercase).
-  format: country-code
-  pattern: '^[A-Z]{2}$'
-  example: "US"
-```
-
-#### **CurrencyCode**
-
-```
-CurrencyCode:
-  type: string
-  description: ISO 4217 currency code (uppercase).
-  format: currency-code
-  pattern: '^[A-Z]{3}$'
-  example: "USD"
-```
-
-#### **LanguageTag**
-
-```
-LanguageTag:
-  type: string
-  description: Language tag per ISO 639-1 / BCP 47.
-  format: language-tag
-  pattern: '^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$'
-  example: "en-US"
-```
-
-#### **Email**
-
-```
-Email:
-  type: string
-  description: Email address per RFC 5322.
-  format: email
-  pattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
-  example: "user@example.com"
-```
-
-#### **UUID**
-
-```
-UUID:
-  type: string
-  description: Universally Unique Identifier per RFC 4122.
-  format: uuid
-  pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
-  example: "279fc665-d04d-4dba-bcad-17c865489dfa"
-```
-
-#### **URI**
-
-```
-URI:
-  type: string
-  description: URI string per RFC 3986.
-  format: uri
-  pattern: '^(https?|ftp)://[^\s/$.?#].[^\s]*$'
-  example: "https://api.lumen.com/v1/services"
-```
-
----
-
-#### **Money Object ( Integer Minor Units)**
-
-> Represents a monetary amount using ISO 4217 minor units (integer-based).
-
-```
-Money:
-  type: object
-  required: [amount, currency]
-  properties:
-    amount:
-      type: integer
-      minimum: 0
-      maximum: 9007199254740991   # I-JSON safe (2^53 – 1)
-      description: >
-        Monetary amount expressed in ISO 4217 minor units.
-        Example: USD 12.34 → amount=1234, currency="USD"
-    currency:
-      $ref: '#/components/schemas/CurrencyCode'
-  example:
-    amount: 1234
-    currency: "USD"
-```
-
----
-
-#### **Address Object**
-
-A common postal address representation used consistently across all domains.
-
-```
-Address:
-  type: object
-  description: Postal address (country-specific formatting may apply).
-  additionalProperties: false
-  properties:
-    line1:
-      type: string
-      description: Primary street line (street, number, unit).
-      maxLength: 256
-      example: "100 Main St Apt 5B"
-    line2:
-      type: string
-      description: Secondary line (building, suite, floor) if needed.
-      maxLength: 256
-      example: "Building A, Floor 3"
-    city:
-      type: string
-      description: City, town, or locality.
-      maxLength: 128
-      example: "Denver"
-    state:
-      type: string
-      description: State, region, or province (country-specific).
-      maxLength: 128
-      example: "CO"
-    postal_code:
-      type: string
-      description: Postal/ZIP code (country-specific format).
-      maxLength: 32
-      example: "80202"
-    country:
-      $ref: '#/components/schemas/CountryCode'
-  example:
-    line1: "100 Main St Apt 5B"
-    city: "Denver"
-    state: "CO"
-    postal_code: "80202"
-    country: "US"
-```
-
-**Context-specific variants:**
-
-```
-UsShippingAddress:
-  allOf:
-    - $ref: '#/components/schemas/Address'
-    - type: object
-      required: [line1, city, state, postal_code, country]
-```
-
-```
-InternationalBillingAddress:
-  allOf:
-    - $ref: '#/components/schemas/Address'
-    - type: object
-      required: [line1, city, postal_code, country]
-```
-
----
-
-### **Governance Validation Rules**
-
-| Rule | Enforcement |
-| --- | --- |
-| Disallow unrecognized `format` values | Spectral lint |
-| Require `pattern`, `example`, `description` when custom `format` used | Spectral lint |
-| Validate Money.amount ≤ 2⁵³ – 1 | Spectral + CI schema check |
-| Enforce ISO regex patterns for country/currency/language | Spectral rule |
-| Warn if `float`/`double` used for monetary values | Spectral rule |
-
----
-
-### **Summary**
-
-* **External developers** should understand schemas immediately through **description + regex + example**, without needing to read the style guide.
-* **Governance tooling** (Spectral, SDK generators, portals) can rely on **custom formats** for consistency and automation.
-* **Money, Address, Country, Currency, and Language** fields are standardized across all domains.
-
-### API Standard: Rest & Resource Design
-<a id="api-standard-rest-resource-design-675866738817"></a>
-
-**Purpose**
------------
-
-This section defines how APIs at **Lumen** are structured around resources — the fundamental building blocks of RESTful architecture — ensuring consistency, discoverability, and governance automation across all API domains.
-
----
-
-**REST Principle — Resource-Centric Design**
---------------------------------------------
-
-### **Governance Objective**
-
-APIs must be modeled around *resources*, not actions.  
-A *resource* represents a logical entity (e.g., `customer`, `order`, `connection`) that can be acted upon via standard HTTP methods.
-
-> “The key abstraction of information in REST is a resource.”  
-> — *Roy Fielding, REST Dissertation §5.2*
-
-### **Governance Rules**
-
-* Every REST API must identify its **primary resource(s)** before design begins.
-* Resources are **nouns**, not verbs.
-* CRUD behavior must be represented through **HTTP methods**, not in the URI.
-
-### **✅ Example**
-
-| Not Recommended | Recommended |
-| --- | --- |
-| `POST /createUser` | `POST /users` |
-| `POST /updateUser` | `PATCH /users/{id}` |
-| `POST /deleteUser` | `DELETE /users/{id}` |
-
----
-
-**Resource Hierarchies and URI Scope**
---------------------------------------
-
-### **Governance Objective**
-
-Maintain intuitive, predictable, and domain-contained URI structures.
-
-### **Governance Rules**
-
-* URIs must follow:
-
-  ```
-  /{domain}/v{n}/{resource}/{resource_id}/[subresource]
-  ```
-* Each resource belongs to **one business domain**.
-* **No cross-domain fan-out**:  
-  A resource in one domain cannot directly reference or nest resources from another.
-* URI depth must not exceed **two resource levels** (max 4 path segments after version).
-
-### **✅ Example**
-
-| Allowed | Disallowed |
-| --- | --- |
-| `/customers/v1/customers/{id}/accounts` | `/projects/{id}/tasks/{taskId}/comments/{commentId}` |
-| `/network/v1/connections/{id}` | `/billing/v1/customers/{id}/network/connections` |
-
----
-
-**Collections vs Singleton Resources**
---------------------------------------
-
-### **Governance Objective**
-
-Differentiate between **collections** (plural) and **singletons** (singular) to ensure consistent structure and expectations.
-
-### **Governance Rules**
-
-* **Collections:** Plural noun, contain multiple resources (e.g., `/customers`).
-* **Singletons:** Singular noun, one-per-parent (e.g., `/projects/{id}/config`).
-* **Singleton resources must not define:**
-
-  + `id` property
-  + `POST` or `DELETE` operations
-* **Singletons must define:** `GET` and `PATCH`.
-
-### **Implementation Hint**
-
-Mark singletons explicitly in OAS:
-
-```
-x-singleton: true
-```
-
-### **✅ Example**
-
-| Type | Path | Allowed Methods |
-| --- | --- | --- |
-| Collection | `/customers` | `GET`, `POST` |
-| Singleton | `/projects/{id}/config` | `GET`, `PATCH` |
-
----
-
-**Resource Naming**
--------------------
-
-### **Governance Objective**
-
-Enable predictable API navigation and uniform discoverability.
-
-### **Governance Rules**
-
-* Use **nouns** for resources; avoid verbs.
-* Pluralize collection names (e.g., `/users`, `/invoices`).
-* Singular for singletons (`/me`, `/company`).
-* **MUST** use `lowercase kebab-case` (`/service-offers`).
-* Resource URIs must always be **URL-safe** and **lowercase**.
-
----
-
-**Actions on Resources (Non-CRUD)**
------------------------------------
-
-### **Governance Objective**
-
-Support non-CRUD operations that represent *state transitions* or *processes* without breaking REST uniformity.
-
-### **Governance Rules**
-
-* Use verbs **only** when:
-
-  + The action cannot be represented by standard HTTP methods.
-  + It represents a *state transition* or *long-running operation (LRO)*.
-* Must be scoped to a resource (not root-level).
-* Use **process/job** pattern for asynchronous operations.
-* Allowed form:
-
-  ```
-  POST /{resource}/{id}/action
-  ```
-
-### **✅ Example**
-
-| Not Recommended | Recommended |
-| --- | --- |
-| `POST /archiveUser` | `POST /users/{id}/archive` |
-| `POST /reprovision` | `POST /connections/{id}/reprovision` |
-
-If the operation is long-running, annotate:
-
-```
-x-lro: true
-```
-
----
-
-**Resource Identifiers (IDs)**
+6. Observability & Correlation
 ------------------------------
 
-### **Governance Objective**
+* **MUST** implement W3C Trace Context (`traceparent`, `tracestate`).
+* **Clients SHOULD** generate and send the `traceparent` header.
+* **Gateways MUST** ensure every request has a `traceparent`. If a client request is missing the `traceparent` header, the gateway **MUST** generate one before forwarding the request to internal services.
+* **Servers MUST** propagate the `traceparent` header across all internal service boundaries.
+* **Servers MUST** include the `traceparent` value in all error responses for end-to-end tracing.
 
-Ensure resource identity is secure, unique, stable, and automation-friendly.
+---
 
-### **Governance Rules**
+7. Rate Limiting
+----------------
 
-* **MUST be opaque** — consumers should not infer meaning from IDs.
-* **MUST be generated by provider**, never client-supplied.
-* **MUST be globally unique** within API space.
-* **MUST be URL-safe**.
-* **MUST use consistent field naming convention**: `<resource>_id`.
-* **MUST have fixed length** — changing length constitutes a breaking change.
-* **MUST NOT** use sequential IDs.
-* **MAY** use UUID v4 or Snowflake-style identifiers.
-* **MAY** use short type prefixes (e.g., `PAY_`, `ACC_`) for troubleshooting.
+Gateway should handle ratelimiting and use below headers.
 
-### **Reusable Schema**
+* **SHOULD** use the IETF-standardized `RateLimit` response fields:
+
+  + `ratelimit-limit`: The quota for the time window.
+  + `ratelimit-remaining`: The number of requests remaining.
+  + `ratelimit-reset`: The remaining time in seconds until the quota resets.
+* **MUST** include the `Retry-After` header (in seconds) when returning a `429 Too Many Requests` or `503 Service Unavailable` status due to throttling.
+
+---
+
+8. Size Constraints
+-------------------
+
+* **Size Limits:** Header values **MUST** be ASCII. Total header size **SHOULD** remain within gateway limits (e.g., 8KB).
+
+---
+
+9. Governance & Linting (Spectral Snippets)
+-------------------------------------------
+
+The following Spectral rules SHOULD be used to enforce these header standards.
+
+### Header Name Format
 
 ```
-ResourceId:
-  type: string
-  description: >
-    Opaque, globally unique identifier for a resource.
-    Generated by the API provider. Never sequential or client-supplied.
-  pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
-  example: "279fc665-d04d-4dba-bcad-17c865489dfa"
+rules:
+  lumen-header-name-format:
+    given: "$..parameters[?(@.in=='header')].name"
+    then:
+      function: pattern
+      functionOptions: { match: "^[a-z][a-z0-9-]*$" }
 ```
 
 ---
 
-**Resource Metadata**
----------------------
+10. Change Control
+------------------
 
-### **Governance Objective**
+* Additions to the allow-list or new custom headers **MUST** go through API Governance with Security review.
 
-Provide uniform lifecycle visibility (creation, updates) across all resources.
+## API Standard: Delete Method
+<a id="api-standard-delete-method-675767681290"></a>
 
-### **Governance Rules**
-
-Every **collection resource** MUST include:
-
-* `id`
-* `created_at`
-* `last_updated_at`
-
-Singletons exclude these (redundant with parent).
-
-### **Reusable Schema**
-
-```
-ResourceMetadata:
-  type: object
-  required: [id, created_at, last_updated_at]
-  properties:
-    id:
-      $ref: '#/components/schemas/ResourceId'
-    created_at:
-      type: string
-      format: date-time
-      description: Creation timestamp (UTC)
-    last_updated_at:
-      type: string
-      format: date-time
-      description: Last update timestamp (UTC)
-```
-
----
-
-**Governance Enforcement Rules**
---------------------------------
-
-| Rule ID | Enforcement Type | Description |
-| --- | --- | --- |
-| `path-domain-scope` | Error | Paths must begin with a domain (e.g., `/billing/`, `/network/`). |
-| `path-versioned` | Error | Paths must include major version segment (e.g., `/v1/`). |
-| `path-segment-depth` | Error | Maximum path depth = 4 segments after version. |
-| `singleton-no-post-delete` | Error | Singleton resources cannot define POST/DELETE. |
-| `id-schema-ref` | Error | All `*_id` fields must use `ResourceId` schema. |
-| `resource-metadata-required` | Warn | Collection schemas must include `ResourceMetadata`. |
-| `verb-endpoint-lro` | Error | Verbs in path allowed only if x-action: true or x-lro: true. This explicitly permits action endpoints for complex state transitions. |
-
----
-
-**Example Resource Model**
---------------------------
-
-```
-paths:
-  /customers:
-    get:
-      summary: List all customers
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      allOf:
-                        - $ref: '#/components/schemas/ResourceMetadata'
-                        - type: object
-                          properties:
-                            name:
-                              type: string
-                              example: "Acme Corp"
-    post:
-      summary: Create a new customer
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Customer'
-
-  /customers/{customer_id}/accounts:
-    get:
-      summary: List accounts for a customer
-      parameters:
-        - name: customer_id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/ResourceId'
-```
-
----
-
-**Governance Rationale**
-------------------------
-
-| Principle | Outcome |
-| --- | --- |
-| **Resource-centric modeling** | Aligns APIs to REST uniform interface, improving predictability. |
-| **Strict URI domain boundaries** | Enables per-domain governance, versioning, and automation. |
-| **Opaque, stable identifiers** | Ensures consistency across distributed systems and prevents information leakage. |
-| **Singleton control** | Simplifies lifecycle management for dependent configurations. |
-| **Action resource governance** | Preserves REST semantics while supporting modern async/LRO workflows. |
-
----
-
-**Summary**
------------
-
-This REST & Resource section moves Lumen APIs from loosely interpreted REST conventions to a **governable, automatable, and externally predictable API architecture**.
-
-* Consistent structure = easier discoverability and SDK generation.
-* Enforced ID and resource schemas = audit-ready data lineage.
-* Governed URI scope = scalable domain modeling without overlap.
-
-### API Standard: JSON Payload
-<a id="api-standard-json-payload-675866051051"></a>
-
-### **Overview**
-
-All Lumen APIs **must use JSON** as the canonical message format for request and response bodies.  
-From a governance standpoint, this ensures predictable interoperability across platforms, easier validation using OpenAPI 3.0.3, and forward-compatible payload design.
-
-To achieve this, all JSON payloads must follow the structural, naming, and encoding rules defined in [RFC 7159 (JSON)](https://datatracker.ietf.org/doc/html/rfc7159) and [RFC 7493 (I-JSON)](https://datatracker.ietf.org/doc/html/rfc7493).  
-The goal is to enforce **clarity, safety, and uniformity** across all APIs regardless of team or domain.
-
----
-
-### **Governance Principles**
-
-| **Governance Objective** | **Policy Requirement** | **Rationale** |
-| --- | --- | --- |
-| *Standardized Format* | All request and response bodies **MUST** be valid JSON objects. | Guarantees structured, parsable data with clear schema evolution paths. |
-| *I-JSON Compliance* | JSON payloads **MUST** conform to the I-JSON profile (RFC 7493). | Ensures consistent behavior across clients, SDKs, and backend systems. |
-| *Encoding* | All JSON content **MUST** use UTF-8 encoding. | Avoids encoding ambiguity and corruption across gateways. |
-| *Uniqueness of Keys* | Each JSON object **MUST** contain **unique property names**. | Prevents parser ambiguity and security issues (duplicate key override). |
-| *Content Type* | Media type **MUST** be declared as `application/json`. | Enables correct content negotiation and API discovery. |
-| *Extensibility* | Payloads **MUST** support additive evolution (new fields tolerated). | Allows forward-compatible releases without breaking clients. |
-
----
-
-### **Structural Rules**
-
-#### **Nested Structures**
-
-**SHOULD** prefer nested, well-scoped objects over flattened key sets.  
-This improves logical grouping, maintainability, and future extensibility.
-
-✅ **Recommended**
-
-```
-{
-  "customer_id": "C123",
-  "billing_address": {
-    "line1": "100 Main St",
-    "city": "Denver",
-    "postal_code": "80202"
-  }
-}
-```
-
-❌ **Not Recommended**
-
-```
-{
-  "customer_id": "C123",
-  "billing_address_line1": "100 Main St",
-  "billing_address_city": "Denver",
-  "billing_address_postal_code": "80202"
-}
-```
-
----
-
-#### **Field Naming Convention**
-
-Field names **MUST** follow **lower snake\_case**, matching regex:
-
-```
-^[a-z][a-z0-9_]*$
-```
-
-Rules:
-
-* First character must be lowercase.
-* Use underscores to separate words.
-* No hyphens, camelCase, or PascalCase.
-* ASCII-only.
-
-✅ **Recommended** → `customer_name`, `invoice_number`, `created_at`  
-❌ **Not Recommended** → `salesOrderId`, `CustomerName`, `sales-order-id`
-
----
-
-#### **Array Naming Convention**
-
-Array properties **MUST** use plural names to signal multiplicity.  
-Empty arrays must be represented as `[]`, *not* `null`.
-
-✅ **Recommended**
-
-```
-{
-  "line_items": []
-}
-```
-
-❌ **Not Recommended**
-
-```
-{
-  "line_items": null
-}
-```
-
----
-
-### **I-JSON Compliance Checklist**
-
-| **Category** | **Requirement** | **Description** |
-| --- | --- | --- |
-| **Encoding** | UTF-8 | Required for all JSON payloads. |
-| **Duplicate Keys** | Forbidden | Parsers must reject payloads where a key appears more than once in the same object. |
-| **Numbers** | Finite, safe range only | No `NaN`, `Infinity`, or numbers > 2⁵³ − 1. |
-| **Strings** | Valid Unicode scalars only | No control or invalid Unicode characters. |
-| **Top-Level Type** | Object only | Arrays, primitives, or raw strings as top-level payloads are not permitted. |
-| **Date/Time** | RFC 3339 UTC format | Example: `"2025-11-11T18:30:00Z"` |
-
----
-
-### **Example — Valid Payload**
-
-```
-{
-  "order_id": "ORD_9876",
-  "customer": {
-    "customer_id": "C12345",
-    "name": "Acme Corp"
-  },
-  "line_items": [
-    {
-      "item_id": "I567",
-      "quantity": 3
-    }
-  ],
-  "total_amount": 1500,
-  "currency": "USD",
-  "created_at": "2025-11-11T18:30:00Z"
-}
-```
-
----
-
-### **Example — Invalid Payloads**
-
-**Duplicate Keys**
-
-```
-{
-  "name": "Acme",
-  "name": "Acme Inc"
-}
-```
-
-**Null Array**
-
-```
-{
-  "line_items": null
-}
-```
-
-**Unsafe Number**
-
-```
-{
-  "amount": 99999999999999999
-}
-```
-
----
-
-### **Governance Enforcement**
-
-* **Spectral Linting Rules:**  
-  Validate UTF-8 compliance, key uniqueness, and snake\_case fields.  
-  Disallow null arrays and duplicate keys.
-* **Gateway Validation:**  
-  Reject invalid or non-I-JSON payloads at request-time.
-* **Schema Linting in CI:**  
-  Automated pipelines must validate sample payloads and OpenAPI schemas for I-JSON compliance.
-* **Documentation Consistency:**  
-  All examples in the Developer Portal must use valid, lint-clean JSON payloads.
-
----
+DELETE Method – Request and Response Standards
+----------------------------------------------
 
 ### **Summary**
 
-JSON payload hygiene directly determines API quality and interoperability.  
-Lumen APIs **must** adhere to I-JSON constraints, snake\_case naming, predictable array behavior, and consistent UTF-8 encoding.  
-This ensures that payloads are **machine-safe, forward-compatible, and consistent** across every domain and consumer.
+DELETE represents a request to remove the entire resource identified by the URI.  
+It is *not* intended for partial removal, filtered deletion, or passing instruction payloads.
 
-### API Versioning Strategy
-<a id="api-versioning-strategy-675743498245"></a>
+---
 
-This document outlines the proposed official strategy for versioning all public-facing REST APIs. A stable and predictable versioning strategy is critical for building trust with API consumers and ensuring a reliable developer experience.
+### **Request Rules**
 
-Versioning Principles
----------------------
+| Rule | Requirement | Rationale |
+| --- | --- | --- |
+| **MUST NOT include a request body** | DELETE has undefined semantics for a body per RFC 9110 §9.3.5 | Ensures predictable behavior across proxies, SDKs, and gateways |
+| **MUST target a single resource URI** | DELETE /{resource}/{id} | Full deletion semantics, not partial update |
+| **MUST NOT support conditional filters or lists in the body** | Use PATCH or POST /{resource}:delete instead | Keeps REST semantics pure and idempotent |
+| **MUST be idempotent** | Multiple identical DELETEs should have the same effect | Required for retry safety |
 
-Our strategy uses both **Major** and **Minor** versions, but they are applied in different places to serve distinct purposes.
+---
 
-### Major Versions: The Public Contract 📜
+#### 🧾 **Example (Correct)**
 
-The major version represents the public contract with the client and **MUST** only change when a **breaking change** is introduced.
+```
+DELETE /fabric/v1/connections/12345
+```
 
-* **Implementation**: The major version **MUST** be included in the URI path and prefixed with a "v" (e.g., `v1`, `v2`).
+**Response**
 
-  ```
-  https://api.lumen.com/inventory/v1/connections
-  ```
-* **Client Impact**: A client's integration is tied to this major version. We guarantee that no breaking changes will be made within a given major version.
+```
+HTTP/1.1 204 No Content
+```
 
-### Minor Versions: The Diagnostic Tool 🩺
+---
 
-The minor version is an internal reference used to track non-breaking, additive changes. It serves as a crucial tool for communication and diagnostics.
+#### 🚫 **Example (Incorrect)**
 
-* **Implementation**: The server **SHOULD** include the semantic version (major.minor) in an HTTP response header.
+```
+DELETE /mcgw/v1/routes
+Content-Type: application/json
 
-  ```
-  API-Version: 1.2
-  ```
-* **Client Impact**: This has **zero impact** on the client's code. They are not required to send or parse this header. Its purpose is to provide a precise reference point for debugging, especially in distributed systems where deployment lag could lead to different nodes running different code versions.
+{
+  "routeIds": ["r1","r2","r3"]
+}
+```
 
-Defining Breaking vs. Non-Breaking Changes
-------------------------------------------
+**Why This Is Non-Compliant:**  
+This DELETE request attempts partial modification via a request body, which has no defined semantics under RFC 9110.  
+Use PATCH or a POST action endpoint instead.
 
-To ensure clarity, the following examples define what constitutes a breaking change versus a non-breaking change. When in doubt, a change **SHOULD** be treated as breaking.
+---
 
-### Breaking Changes (Requiring a New Major Version)
+### **Response Rules**
 
-Breaking changes are modifications that can potentially break an existing client integration.
+| Status Code | Meaning | Use Case |
+| --- | --- | --- |
+| **204 No Content** | ✅ Successful deletion Or Resource does not exist | Resource deleted successfully Or Target resource already deleted or invalid |
+| **400 Bad Request** | Invalid URI, malformed query parameter | Syntax or parameter validation failure |
+| **401 Unauthorized** | Authentication required | Caller not authenticated |
+| **403 Forbidden** | Insufficient permission | Caller lacks permission to delete |
+| **405 Method Not Allowed** | DELETE not supported for this resource | Used when DELETE not implemented |
+| **409 Conflict** | Discouraged. If 409 is possible during delete, model it as POST with cancel action. | e.g., “Resource locked” or “pending operation” |
+| **422 Unprocessable Content** | Discouraged. If 422 is possible during delete, model it as POST with cancel action. | e.g., “Cannot delete active policy” — prefer PATCH or POST action |
+| **500 Internal Server Error** | Platform/system failure | Server-side unexpected error |
 
-* **Request Changes:**
+---
 
-  + Removing or renaming a parameter.
-  + Adding a new *required* parameter.
-  + Making a previously optional parameter *required*.
-  + Changing the data type of a parameter.
-  + Adding a new validation rule to an existing parameter (e.g., restricting the length of a string).
-  + Changing authentication or authorization requirements.
-* **Response Changes:**
+### **Response Body Rules**
 
-  + Removing or renaming a field in the response body.
-  + Making a previously *required* response field optional.
-  + Changing the data type of a response field (e.g., from an integer to a money object).
-  + Changing the structure of the JSON payload (e.g., nesting an existing field).
-  + Removing a value from an `enum`.
-  + Any change to the primary HTTP Status Code returned by an existing API endpoint.
-  + Adding a new value to enum
+* **MUST NOT** include a response body for Delete.
 
-### Non-Breaking Changes (Minor Version Increments)
+### **Alternatives for Non-Standard Deletion Use Cases**
 
-Non-breaking (additive) changes are modifications that should not break an existing integration. These changes will be available in all supported API versions.
+| Use Case | Recommended Design | Example |
+| --- | --- | --- |
+| Delete subset of items | PATCH with remove operation | `PATCH /mcgw/v1/routes { "remove": ["r1","r2"] }` |
+| Batch or filtered deletion | POST to action endpoint | `POST /fabric/v1/connections:delete { "ids": ["c1","c2"] }` |
+| Conditional deletion | POST to /{resource}:terminate with conditions | `POST /mcgw/v1/sessions:terminate { "force": true }` |
 
-* **Request Changes:**
+---
 
-  + Adding a new *optional* parameter.
-  + Adding a new *optional* request header.
-  + Adding an optional field in the request body
-* **Response Changes:**
+### **Governance Enforcement Examples**
 
-  + Adding a new field to the response body.
-  + Adding a new endpoint or operation.
-  + Adding a new response header.
+**Rule 1 – No DELETE Request Body**
 
-API Lifecycle Management
-------------------------
+```
+rules:
+  lumen-no-delete-body:
+    description: "DELETE requests must not define requestBody"
+    given: "$.paths[*].delete"
+    then:
+      field: requestBody
+      function: falsy
+```
 
-### Announcing Major Changes (Pre-Release Communication)
+**Rule 2 – Valid DELETE Responses**
 
-To provide our consumers with adequate time to plan and budget for upcoming migrations, breaking changes **SHOULD** be announced at least **6 months** *before* a new major version is released.
+```
+rules:
+  lumen-delete-status-codes:
+    description: "Allowed HTTP status codes for DELETE"
+    given: "$.paths[*].delete.responses"
+    then:
+      function: lumen-validate-status-code
+      functionOptions:
+        validCodes: [204, 400, 401, 403, 404, 405, 500]
+```
 
-* This announcement **MUST** be made through the official API changelog, documentation, and, where possible, direct email communication to affected consumers.
-* The announcement **MUST** detail the upcoming breaking changes, the reasons for them, and provide a preliminary migration guide.
+---
 
-### Active Version Support
+### **Summary Table**
 
-All API products **MUST** support at least two active major versions during a migration period.
+| Category | Guideline |
+| --- | --- |
+| **Request** | DELETE must target a single resource and have no body |
+| **Response** | Use only predefined codes (204, 400–500) |
+| **Governance** | Enforced via Spectral rules for DELETE behavior and status codes |
 
-* When a new REST API version with breaking changes is released, the previous API version **MUST** be supported for at least **24 more months**.
-* This overlap period allows clients to migrate at their own pace without service disruption.
+---
 
-### **Deprecating Endpoints and Features**
+### **Key Takeaways**
 
-Deprecating an endpoint or feature requires a phased approach. The removal of any API element is a **breaking change** and can only happen in a new major version.
+* DELETE is for **entire resource removal only** — not partial, conditional, or batch operations.
+* No request body allowed — maintain idempotency and HTTP compliance.
+* Use **PATCH** for partial deletion or **POST :action** for complex or conditional deletions.
+* Responses should be predictable and minimal (typically `204 No Content`).
+* All error responses should follow **RFC 7807** for consistency and automation.
 
-1. **Announce (Phase 1) 📣: The endpoint remains fully functional.**
+## API Style Guide Governance Tracker
+<a id="api-style-guide-governance-tracker-675726426458"></a>
 
-   * In the OpenAPI specification, the operation **MUST** be marked with `deprecated: true`.
-   * The server **SHOULD** return a `Sunset` header (RFC 8594) containing the exact date and time when the endpoint will be fully removed.
-   * The server **SHOULD** also return a `Deprecation` header containing the date when the deprecation was announced. The format required by the RFCs is a standard **HTTP-date**, as defined in [RFC 7231](https://www.google.com/search?q=https://datatracker.ietf.org/doc/html/rfc7231%23section-7.1.1.1)
-   * The documentation **MUST** be updated to reflect the deprecation, the removal timeline, and any new preferred endpoints.
+1. Overview
+-----------
 
-   **Example HTTP Headers**
+This page tracks the progress of the API Working Group in reviewing, consolidating, and approving the official Lumen API Style Guide. The goal is to create a single, unified set of standards that will be used for all API development and governance.
 
-   ```
-   HTTP/1.1 200 OK
-   Deprecation: Wed, 22 Oct 2025 13:30:00 GMT
-   Sunset: Fri, 22 Oct 2027 13:30:00 GMT
-   ```
-2. **Guide (Phase 2)** 🚀: Provide a clear path forward for consumers.
+### Status Legend
 
-   * If a replacement exists, the server **SHOULD** return a `Link` header pointing to the new endpoint (e.g., `Link: <.../v1/new-endpoint>; rel="alternate"`).
-   * If the feature is being removed entirely, the documentation **MUST** state this clearly.
-3. **Remove (Phase 3)** ❌: After the support window, the endpoint is removed.
+* 🟩 **Approved:** The standard has been reviewed and approved by the working group.
+* 🟧 **Pending:** The standard is under review, has open issues, or is awaiting a formal decision.
+* ⬜ **Draft:** The standard exists but has not yet been formally reviewed by the group.
 
-   * The deprecated endpoint **MUST** be completely removed in the next major version release (e.g., `/v2`).
+2. Master Governance Tracker
+----------------------------
 
-### **Sunsetting and Decommissioning a Major Version**
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+| Subject Area | Source | Status | Open Issues / Questions | Notes / Rationale |
+| **Principles of Cloud-First API Design** | Confluence | 🟩 **Approved** |  |  |
+| **OAS Specification Best Practices** | Confluence | 🟩 **Approved** | 3.1.x (limited support). Current support 3.0.x | Updated support for 3.0.x |
+| **API Versioning Strategy** | Confluence | 🟩 **Approved** | `Deprecation`: date format to follow RFC. `Modify status code` | Updated |
+| **API Pagination Standards** | Confluence | 🟩 **Approved** | `next/prev` is not possible at this time | Removed |
+| **API Standardized Error Responses** | Confluence | 🟩 **Approved** | `traceparent`, `9457` (RFC 9457 Problem Details) | Created RFC 9457 Problem Detail profile for Lumen |
+| **API URI Standards and Design Patterns** | Confluence | 🟩 **Approved** |  |  |
+| **API Standard: Idempotency** | Confluence | 🟩 **Approved** |  |  |
+| **API Standard: Partial Resource Retrieval** | Confluence | 🟩 **Approved** |  |  |
+| **API Standard: Delete Method** | Confluence | 🟩 **Approved** |  |  |
+| **API Standard: Caching & Concurrency** | Confluence | 🟩 **Approved** |  |  |
+| **API Standard: HTTP Headers** | Confluence | 🟩 **Approved** |  |  |
+| **API Standard: Date & Time Naming** | Confluence | 🟩 **Approved** |  |  |
+| **API Standard: Standardized Data Types** | Confluence | 🟩 **Approved** |  |  |
+| **API Standard: Rest & Resource Design** | Confluence | 🟩 **Approved** |  |  |
+| **API Standard: JSON Payload** | Confluence | 🟩 **Approved** |  | extracted date standards seperately from json payload |
+| **API Standard: GET Method** | Confluence | 🟩 **Approved** |  |  |
+| **API Standard: POST Method** | Confluence | 🟩 **Approved** |  |  |
+| **API Standard: PUT Method** | Confluence | 🟩 **Approved** |  |  |
+| **API Standard: PATCH Method** | Confluence | 🟩 **Approved** |  |  |
+| **webhook** | (New Item) | ⬜ **Draft** | `jacob(webhooks - undermetristic), casey (sre)` | Lower priority, not required for base API Styleguide |
+| **API Governance Process** | Confluence | ⬜ **Draft** |  | Lower priority, not required for base API Styleguide |
+| **API Standard: Long-Runing Operations (LRO)** | Confluence | 🟩 **Approved** |  | Lower priority, not required for base API Styleguide |
+| **API Standard: Bulk Data Transfer** | Confluence | 🟩 **Approved** |  | Lower priority, not required for base API Styleguide |
+| **API Standard: Batch Operations** | Confluence | 🟩 **Approved** |  |  |
 
-After the mandated 24-month support window for a previous version ends, that version will be decommissioned.
-
-* **Communication**: Consumers still using the old version will be notified via multiple channels about the upcoming shutdown.
-* **Brownouts**: A "brownout" period may be implemented, where the old version is temporarily disabled for short periods to alert remaining users.
-* **Final Response**: Once decommissioned, the old version's endpoints **SHOULD** return an HTTP `410 Gone` status code to indicate that the resource is intentionally and permanently unavailable.
-
-**Handling Experimental (Beta) Features**
------------------------------------------
-
-To gather feedback on new features, a beta version may be released. Beta features are not bound by the standard 24-month support policy and can be changed or removed without the standard deprecation process.
-
-* **Implementation**: Beta features **SHOULD** be identified clearly, either through a beta-specific URI (e.g., `/v1-beta/new-feature`) or a version header (`API-Version: 2.1.0-beta`).
-
-**Updating Shared Data Models**
--------------------------------
-
-Making a breaking change to a common data model (e.g., the `Address` object) across multiple APIs **MUST** be handled with the **"Expand and Contract"** pattern to avoid a disruptive, simultaneous release of new major versions for all dependent APIs.
-
-1. **Expand (Non-Breaking)**: In the current major version, add new fields as *optional* and mark the old fields as *deprecated*. The server logic is updated to handle both old and new fields.
-2. **Transition (Monitor)**: Allow consumers to migrate to the new fields over the 24-month support window. Monitor the usage of the deprecated fields.
-3. **Contract (Breaking)**: In the next major version, remove the deprecated fields entirely. The new fields can now be made *required*
+Export to Sheets
 
 ## API Standard: Rate Limits & Error Handling Standard
 <a id="api-standard-rate-limits-error-handling-standard-675890790459"></a>
@@ -7767,6 +5989,1805 @@ The following table summarizes common misconfigurations and the recommended alte
 | Retrying 429 responses immediately without delay | Honor `Retry-After` and implement exponential backoff | Avoids retry storms and wasted capacity |
 | Hard-coding policy names in JavaScript | Use runtime variables (`quota.policy.name`) or policy properties | Improves reusability and reduces configuration drift |
 | Testing rate limits with only one MP | Test at the expected peak MP count | Ensures behavior is realistic under scaled conditions |
+
+## OAS Specification Best Practices
+<a id="oas-specification-best-practices-675743727627"></a>
+
+This document provides a set of standardized guidelines for creating high-quality, maintainable, and developer-friendly OpenAPI specifications. Adhering to these practices ensures consistency and clarity across all our APIs.
+
+---
+
+OAS Version and Format
+----------------------
+
+### **Adopt OAS 3.0.3 as the Standard**
+
+* Utilize OAS 3.0.3 for all new API specifications to ensure alignment with ApigeeX industry practices.
+* Include the correct version declaration at the start of the document:
+
+  ```
+  openapi: 3.0.3
+  ```
+
+### **Use YAML as the Documentation Format**
+
+* Employ YAML for writing OAS documents for better readability and maintainability.
+* Use a consistent indentation of two spaces to structure the document clearly.
+
+---
+
+API Metadata (`info` object)
+----------------------------
+
+The `info` object is the first thing a developer sees. It must clearly articulate the API's purpose and business value.
+
+* `info.description`: This field **MUST** describe the business capability the API unlocks. It should answer the question, "What problem does this solve for the consumer?" Avoid technical jargon.
+
+  + ***Bad***: "An API for managing MCGW connections."
+  + ***Good***: "Use the Fabric Connections API to programmatically create, manage, and delete high-speed, private connections between your on-premises infrastructure and cloud providers like AWS, Azure, and GCP."
+
+---
+
+API Documentation Structure (`tags` and `summary`)
+--------------------------------------------------
+
+These fields control how your API is organized and displayed in documentation tools, making them critical for usability and context.
+
+* `tags`: All operations **MUST** be grouped using `tags`. The tags **MUST** be based on the resource name (e.g., a "Connections" tag for all operations related to connections) to organize the API around its core business objects.
+* `summary`: Every operation **MUST** have a `summary`. It must be a short, action-oriented phrase from the user's perspective that clearly states what the endpoint does.
+
+  + *Bad*: "GET connections"
+  + *Good*: "List all active connections"
+
+---
+
+Operation IDs (`operationId`)
+-----------------------------
+
+The `operationId` is used by code generation tools to create method names in SDKs. Inconsistent or missing IDs lead to messy, unpredictable code and a poor developer experience.
+
+* **Requirement**: Every operation **MUST** have a unique `operationId`.
+* **Convention**: The `operationId` **MUST** follow a consistent naming convention, such as `verbResource` (e.g., `listConnections`, `createConnection`). This ensures the generated code is predictable and intuitive.
+
+---
+
+Security
+--------
+
+Apply security requirements at the individual path or operation level rather than globally. This approach provides precise control and accommodates varying security needs for different endpoints.
+
+```
+paths:
+  /items:
+    get:
+      security:
+        - OAuth2:
+            - read
+```
+
+---
+
+Reusability and Naming
+----------------------
+
+* **Reuse Schemas**: Leverage the `components` section to define and reuse schemas, parameters, and headers. This ensures consistency and makes the specification easier to maintain.
+* **Descriptive Naming Conventions**: Use meaningful names for paths, parameters, and other elements, and follow the company's established naming standard.
+
+### How to Document Reusable Components
+
+The `components` section is the central repository for all reusable definitions.
+
+#### Reusable Request Parameters (Query & Path)
+
+Define reusable query and path parameters under
+
+```
+components.parameters.
+```
+
+#### Declare Reusable Parameters example
+
+```
+components:
+  parameters:
+    ResourceId:
+      name: id
+      in: path
+      description: The unique identifier for the resource.
+      required: true
+      schema:
+        type: string
+        format: uuid
+    LimitParam:
+      name: limit
+      in: query
+      description: The maximum number of items to return per page.
+      schema:
+        type: integer
+        default: 20
+```
+
+#### Reference them in your paths
+
+```
+paths:
+  /v1/items/{id}:
+    parameters:
+      - $ref: '#/components/parameters/ResourceId'
+```
+
+#### Reusable Request Headers
+
+Request headers are treated as parameters with “in: header” and are also defined under
+
+```
+components.parameters
+```
+
+#### Define the reusable header as a parameter
+
+```
+components:
+  parameters:
+    CorrelationIdHeader:
+      name: X-Correlation-ID
+      in: header
+      description: Tracks a request across multiple services for debugging.
+      required: true
+      schema:
+        type: string
+        format: uuid
+```
+
+#### Reference it in your path
+
+```
+paths:
+  /v1/items:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/CorrelationIdHeader'
+```
+
+#### Reusable Response Headers
+
+Response headers have their own dedicated section for reusability:
+
+```
+components.headers
+```
+
+#### Define the reusable response header
+
+```
+components:
+  headers:
+    RateLimitRemaining:
+      description: The number of requests left for the current time window.
+      schema:
+        type: integer
+```
+
+#### Reference it in a response definition
+
+```
+paths:
+  /v1/items:
+    get:
+      responses:
+        '200':
+          description: A successful response.
+          headers:
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+```
+
+---
+
+Data Types and Examples
+-----------------------
+
+* **Define Reusable Schemas**: Define reusable schemas for complex data types in the `components` section. Clearly specify ***data types, formats, constraints, and examples***.
+* **Provide Realistic Examples**:
+
+  + Include examples that cover various real-world scenarios (common, edge, and error cases).
+  + Use the `example` or `examples` keyword within schema definitions for both requests and responses.
+  + Ensure examples use realistic and relevant data.
+
+#### OAS `examples` Example
+
+```
+paths:
+  /v1/items:
+    post:
+      summary: Create a new item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+            examples:
+              # First example: A simple item with only required fields
+              simpleItem:
+                summary: A basic item
+                description: An example of creating an item with the minimum required information.
+                value:
+                  name: "Standard Widget"
+                  price: 19.99
+
+              # Second example: An item with optional fields included
+              itemWithOptionalFields:
+                summary: An item with optional data
+                description: An example of creating an item that includes optional fields like a description and SKU.
+                value:
+                  name: "Premium Widget"
+                  price: 29.99
+                  description: "A high-quality, durable widget."
+                  sku: "PREM-WID-001"
+```
+
+Casing Requirements
+-------------------
+
+Schema objects defined in the `components` section **MUST** use **PascalCase** (also known as UpperCamelCase). This convention makes it easy to distinguish schema objects from `snake_case` field names within the specification.
+
+```
+# ✅ Good: Uses PascalCase
+CustomerOrder:
+  type: object
+  properties:
+    order_id:
+      type: string
+# ❌ Bad: Uses snake_case
+customer_details:
+  type: object
+```
+
+---
+
+Best Practices for Naming
+-------------------------
+
+### Use Singular Nouns
+
+Schema object names **MUST** represent a single instance of that object. Use singular nouns for clarity. The concept of a collection is handled by defining an `array` that references the singular object.
+
+* *Good*: `Customer`, `Order`, `Invoice`
+* *Bad*: `Customers`, `OrdersList`
+
+### Be Descriptive and Unambiguous
+
+Names should be clear and specific, avoiding generic or vague terms that could cause confusion.
+
+* *Good*: `BillingAddress`, `ShippingAddress`, `ProductInventory`
+* *Bad*: `Data`, `Items`, `Record`, `Object`
+
+### Avoid Jargon and Abbreviations
+
+Names **SHOULD** use simple, common terms and avoid internal project codenames, jargon, or unnecessary abbreviations.
+
+* *Good*: `MultiCloudGateway`, `Invoice`
+* *Bad*: `McgwObject`, `BillingRecord`
+
+### Use Suffixes for Clarity
+
+When a schema has different variations (e.g., for requests vs. responses), use consistent suffixes to distinguish them.
+
+* **For Create/Update Operations**: Use suffixes like `Request` or `Update`.
+
+  + `CreateCustomerRequest`
+  + `UpdateCustomerRequest`
+* **For Different Views**: Use suffixes that describe the context.
+
+  + `CustomerSummary`
+  + `CustomerDetails`
+
+### Use API Prefixes to Prevent Namespace Collisions
+
+To prevent conflicts when developers generate code from multiple OAS files, all schema names **MUST** be prefixed with a short, unique **API Prefix**.
+
+An **API Prefix** is a short identifier, unique to an API, that is added to the beginning of every schema object's name. Its purpose is to guarantee that all generated class names will be unique, even when a developer consumes multiple APIs that have schemas with similar names.
+
+* **The Problem**: If the MCGW API has an `Order` schema and the IOD API also has an `Order` schema, code generation tools will create two different classes with the same name, causing a conflict.
+* **The Solution**: By using prefixes, the schemas are named `McgwOrder` and `IodOrder`, which generate unique and conflict-free classes.
+
+## API URI Standard Proposal
+<a id="api-uri-standard-proposal-675743891744"></a>
+
+Overview & Purpose
+------------------
+
+This document proposes a standardized URI structure for Lumen APIs. The goal is to create a consistent, predictable, and governable namespace that clarifies the purpose and scope of each API, supports different customer segments (Enterprise vs. Wholesale), and facilitates platform evolution.
+
+Core URI Structure
+------------------
+
+The proposed core structure follows a `{domain}/{version}/{resource}` pattern:
+
+* `{domain}`: Identifies the primary functional area or customer segment (e.g., `product`, `business-function`, `wholesale`).
+* `{version}`: The major API version (e.g., `v1`, `v2`).
+* `{resource}`: The specific resource (noun) being acted upon (e.g., `users`, `keys`, `orders`).
+
+Proposed API Domains
+--------------------
+
+The following top-level domains are proposed to categorize Lumen APIs:
+
+### Product Function APIs
+
+* **Description:** Enterprise APIs performing product-specific functions.
+* **URI Template:** `/{product}/{version}/{resource}`
+* **Example:** `/fabric/v1/ports`, `/mcgw/v1/connections`
+
+### Business Function APIs
+
+* **Description:** Enterprise APIs performing cross-cutting business functions (e.g., identity, billing, ordering).
+* **URI Template:** `/{business-function}/{version}/{resource}`
+* **Example:** `/admin/v1/users`, `/ordering/v1/orders`
+* **Note:** If a specific business function needs product-specific variations (e.g., inventory responses differing by product), a separate URI within the function domain might be necessary, rather than embedding product names directly.
+
+### Wholesale APIs
+
+* **Description:** A dedicated domain for APIs serving wholesale customers, covering both product and business functions.
+* **URI Templates:**
+
+  + `/wholesale/{product}/{version}/{resource}`
+  + `/wholesale/{business-function}/{version}/{resource}`
+* **Rationale:** Provides a distinct namespace for wholesale use cases. This enables:
+
+  + **Impact Isolation:** Separates wholesale traffic from enterprise traffic.
+  + **Tailored SLOs:** Allows different performance characteristics (e.g., higher timeouts for bulk wholesale orders).
+  + **Targeted Auditing & Metrics:** Simplifies tracking of wholesale usage.
+* **Implementation Note:** While the gateway URI is separate, a Wholesale API *can* potentially route to the same backend implementation as an Enterprise API to avoid code duplication where functionality aligns.
+* **Cost Implication:** Each distinct gateway deployment (like `/wholesale/...`) may incur separate proxy deployment costs in Apigee X.
+
+### Partner APIs (Open Question)
+
+* **Discussion Needed:** Do we need a distinct `/partner/...` domain? What specific use cases (Pricing, Quoting, Marketplace integration, shared customer experiences) fall under this category? What are the partner types (Indirect, Hyperscalers, VARs)? This requires further discussion.
+
+Examples: Business Function APIs
+--------------------------------
+
+This table illustrates how common business functions might map to the proposed URI structure. *Note: Many comments and questions here require discussion by the working group.*
+
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+| **Business Function** | **API Name** | **Comment / Questions** | **Method** | **Proposed URI** |
+| **User Administration** | *(N/A - UI Only?)* | New User Setup and role change not supported through API? Functions performed by admin in UI? | - | - |
+|  | `resetUserPassword` |  | `POST` | `/admin/v1/user/{user_id}/password` |
+|  | `deactivateUser` |  | `POST` | `/admin/v1/user/{user_id}/accounts` *(Note: URI seems mismatched? Should it be* `/admin/v1/users/{user_id}/status`*?)* |
+|  | `listEntitlements` | Enables customers to consume on-demand products. Should this be administered through UI only? | `GET` | `/admin/v1/user/entitlements` *(Note: Per user or all? Needs clarification -* `/admin/v1/users/{user_id}/entitlements`*?)* |
+|  | `addEntitlement` | Add entitlement to a user | `POST` | `/admin/v1/user/entitlements/{entitlement_id}` *(Note: Needs user context -* `/admin/v1/users/{user_id}/entitlements`*?)* |
+|  | `removeEntitlement` | Remove entitlement from a user | `DELETE` | `/admin/v1/user/entitlements/{entitlement_id}` *(Note: Needs user context -* `/admin/v1/users/{user_id}/entitlements/{entitlement_id}`*?)* |
+| **API Key Management** | `createAPIKey` | Create API Key. Requires existing key for admin APIs? Need mapping of key to allowed endpoints/methods. | `POST` | `/api-key/v1/keys` |
+|  | `getAPIKeyList` | List all API Keys for a given user. | `GET` | `/api-key/v1/keys` |
+|  | `getAPIkeyDetails` | List APIs a key is allowed to access. | `GET` | `/api-key/v1/keys/{api_key}` |
+|  | `deleteAPIKey` | Delete an API key. | `DELETE` | `/api-key/v1/keys/{api_key}` |
+| **Authorization** | `requestAccessToken` | Needs API Key. No user/pass auth. Key created via platform or API. | `POST` | `/oauth/v2/token` |
+| **Service Availability** | `listServicesAvailableAtAddress` | Replaces current location API. Use address, not MasterSiteID. | `GET` | `/services/v1/availability` |
+| **Inventory Management** | `getAvailableInventoryByLocation` | Get list of available product inventory at a location. | `GET` | `/inventory/v1/product` *(Note: Ambiguous URI? Needs location?* `/inventory/v1/locations/{loc_id}/products`*?)* |
+|  | `getAvailableInventoryByProduct` | Get list of available product inventory (globally?). Priority for MCGW. Dependency on Blue Planet migration? | `GET` | `/inventory/v1/product` *(Note: Ambiguous URI? Needs product filter?* `/inventory/v1/products/{prod_id}/locations`*?)* |
+|  | `getAvailableInventoryByProductByLocation` | Get list of available product inventory at a given location. | `GET` | `/inventory/v1/product` *(Note: Ambiguous URI? Needs both filters?* `/inventory/v1/locations/{loc_id}/products/{prod_id}`*?)* |
+| **Pricing** | `getPricing` | Unauthenticated standard pricing. Covers most on-demand products. | `GET` | `/pricing/v1/catalogue` |
+| **Quoting** | `createQuote` | Custom pricing for authenticated customers. More for classic products? Wholesale only? | `POST` | `/quoting/v1/price-request` |
+|  | `saveQuote` | Save a quote. | `POST` | `/quoting/v1/price-request/{quote_id}` |
+|  | `retrieveQuotes` | Get list of saved quotes. | `GET` | `/quoting/v1/price-request` |
+| **Ordering** | `createOrder` | Creates order from saved quote (classic products). On-demand service order created behind the scenes. Wholesale only? | `POST` | `/ordering/v1/order` |
+|  | `getOrdersList` |  | `GET` | `/ordering/v1/order` |
+|  | `getOrderDetails` |  | `GET` | `/ordering/v1/order/{order_id}` |
+|  | `checkOrderStatus` |  | `GET` | `/order/v1/order-status/{order_id}` |
+|  | `cancelOrder` |  | `POST` | `/order/v1/resource` *(Note: URI seems incorrect?* `/ordering/v1/orders/{order_id}/cancel`*?)* |
+| **Service Management** | `getServiceLists` | High Priority for MCGW | `GET` | `/services/v1/services` |
+|  | `getServiceDetails` | Including usage, alerts. What does "service" mean? Align with Portal view. | `GET` | `/services/v1/services/{service_id}` |
+|  | `runServiceDiagnostic` |  | `POST` | `/services/v1/services/{service_id}/diagnostics` *(Proposed)* |
+|  | `createServiceTicket` |  | `POST` | `/support/v1/tickets` *(Proposed)* |
+|  | `listServiceTickets` |  | `GET` | `/support/v1/tickets` *(Proposed)* |
+|  | `checkServiceTicketStatus` |  | `GET` | `/support/v1/tickets/{ticket_id}/status` *(Proposed)* |
+|  | `cancelServiceTicket` |  | `POST` | `/support/v1/tickets/{ticket_id}/cancel` *(Proposed)* |
+| **Scheduled Maintenance** | *(TBD)* |  |  |  |
+| **Billing** | *(TBD)* |  |  |  |
+| **Telemetry** | *(TBD)* | APIs monitoring and usage |  |  |
+
+Refined Business Function Categories Proposed
+---------------------------------------------
+
+This is an atttempt to group the functions into clearer, more standard domains:
+
+* `identity`: Covers users, authentication, authorization, API keys, and entitlements. (Replaces `User Administration`, `API Key Management`, `Authorization`, parts of `admin`).
+* `catalog (or offerings)`: Focuses on discovering *what* services are available *where*. (Replaces `Service Availability`).
+* `inventory`: Manages the status and details of specific network resources/assets.
+* `pricing`: Handles retrieval of standard pricing information.
+* `quoting`: Manages the creation and retrieval of customer-specific quotes.
+* `ordering`: Handles the submission and tracking of orders.
+* `services`: Manages *provisioned* or *active* customer services (post-order). (Replaces `Service Management`).
+* `support`: Manages trouble tickets and diagnostics related to active services. (Extracted from `Service Management`).
+* `billing`: (Kept from original TBD).
+
+Improved URIs Based on Refined Categories
+-----------------------------------------
+
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+| **Business Function (Domain)** | **API Name / Action** | **Method** | **Proposed URI** | **Original URI Notes Addressed** |
+| **Identity** | Reset User Password | `POST` | `/identity/v1/users/{user_id}/actions/reset-password` | Uses action pattern, clearer than `/password`. |
+|  | Deactivate User | `PATCH` | `/identity/v1/users/{user_id}` (Body: `{"status": "inactive"}`) | Uses `PATCH` for state change, corrects mismatched `/accounts` URI. |
+|  | List User Entitlements | `GET` | `/identity/v1/users/{user_id}/entitlements` | Clarifies per-user scope. |
+|  | Add Entitlement to User | `POST` | `/identity/v1/users/{user_id}/entitlements` (Body: `{"entitlement_id": "...", ...}`) | Creates an entitlement *assignment*. |
+|  | Remove Entitlement from User | `DELETE` | `/identity/v1/users/{user_id}/entitlements/{entitlement_id}` | Deletes the *assignment*. |
+|  | Create API Key for User | `POST` | `/identity/v1/users/{user_id}/api-keys` | Assumes keys belong to users. |
+|  | List User's API Keys | `GET` | `/identity/v1/users/{user_id}/api-keys` |  |
+|  | Get API Key Details | `GET` | `/identity/v1/users/{user_id}/api-keys/{key_id}` |  |
+|  | Delete API Key | `DELETE` | `/identity/v1/users/{user_id}/api-keys/{key_id}` |  |
+| **(Standard OAuth)** | Request Access Token | `POST` | `/oauth/v2/token` | Kept standard URI. |
+| **Catalog/** **Offerings** | Check Service Offering Availability | `GET` | `/catalog/v1/availability?address=...` (or other filters) |  |
+| **Inventory** | Get Product Inventory | `GET` | `/inventory/v1/product-inventory?location_id=...&product_id=...` | Uses query parameters for flexible filtering by location, product, or both. Addresses ambiguity. Resource named `product-inventory`. |
+| **Pricing** | Get Price Catalog | `GET` | `/pricing/v1/rates` |  |
+| **Quote** | Create Quote | `POST` | `/quote/v1/quotes` |  |
+|  | Save/Update Quote | `PUT` / `PATCH` | `/quote/v1/quotes/{quote_id}` |  |
+|  | Retrieve Quotes | `GET` | `/quote/v1/quotes` |  |
+|  | Retrieve Specific Quote | `GET` | `/quote/v1/quotes/{quote_id}` |  |
+| **Order** | Create Order | `POST` | `/order/v1/orders` (Body includes `quote_id` if needed) |  |
+|  | List Orders | `GET` | `/order/v1/orders` |  |
+|  | Get Order Details | `GET` | `/order/v1/orders/{order_id}` |  |
+|  | Cancel Order | `POST` | `/order/v1/orders/{order_id}/actions/cancel` |  |
+| **Services (Provisioned)** | List Services | `GET` | `/services/v1/services` |  |
+|  | Get Service Details | `GET` | `/services/v1/services/{service_id}` | (Includes usage, status, alerts etc.). |
+|  | Run Service Diagnostic | `POST` | `/services/v1/services/{service_id}/actions/run-diagnostics` | Uses action pattern. |
+| **Support** | Create Support Ticket | `POST` | `/support/v1/tickets` | Moved ticketing to dedicated domain. |
+|  | List Support Tickets | `GET` | `/support/v1/tickets` |  |
+|  | Get Ticket Details | `GET` | `/support/v1/tickets/{ticket_id}` | (Includes status). |
+|  | Cancel Support Ticket | `POST` | `/support/v1/tickets/{ticket_id}/actions/cancel` | Uses action pattern. |
+| **Billing** | *(TBD)* | *(TBD)* | *(TBD)* |  |
+
+Open Issues & Discussion Points for Working Group
+-------------------------------------------------
+
+* **Partner APIs:** Confirm need, scope, and URI structure (`/partner/...`?).
+* **Wholesale Exclusivity:** Confirm if Quoting/Ordering APIs are truly Wholesale-only or need Enterprise equivalents.
+* **Product-Specific Business Functions:** Finalize approach for handling variations within business functions (e.g., Inventory).
+* **UI vs. API Scope:** Clarify which functions (like User Admin, Entitlements) are intentionally UI-only vs. candidates for APIs.
+* **Inventory API Structure:** Proposed URIs seem ambiguous and need refinement to properly filter by location/product. Confirm dependency on Blue Planet migration.
+* **Service Management Scope:** Define "service" clearly (align with Portal?). Refine proposed URIs for diagnostics/ticketing.
+* **URI Mismatches:** Review URIs noted in the table above (e.g., `deactivateUser`, `cancelOrder`) for correctness.
+* **Authentication/Authorization Details:** Clarify API Key management flow, especially creation and permissions mapping.
+
+Next Steps
+----------
+
+1. Review proposed domain structure (`product`, `business-function`, `wholesale`).
+2. Discuss and decide on the "Partner API" question.
+3. Review the Business Function examples, address embedded questions, and refine URIs for clarity and consistency.
+4. Assign owners/actions for resolving open issues.
+5. Formalize approved structure in the main API Style Guide.
+
+## API Pagination Standards
+<a id="api-pagination-standards-675750379523"></a>
+
+**1. Introduction**
+-------------------
+
+Pagination is the process of dividing a large set of data into smaller, discrete pages. Proper pagination is essential for creating APIs that are performant, scalable, and easy for our customers and partners to consume. Failure to implement a consistent pagination strategy leads to slow response times, server strain, and a poor developer experience.
+
+This document establishes the proposed official standards for implementing pagination within Lumen's API ecosystem. All development teams are required to adhere to these guidelines to ensure a cohesive and predictable platform.
+
+---
+
+**2. The Default Standard: Offset-Based Pagination**
+----------------------------------------------------
+
+For the vast majority of use cases, **Offset-based pagination** should be the default method. It is intuitive, flexible, and meets the needs of most applications where users need to navigate to specific pages.
+
+### **Query Parameters**
+
+Paginated endpoints MUST accept the following query parameters:
+
+* `limit`: An integer specifying the maximum number of items to return per page.
+
+  + If not provided, the API MUST default to `25`.
+  + The API MUST enforce a maximum value of `100`. Requests for more than 100 items should result in a `400 Bad Request` error.
+* `offset`: An integer specifying the number of records to skip. This is how the client navigates to subsequent pages.
+
+  + If not provided, the API MUST default to `0` (the first page).
+
+**Example Request:** `GET /v1/services?limit=50&offset=100` (Returns 50 services, starting after the 100th service).
+
+### **Response Structure**
+
+The response body for a paginated request MUST be a JSON object containing two top-level keys: `data` and `pagination`.
+
+* `data`: An array containing the resource objects for the current page.
+* `pagination`: An object containing the following metadata fields:
+
+  + `total`: The total number of items available in the entire collection.
+  + `limit`: The `limit` value used for the current page.
+  + `offset`: The `offset` value used for the current page.
+
+**Example Response:**
+
+```
+{
+  "data": [
+    { "id": "svc-abc-101", "name": "Service 101" },
+    // ... 49 more items
+    { "id": "svc-xyz-150", "name": "Service 150" }
+  ],
+  "pagination": {
+    "total": 473,
+    "limit": 50,
+    "offset": 100
+  }
+}
+```
+
+---
+
+**3. High-Performance Standard: Keyset (Cursor-Based) Pagination**
+------------------------------------------------------------------
+
+For endpoints that expose very large datasets (millions of records) or data that changes frequently (e.g., event logs, real-time data), **Keyset pagination** MUST be used. This method is more performant and provides a stable window into the data, avoiding issues where items are skipped or repeated as new data is added.
+
+### **Query Parameters**
+
+* `limit`: Same definition as in Offset pagination (default `25`, max `100`).
+* `after`: A string representing an opaque cursor that points to the last item of the previous page. The API will return items that come after this cursor.
+
+**Example Request:** `GET /v1/events?limit=50&after=NGM5YTYxYjItM2RiYi00YjU4LTg5ZmMtMTdiYmI5ZjIzMjc5`
+
+### **Response Structure**
+
+The response structure for Keyset pagination is simplified to facilitate "infinite scroll" style navigation.
+
+* `data`: An array containing the resource objects for the current page.
+* `pagination`: An object containing the following metadata:
+
+  + `next_cursor`: The cursor string for the next page of results. This value is passed into the `after` parameter in the subsequent request. It is `null` if there are no more pages.
+  + `has_next_page`: A boolean indicating if more pages are available.
+  + `next`: A full URL string pointing to the next page of results, including the `after` parameter.
+
+**Example Response:**
+
+```
+JSON
+```
+
+```
+{
+  "data": [
+    { "id": "evt-123", "timestamp": "2025-10-15T14:30:00Z" },
+    // ... 49 more items
+    { "id": "evt-456", "timestamp": "2025-10-15T14:28:00Z" }
+  ],
+  "pagination": {
+    "next_cursor": "ZjkzMjc5YTYxYjItM2RiYi00YjU4LTg5ZmMtMTdiYmI5Zj",
+    "has_next_page": true,
+    "next": "https://api.lumen.com/v1/events?limit=50&after=ZjkzMjc5YTYxYjItM2RiYi00YjU4LTg5ZmMtMTdiYmI5Zj"
+  }
+}
+```
+
+---
+
+**4. Summary of Guidance**
+--------------------------
+
+1. **Default to Offset:** Use Offset pagination for all standard resource collections.
+2. **Use Keyset for Scale:** Use Keyset (Cursor) pagination for event streams, logs, and any dataset exceeding one million records where performance and data consistency are critical.
+3. **Provide Hypermedia Links:** Always include fully-qualified URLs for `next` and `previous` links. This reduces the burden on the client and makes the API more discoverable (HATEOAS).
+4. **Enforce Limits:** Always enforce a default and maximum `limit` to protect the API from misuse.
+5. **Document Clearly:** The chosen pagination method and its parameters must be clearly documented in the OpenAPI specification for every applicable endpoint.
+
+## API Standard: Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)
+<a id="api-standard-lumen-problem-details-minimal-profile-lpdp-mini-v1-0-675749954024"></a>
+
+Lumen Problem Details — Minimal Profile (LPDP-Mini v1.0)
+========================================================
+
+### Purpose
+
+Provide a **lightweight, RFC 9457-compliant** error envelope that’s consistent across all Lumen APIs.  
+It focuses on three essentials — `code`, `message`, and optional `meta` — while letting teams extend `meta` per API as needed.
+
+---
+
+Profile Summary
+---------------
+
+| **Design Goal** | **Description** |
+| --- | --- |
+| **Simplicity** | Practical & viable RFC 9457 extension that developers can implement correctly. |
+| **Stability** | `code` is machine-readable and stable across languages and messages. |
+| **Extensibility** | `meta` can be open, omitted, or refined per API. |
+| **Security** | No PII, credentials, or stack traces in error payloads. |
+| **Compliance** | Fully aligns with [RFC 9457 – Problem Details for HTTP APIs](https://datatracker.ietf.org/doc/html/rfc9457). |
+
+---
+
+Core Structure (Org-wide Standard)
+----------------------------------
+
+### Media Type
+
+All error responses **MUST** use:  
+`Content-Type: application/problem+json`
+
+### JSON Schema (OpenAPI fragment)
+
+```
+components:
+  schemas:
+    LpdpProblem:
+      type: object
+      additionalProperties: false
+      description: Minimal Problem-Details envelope (RFC 9457-compliant)
+      properties:
+        title:
+          type: string
+          description: Short, human-readable summary.
+        detail:
+          type: string
+          description: Optional longer explanation.
+        errors:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/LpdpError' }
+      required: [ title, errors ]
+
+    LpdpError:
+      type: object
+      additionalProperties: false
+      description: Individual error item.
+      properties:
+        code:
+          type: string
+          description: Stable, machine-readable identifier (string form preferred).
+        message:
+          type: string
+          description: Human-readable explanation of the issue.
+        meta:
+          type: object
+          description: >
+            Optional unregulated extension for machine-readable context.
+            Lumen does not prescribe its structure. Teams may define custom
+            schemas if needed.
+          additionalProperties: true
+      required: [ code, message ]
+```
+
+---
+
+RFC 9457 Alignment
+------------------
+
+| RFC 9457 Member | LPDP-Mini Treatment | Rationale |
+| --- | --- | --- |
+| `type` | Optional / constant URI | RFC 9457 §3.1.1 allows omission. |
+| `title` | Required | Short human summary. |
+| `status` | Omitted | HTTP status line authoritative. |
+| `detail` | Optional | Narrative text. |
+| `instance` | Optional | Rarely used. |
+| `errors` | Extension (§3.2) | Array of per-error details. |
+| `code`,`message`,`meta` | Extensions | Fully compliant. |
+
+---
+
+`code` — Role and Representation
+--------------------------------
+
+### What `code` is
+
+A **stable, machine-readable key** identifying the error category; independent of message wording or localization.
+
+### Naming Convention
+
+`<domain>.<category>.<reason>`  
+Examples: `auth.missing`, `resource.not_found`, `dependency.failed`.
+
+### Why string codes are standard
+
+| Aspect | String (`auth.missing`) | Numeric (`1043`) |
+| --- | --- | --- |
+| Readability | Human-friendly in logs | Opaque |
+| Namespacing | Simple (`auth.*`) | None |
+| Client branching | Safe (`if code==…`) | Ambiguous |
+| Governance | Regex enforceable | Central registry needed |
+| Size | Slightly larger | Smaller |
+| Interop | Locale-agnostic | Requires catalog |
+| HTTP overlap | Distinct from status codes | Confusing |
+
+> **Recommendation:**  
+> Lumen should use **string codes** exclusively.  
+> Numeric identifiers, if required for backward compatibility, appear only as `meta.legacy_code`.
+
+---
+
+`meta` — Optional and Team-Defined
+----------------------------------
+
+### Guidance
+
+* Optional, uncontracted unless a team defines its own schema.
+* **Never** include secrets, internal identifiers, hostnames, stack traces, PII, or full payloads.
+* Keep small (< 4 KB) and limited to relevant machine context.
+* Teams may narrow `meta` locally if they need a structured contract.
+
+### Example of Per-API Override
+
+```
+components:
+  schemas:
+    LpdpError_MCGW_V1:
+      allOf:
+        - $ref: '#/components/schemas/LpdpError'
+        - type: object
+          properties:
+            meta:
+              $ref: '#/components/schemas/McgwErrorMetaV1'
+
+    McgwErrorMetaV1:
+      type: object
+      additionalProperties: false
+      description: Meta structure specific to MCGW v1 APIs.
+      properties:
+        subsystem: { type: string }
+        operation: { type: string }
+        cause:
+          type: string
+          enum: [timeout, unavailable, error, authorization, unknown]
+      required: [ subsystem, cause ]
+```
+
+---
+
+Canonical Examples and HTTP Status Mapping
+------------------------------------------
+
+| **Use Case** | **Status** | **Example Summary** |
+| --- | --- | --- |
+| **Malformed Request** | **400 Bad Request** | Invalid JSON or schema syntax. |
+| **Unauthorized / Forbidden** | **401 / 403** | Missing credentials / insufficient rights. |
+| **Validation Errors** | **422 Unprocessable Entity** | Field-level or semantic violations. |
+| **Resource Not Found** | **404 Not Found** | Composite key absent. |
+| **Ambiguous Match / Conflict** | **409 Conflict** | Multiple resource matches or conflicting state. |
+| **Dependency Failure** | **424 Failed Dependency** (alt 502/503/504) | Downstream timeout / failure. |
+| **Internal Failure / Unknown Cause** | **500 Internal Server Error** | Unexpected system condition. |
+
+---
+
+### (a) Validation Error — 422
+
+```
+{
+  "title": "Validation failed",
+  "errors": [
+    { "code": "string.min", "message": "[name] must be at least 3 characters.", "meta": { "min": 3, "actual": 2 } },
+    { "code": "cidr.invalid", "message": "[ip_address] must be a valid IPv4 CIDR.", "meta": { "expected": "IPv4 CIDR, e.g., 192.168.1.0/24" } }
+  ]
+}
+```
+
+### (b) Dependency Failure — 503
+
+```
+{
+  "title": "Backend dependency failed",
+  "errors": [
+    {
+      "code": "dependency.failed",
+      "message": "VRF service did not respond.",
+      "meta": { "subsystem": "VRFService", "operation": "lookupVrf", "resource": "vrf", "cause": "timeout" }
+    }
+  ]
+}
+```
+
+### (c) Composite Key Not Found — 404
+
+```
+{
+  "title": "VRF not found",
+  "errors": [
+    { "code": "resource.not_found", "message": "No VRF matched the provided name and customer.", "meta": { "resource": "vrf" } }
+  ]
+}
+```
+
+### (d) Ambiguous Resource — 409
+
+```
+{
+  "title": "VRF selection is ambiguous",
+  "errors": [
+    { "code": "resource.ambiguous", "message": "More than one VRF matches the provided criteria.", "meta": { "resource": "vrf", "candidates": 3 } }
+  ]
+}
+```
+
+### (e) Unknown Failure — 500
+
+```
+{
+  "title": "Unable to fetch VRF information",
+  "errors": [
+    { "code": "resource.lookup_failed", "message": "VRF information could not be retrieved.", "meta": { "subsystem": "VRFService", "cause": "unknown" } }
+  ]
+}
+```
+
+### (f) Auth Failures — 401 / 403
+
+```
+{
+  "title": "Unauthorized",
+  "errors": [ { "code": "auth.missing", "message": "Authorization header is required." } ]
+}
+```
+
+```
+{
+  "title": "Forbidden",
+  "errors": [ { "code": "auth.forbidden", "message": "Caller not permitted to perform this operation." } ]
+}
+```
+
+### (g) Malformed Request — 400
+
+```
+{
+  "title": "Malformed request",
+  "errors": [ { "code": "request.invalid_json", "message": "Request body is not valid JSON." } ]
+}
+```
+
+---
+
+Governance Rules
+----------------
+
+1. All 4xx / 5xx responses → `application/problem+json`.
+2. Each error → `code` and `message`.
+3. `code` → **string** form only; numeric legacy values in `meta.legacy_code`.
+4. `meta` → optional; must exclude sensitive or internal data.
+5. Per-API teams may narrow `meta` via local schemas without breaking the global profile.
+
+---
+
+### Summary
+
+| **Field** | **Required** | **Purpose** |
+| --- | --- | --- |
+| `title` | ✅ | Human-readable summary |
+| `errors` | ✅ | Array of issues |
+| `code` | ✅ | String identifier (machine key) |
+| `message` | ✅ | Human explanation |
+| `meta` | ⚙️ | Optional contextual data |
+| `detail`, `instance`, `type` | ⚙️ | Optional per RFC |
+| `status`, `trace_id` | ❌ | Omitted |
+| Rate-limit info | — | Conveyed via headers only |
+
+## API Standard: Idempotency
+<a id="api-standard-idempotency-675769778234"></a>
+
+1. What is Idempotency?
+-----------------------
+
+An **idempotent** operation is an operation that can be performed multiple times without changing the result beyond the initial application.
+
+In the context of a REST API, this means that making the same request multiple times (e.g., due to a network error and retry) will produce the same result and system state as making it just once.
+
+2. Why is Idempotency a Standard?
+---------------------------------
+
+Idempotency is not an optional feature; it is a **critical component of a robust and reliable API platform.** Clients (mobile apps, web frontends, other services) operate on unreliable networks. A client may send a request, the server may process it, but the response may be lost before it reaches the client.
+
+Without idempotency, this client has no safe way to recover.
+
+* **The Risk:** The client doesn't know if the request succeeded.If it retries a `POST /users` request, it may create two identical users. If it retries a `POST /charges` request, it may charge the customer twice.
+* **The Solution:** This standard ensures all endpoints are safe to retry, protecting our systems and our customers from data duplication and unintended side effects.
+
+3. Idempotency by HTTP Method
+-----------------------------
+
+This standard defines the required behavior for each HTTP method.
+
+|  |  |  |
+| --- | --- | --- |
+| **Method** | **Idempotent by Standard?** | **Notes** |
+| `GET` | **MUST** | `GET` requests are *safe* (they don't change state) and must be idempotent. |
+| `PUT` | **MUST** | A `PUT` request replaces a resource. `PUT /users/123` twice is the same as once. |
+| `DELETE` | **MUST** | A `DELETE` request deletes a resource. The first call deletes it (returning `204`). The second call (and all subsequent) should return `404 Not Found`. The system state remains the same ("deleted"). |
+| `PATCH` | **MUST** | A `PATCH` operation must be idempotent. Server logic must ensure that re-applying the same patch does not produce a different result. (e.g., `PATCH /item/123 {"name": "new"}` twice is fine). |
+| `POST` | **MUST** support idempotency | `POST` is not naturally idempotent. This standard **requires** all `POST` endpoints to support an idempotency-key mechanism to *make* them idempotent. |
+
+---
+
+4. `POST` Idempotency: The `idempotency-key` Header
+---------------------------------------------------
+
+Since `POST` requests create new resources, they are the highest risk for duplication. To mitigate this, all `POST` endpoints that create resources **MUST** support idempotency via a request header.
+
+### The Standard
+
+`POST` endpoints **MUST** honor the `idempotency-key` header.
+
+### Client Responsibility
+
+When a client sends a `POST` request, it **SHOULD** generate a unique key (e.g., a **UUID**) and send it in the `idempotency-key` header.
+
+```
+HTTP
+```
+
+```
+POST /v1/customers
+idempotency-key: a8b4-12a8-8f81-9b48-18e0-128a
+Content-Type: application/json
+
+{
+  "name": "Jane Doe",
+  "email": "jane.doe@example.com"
+}
+```
+
+If the client suffers a network error and needs to retry, it **MUST** send the *exact same* `idempotency-key` with the retry request.
+
+### Server Responsibility
+
+The server **MUST** perform the following logic for any `POST` request containing an `Idempotency-Key`:
+
+1. **Check for Key:** The server checks an internal cache (e.g., Redis) for this key.
+2. **Key Not Found (New Request):**
+
+   * This is the first time this request has been seen.
+   * The server processes the request as normal (e.g., creates the customer in the database).
+   * The server then **stores the HTTP response** (e.g., the `201 Created` status and the JSON body) in the cache, using the `Idempotency-Key` as the cache key.
+   * The server returns the response to the client.
+3. **Key is Found (Retry):**
+
+   * This is a retry. The server **MUST NOT** re-process the request.
+   * It immediately fetches the *original, saved response* from the cache.
+   * It returns that exact same response to the client.
+
+This flow guarantees that a client can safely retry a `POST` without fear of creating duplicate resources.
+
+### Key Details
+
+* **Key Format:** `idempotency-key` values **SHOULD** be a **UUID** to ensure uniqueness.
+* **Key Lifecycle:** The server **SHOULD** store idempotency keys for at least **24 hours** to allow clients ample time to retry failed requests.
+
+## API Standard: Partial Resource Retrieval
+<a id="api-standard-partial-resource-retrieval-675769581649"></a>
+
+Purpose
+-------
+
+This page extends the **Lumen API Style Guide (v1.0)** to define a standard for **partial resource retrieval** — enabling clients to request only the fields they need, reducing payload size and latency for high-volume NaaS APIs (e.g., telemetry, connections, interfaces).
+
+Guiding Principle
+-----------------
+
+> “Always return full canonical resources **by default**, but allow clients to **opt-in** to partial responses using explicit field projection.”
+
+Partial retrieval improves performance and bandwidth efficiency without changing the canonical model or breaking API contracts.
+
+Standard Definition
+-------------------
+
+| Category | Rule | Requirement |
+| --- | --- | --- |
+| **Parameter Name** | `fields` | **MUST** |
+| **Location** | Query Parameter | **MUST** |
+| **Type** | Comma-separated list of field names (no spaces) | **MUST** |
+| **Behavior** | Return only specified fields; ignore unknown ones or return `400` | **MUST** |
+| **Default** | Full resource if `fields` not provided | **MUST** |
+| **Case Sensitivity** | Field names are case-sensitive and match the schema exactly | **SHOULD** |
+| **Nested Objects** | Use dot notation for sub-fields (e.g., `location.city`) | **MAY** |
+| **Error Handling** | Return `400 Bad Request` with `problem+json` if invalid field names supplied | **SHOULD** |
+
+Example: Fabric Connection Service
+----------------------------------
+
+### 🔹 Full Resource
+
+```
+GET /fabric/v1/connections/12345
+```
+
+**Response**
+
+```
+{
+  "id": "12345",
+  "name": "AWS-Transit-Connect",
+  "status": "active",
+  "bandwidth": {
+    "committed_mbps": 1000,
+    "burst_mbps": 2000
+  },
+  "location": {
+    "city": "Denver",
+    "region": "US-CENTRAL-1"
+  },
+  "provider": "aws",
+  "tags": ["gold", "naas"]
+}
+```
+
+### 🔹 Partial Resource (Using `fields`)
+
+```
+GET /fabric/v1/connections/12345?fields=id,name,status
+```
+
+**Response**
+
+```
+{
+  "id": "12345",
+  "name": "AWS-Transit-Connect",
+  "status": "active"
+}
+```
+
+Nested Field Example – MCGW Interface
+-------------------------------------
+
+```
+GET /mcgw/v1/interfaces/7df9a?fields=id,device.name,device.state
+```
+
+**Response**
+
+```
+{
+  "id": "7df9a",
+  "device": {
+    "name": "edge-router-01",
+    "state": "up"
+  }
+}
+```
+
+Validation & Governance Automation
+----------------------------------
+
+| Tool | Rule | Example |
+| --- | --- | --- |
+| **Spectral Linter** | Ensure `fields` is declared in GET operations where allowed | `oas-parameter-name: fields` |
+| **Governance Rule** | Lint rule `naas-partial-response-allowed` | Enforced only for `GET` endpoints returning resources > 10 fields |
+
+Performance Considerations
+--------------------------
+
+* Reduces payload size by **30–80 %** for high-volume telemetry endpoints.
+* Lowers serialization/deserialization overhead in API Gateway and MCGW controllers.
+* Prevents over-fetching in portal UI and CLI integrations.
+
+Security & Compliance
+---------------------
+
+* Projection **cannot** bypass authorization. The API MUST validate that each requested field is permitted under the caller’s security scope.
+
+Summary
+-------
+
+| Benefit | Impact |
+| --- | --- |
+| Reduced payloads and latency | Better API responsiveness for UI and CLI clients |
+| Standardized pattern across products | Consistent developer experience |
+| Governance-ready | Easily enforced via OAS and Spectral rules |
+
+## API Standard: Standardized Data Types and Formats
+<a id="api-standard-standardized-data-types-and-formats-675866542166"></a>
+
+### **Purpose**
+
+To ensure consistency, readability, and interoperability across all APIs published by Lumen, this section defines the canonical data types, formats, and reusable schemas to be used in all OpenAPI 3.0.3 specifications.
+
+---
+
+### **Principles**
+
+* APIs **MUST** use only the data types and formats listed here.
+* All fields that accept structured values (e.g., country, currency, language, etc.) **MUST** include:
+
+  + a `description` explaining the expected standard,
+  + a `pattern` (regex) to make the rule self-explanatory to external developers, and
+  + an `example` value.
+* Custom `format` identifiers (e.g., `country-code`) are **advisory only**.
+
+  + They are intended for internal governance, linting, and future migration to OAS 3.1.
+  + External consumers should be able to use the schema **without** referencing any style guide.
+
+---
+
+### **Rationale: Custom** `format` **vs Regex**
+
+| Aspect | Custom `format` | Regex + Example |
+| --- | --- | --- |
+| **Purpose** | Governance keyword for Spectral, SDKs, portals | Human & machine validation rule |
+| **External Developer Value** | Low – tooling hint only | High – immediately clear |
+| **Governance Value** | High – centralized semantics | Medium – must duplicate everywhere |
+| **Recommended Use** | Together – `format` + `pattern` + `example` |  |
+
+---
+
+### **Standard Data Types (OAS 3.0.3)**
+
+| Type | OAS `type` | OAS `format` | Description | Example |
+| --- | --- | --- | --- | --- |
+| Boolean | `boolean` | — | `true` or `false` | `true` |
+| Integer (32 bit) | `integer` | `int32` | −2,147,483,648 … 2,147,483,647 | `42` |
+| Integer (64 bit) | `integer` | `int64` | −9,223,372,… 7, use ≤ `2^53 – 1` for I-JSON | `9007199254740991` |
+| Number (float) | `number` | `float` | IEEE-754 single precision | `3.14` |
+| Number (double) | `number` | `double` | IEEE-754 double precision | `3.1415926535` |
+| String | `string` | — | UTF-8 text | `"Lumen rocks!"` |
+| Date | `string` | `date` | RFC 3339 date | `"2025-11-11"` |
+| Date-Time | `string` | `date-time` | RFC 3339 timestamp (UTC `Z`) | `"2025-11-11T14:05:00Z"` |
+| Byte (Base64) | `string` | `byte` | Base64 RFC 4648 § 4 | `"VGVzdA=="` |
+| Binary | `string` | `binary` | Raw octet stream (upload/download) | *(file body)* |
+
+---
+
+### **Custom (Governed) Formats**
+
+> ✅ These are optional keywords for internal tooling and do **not** alter wire format.
+
+| Logical Type | OAS `type` | OAS `format` | Description / Rule | Example |
+| --- | --- | --- | --- | --- |
+| URI | `string` | `uri` | URI per RFC 3986 | `"https://example.com/x"` |
+| Email | `string` | `email` | RFC 5322 address | `"user@example.com"` |
+| UUID | `string` | `uuid` | RFC 4122 UUID | `"279fc665-d04d-4dba-bcad-17c865489dfa"` |
+| Time | `string` | `time` | RFC 3339 partial time | `"08:26:40Z"` |
+| Decimal | `string` | `decimal-string` | Arbitrary precision string | `"1234.5678"` |
+| Language | `string` | `language-tag` | ISO 639-1 / BCP 47 code | `"en-US"` |
+| Country | `string` | `country-code` | ISO 3166-1 alpha-2 uppercase | `"US"` |
+| Currency | `string` | `currency-code` | ISO 4217 alpha-3 uppercase | `"USD"` |
+
+Each field **must also define a pattern and example** so the meaning is clear even if clients ignore `format`.
+
+---
+
+### **Reusable Schema Definitions**
+
+#### **CountryCode**
+
+```
+CountryCode:
+  type: string
+  description: ISO 3166-1 alpha-2 country code (uppercase).
+  format: country-code
+  pattern: '^[A-Z]{2}$'
+  example: "US"
+```
+
+#### **CurrencyCode**
+
+```
+CurrencyCode:
+  type: string
+  description: ISO 4217 currency code (uppercase).
+  format: currency-code
+  pattern: '^[A-Z]{3}$'
+  example: "USD"
+```
+
+#### **LanguageTag**
+
+```
+LanguageTag:
+  type: string
+  description: Language tag per ISO 639-1 / BCP 47.
+  format: language-tag
+  pattern: '^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$'
+  example: "en-US"
+```
+
+#### **Email**
+
+```
+Email:
+  type: string
+  description: Email address per RFC 5322.
+  format: email
+  pattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+  example: "user@example.com"
+```
+
+#### **UUID**
+
+```
+UUID:
+  type: string
+  description: Universally Unique Identifier per RFC 4122.
+  format: uuid
+  pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+  example: "279fc665-d04d-4dba-bcad-17c865489dfa"
+```
+
+#### **URI**
+
+```
+URI:
+  type: string
+  description: URI string per RFC 3986.
+  format: uri
+  pattern: '^(https?|ftp)://[^\s/$.?#].[^\s]*$'
+  example: "https://api.lumen.com/v1/services"
+```
+
+---
+
+#### **Money Object ( Integer Minor Units)**
+
+> Represents a monetary amount using ISO 4217 minor units (integer-based).
+
+```
+Money:
+  type: object
+  required: [amount, currency]
+  properties:
+    amount:
+      type: integer
+      minimum: 0
+      maximum: 9007199254740991   # I-JSON safe (2^53 – 1)
+      description: >
+        Monetary amount expressed in ISO 4217 minor units.
+        Example: USD 12.34 → amount=1234, currency="USD"
+    currency:
+      $ref: '#/components/schemas/CurrencyCode'
+  example:
+    amount: 1234
+    currency: "USD"
+```
+
+---
+
+#### **Address Object**
+
+A common postal address representation used consistently across all domains.
+
+```
+Address:
+  type: object
+  description: Postal address (country-specific formatting may apply).
+  additionalProperties: false
+  properties:
+    line1:
+      type: string
+      description: Primary street line (street, number, unit).
+      maxLength: 256
+      example: "100 Main St Apt 5B"
+    line2:
+      type: string
+      description: Secondary line (building, suite, floor) if needed.
+      maxLength: 256
+      example: "Building A, Floor 3"
+    city:
+      type: string
+      description: City, town, or locality.
+      maxLength: 128
+      example: "Denver"
+    state:
+      type: string
+      description: State, region, or province (country-specific).
+      maxLength: 128
+      example: "CO"
+    postal_code:
+      type: string
+      description: Postal/ZIP code (country-specific format).
+      maxLength: 32
+      example: "80202"
+    country:
+      $ref: '#/components/schemas/CountryCode'
+  example:
+    line1: "100 Main St Apt 5B"
+    city: "Denver"
+    state: "CO"
+    postal_code: "80202"
+    country: "US"
+```
+
+**Context-specific variants:**
+
+```
+UsShippingAddress:
+  allOf:
+    - $ref: '#/components/schemas/Address'
+    - type: object
+      required: [line1, city, state, postal_code, country]
+```
+
+```
+InternationalBillingAddress:
+  allOf:
+    - $ref: '#/components/schemas/Address'
+    - type: object
+      required: [line1, city, postal_code, country]
+```
+
+---
+
+### **Governance Validation Rules**
+
+| Rule | Enforcement |
+| --- | --- |
+| Disallow unrecognized `format` values | Spectral lint |
+| Require `pattern`, `example`, `description` when custom `format` used | Spectral lint |
+| Validate Money.amount ≤ 2⁵³ – 1 | Spectral + CI schema check |
+| Enforce ISO regex patterns for country/currency/language | Spectral rule |
+| Warn if `float`/`double` used for monetary values | Spectral rule |
+
+---
+
+### **Summary**
+
+* **External developers** should understand schemas immediately through **description + regex + example**, without needing to read the style guide.
+* **Governance tooling** (Spectral, SDK generators, portals) can rely on **custom formats** for consistency and automation.
+* **Money, Address, Country, Currency, and Language** fields are standardized across all domains.
+
+## API Standard: Date & Time Naming
+<a id="api-standard-date-time-naming-675837837328"></a>
+
+### **1. Purpose & Scope**
+
+This standard defines how **date and date-time fields** must be named, structured, and represented in API payloads.  
+Consistent date naming and typing improves discoverability, reduces ambiguity, and enables automated validation through governance tools such as **Spectral**.
+
+This convention applies to:
+
+* All API resource representations (request and response payloads)
+* Both system metadata (e.g., auditing fields) and business fields (e.g., expiration, activation)
+* All date and date-time fields defined in OpenAPI specifications
+
+---
+
+### **2. Core Rules**
+
+#### **2.1 Field Naming Suffixes**
+
+| **Suffix** | **Meaning** | **OpenAPI Format** | **Example** |
+| --- | --- | --- | --- |
+| `_at` | Timestamp with time component (RFC 3339 `date-time`) | `format: date-time` | `created_at`, `updated_at`, `starts_at` |
+| `_on` | Calendar date only (RFC 3339 `date`) | `format: date` | `effective_on`, `expires_on` |
+| `*_from` / `*_until` | Time or date ranges | `format: date-time` or `date` | `valid_from`, `valid_until` |
+
+> ⚠️ The OpenAPI schema **MUST** align the suffix to its proper format:  
+> `_at → format: date-time`, `_on → format: date`.
+
+---
+
+### **2.2 State vs Schedule Semantics**
+
+Use timestamp names that clearly express **intent** — whether the value represents a **state change** (what has happened) or a **scheduled event** (what will happen).
+
+| **Category** | **Description** | **Examples** | **Verb Tense** | **Mutability** |
+| --- | --- | --- | --- | --- |
+| **State-based** | Reflect past events that changed system state. Used for audit, versioning, or ordering. | `created_at`, `updated_at`, `deleted_at`, `completed_at` | Past | Immutable |
+| **Schedule-based** | Define future or ongoing timeframes within a business process. | `starts_at`, `ends_at`, `expires_at`, `effective_on`, `renews_on` | Present / Future | Mutable |
+| **Range-based** | Define valid windows for temporal entities. | `valid_from`, `valid_until` | Mixed | Usually Mutable |
+
+> 💬 **Clarification:**
+>
+> * *State fields* answer “**When did this happen?**”
+> * *Schedule fields* answer “**When will or should this occur?**”
+
+---
+
+### **2.3 Examples**
+
+#### ✅ **Recommended**
+
+```
+{
+  "created_at": "2025-10-12T15:45:33Z",
+  "updated_at": "2025-10-15T19:02:11Z",
+  "starts_at": "2025-11-01T00:00:00Z",
+  "ends_at": "2025-11-30T23:59:59Z",
+  "valid_from": "2025-11-01T00:00:00Z",
+  "valid_until": "2026-01-01T00:00:00Z"
+}
+```
+
+#### ❌ **Not Recommended**
+
+```
+{
+  "created": "2025-10-12",
+  "modification_date": "2025-10-15T19:02:11Z",
+  "start_date": "2025-11-01",
+  "expire_at": "2025-11-30"
+}
+```
+
+**Issues:**
+
+* Mixed and inconsistent suffixes (`_date`, `_at`)
+* Some fields missing time component where expected
+* Ambiguous intent (is `expire_at` a schedule or state?)
+
+---
+
+### **3. Governance & Enforcement (Spectral Rule)**
+
+The following Spectral rule enforces this convention during API design-time validation.
+
+#### **Rule ID:** `lumen-date-field-naming`
+
+```
+rules:
+  lumen-date-field-naming:
+    description: "Date/time fields must use '_at' for RFC 3339 date-time and '_on' for RFC 3339 date."
+    message: >-
+      "{{property}} field name does not follow Lumen Date/Time naming convention.
+       Use '_at' for RFC 3339 date-time, '_on' for RFC 3339 date.
+       For ranges, use *_from / *_until."
+    given: "$.components.schemas.*.properties.*"
+    severity: warn
+    then:
+      - function: pattern
+        field: "@key"
+        functionOptions:
+          match: ".*(_at|_on|_from|_until)$"
+      - function: truthy
+        field: "format"
+      - function: enumeration
+        field: "format"
+        functionOptions:
+          values:
+            - date
+            - date-time
+```
+
+✅ **What it checks:**
+
+* Ensures all date-related fields end with `_at`, `_on`, `_from`, or `_until`.
+* Validates that `_at` fields use `format: date-time`.
+* Validates that `_on` fields use `format: date`.
+* Flags inconsistent or ambiguous names (`created`, `start_date`, `expire_at`).
+
+---
+
+### **4. Automation Notes**
+
+* Integrate this rule into the **Spectral ruleset** used by the API linter in the CI pipeline.
+* Apply it to all repositories that define OpenAPI 3.x specifications.
+* Violations are classified as **warnings** (initial rollout) and will be escalated to **errors** once adoption reaches >80%.
+
+---
+
+### **5. Related Standards**
+
+* [RFC 3339: Date and Time on the Internet](https://www.rfc-editor.org/rfc/rfc3339)
+
+## API Standard: PUT Method
+<a id="api-standard-put-method-675851796520"></a>
+
+**Purpose**
+-----------
+
+The `PUT` method **replaces the full representation** of a resource at its canonical URI.  
+It is **idempotent** — identical requests produce the same final state.
+
+This page defines Lumen’s standards for designing, documenting, and implementing `PUT` operations, including creation semantics, conditional updates, and approved response codes.
+
+---
+
+**Semantics**
+-------------
+
+| Property | Requirement |
+| --- | --- |
+| **Safe** | ❌ No, modifies server state. |
+| **Idempotent** | ✅ Yes, repeating the same request yields the same result. |
+| **Typical Use** | Full replacement of a resource. |
+| **Request Body** | ✅ Required, represents the complete, updated resource. |
+| **Response Body** | ✅ Required for `200 OK`, returns the latest representation. |
+
+---
+
+**When to Use** `PUT`
+---------------------
+
+| Use Case | Example | Required Behavior |
+| --- | --- | --- |
+| **Replace an existing resource completely** | `PUT /v1/customers/{id}` | Replaces the full customer object with the provided payload; returns `200 OK` and the updated resource. |
+| **Create a resource at a client-known URI (rare)** | `PUT /v1/buckets/{id}` | MAY be used if the client controls ID generation. Return `201 Created` if the resource did not exist before. |
+| **Update large static configurations or documents** | `PUT /v1/configurations/{id}` | Appropriate when sending an entire configuration file or template. |
+| **Atomic overwrite of immutable document** | `PUT /v1/policies/{id}` | Old version replaced entirely, new ETag generated. |
+
+---
+
+**Singleton Resources**
+-----------------------
+
+### **Definition**
+
+A **singleton resource** represents a unique instance that exists once per logical context (for example, `/configuration`, `/profile`, `/settings`, `/status`, `/organization/{id}/policy`).  
+It is not part of a collection. A singleton **may or may not pre-exist** , if it does not, the client can create it by `PUT`ting a full representation at its canonical URI.
+
+---
+
+### **Guidance**
+
+| Rule | Description |
+| --- | --- |
+| **MAY use PUT to create a singleton** | When the resource has a known, fixed URI and does not yet exist. `PUT` is idempotent, repeating the same request yields the same result. Return **201 Created** on first creation, **200 OK** on subsequent replacements. |
+| **MUST** | Require `If-Match` on updates when the singleton already exists to prevent concurrent overwrites. |
+| **MUST return 201 Created** | When the singleton did not exist previously and has now been created. |
+| **MUST return 200 OK** | When replacing an existing singleton with a new representation. |
+| **SHOULD include ETag** | Every GET and PUT response for a singleton must include an ETag for version control. |
+| **MUST NOT** | Use PUT for actions or only for full replacement. Use PATCH for partial updates. |
+| **MUST NOT** | Allow DELETE on singleton endpoints. |
+
+---
+
+### **Examples**
+
+**Create (first-time PUT)**
+
+```
+PUT /v1/organization/settings
+Content-Type: application/json
+
+{
+  "auto_approve": true,
+  "timezone": "America/Chicago"
+}
+
+HTTP/1.1 201 Created
+ETag: "v1"
+Location: /v1/organization/settings
+```
+
+**Replace (subsequent update)**
+
+```
+PUT /v1/organization/settings
+If-Match: "v1"
+Content-Type: application/json
+
+{
+  "auto_approve": false,
+  "timezone": "America/Chicago"
+}
+
+HTTP/1.1 200 OK
+ETag: "v2"
+```
+
+**Conflict (stale ETag)**
+
+```
+HTTP/1.1 412 Precondition Failed
+Content-Type: application/problem+json
+{
+  "type": "https://api.lumen.com/errors/conflict",
+  "title": "Precondition Failed",
+  "status": 412,
+  "detail": "The resource has been modified by another client."
+}
+```
+
+---
+
+### **Governance Note**
+
+* Singleton `PUT` operations follow the same idempotency, full-replacement, and ETag/If-Match rules as normal resources.
+* Example Spectral validation:
+
+```
+rules:
+  singleton-put-must-support-etag:
+    given: "$.paths[?(@property.match(/^\\/v1\\/(configuration|profile|settings|status|organization\\/[^/]+\\/policy)/))].put"
+    then:
+      field: "responses['200'].headers.ETag"
+      function: truthy
+```
+
+**Summary**
+
+> Singleton resources can be created or replaced using PUT when they have a fixed URI and no existing representation.  
+> Return 201 on first creation, 200 on subsequent updates.  
+> Always include ETag and require If-Match for concurrency control.
+
+---
+
+**General Rules**
+-----------------
+
+| Rule | Description |
+| --- | --- |
+| **MUST** | Replace the **entire resource representation**; omitted fields are treated as deleted. |
+| **SHOULD NOT** | Use PUT for partial updates — use PATCH instead. |
+| **MUST** | Return the updated resource in the response body. |
+| **MUST** | Preserve the resource identifier and canonical URI. |
+| **MUST NOT** | Allow structural mutations (e.g., changing resource type or parent linkage). |
+| **MUST** | Be **idempotent** — re-submitting the same payload must not create duplicates. |
+
+---
+
+**Conditional Requests & ETag**
+-------------------------------
+
+| Header | Usage | Example |
+| --- | --- | --- |
+| `ETag` | Returned with GET/PUT responses. | `ETag: "v12"` |
+| `If-Match` | Required header for optimistic concurrency. | `If-Match: "v12"` |
+
+**Rules**
+
+* **MUST** return a new ETag on every successful modification.
+* **SHOULD** reject updates without If-Match when concurrent edits are possible.
+* **MUST** return 412 Precondition Failed if If-Match does not match.
+* **MUST NOT** accept stale updates.
+
+---
+
+**Example**
+-----------
+
+```
+PUT /v1/customers/c123
+If-Match: "v4"
+Content-Type: application/json
+
+{
+  "id": "c123",
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "status": "active"
+}
+```
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+ETag: "v5"
+Cache-Control: private, max-age=60
+
+{
+  "id": "c123",
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "status": "active"
+}
+```
+
+---
+
+**Status Codes**
+----------------
+
+| Code | Meaning | Applies To | Notes |
+| --- | --- | --- | --- |
+| **200 OK** | Resource successfully replaced | ✅ Existing resource | MUST include updated representation. |
+| **201 Created** | Resource newly created at client-specified URI or singleton first creation | ✅ Creation | MUST include Location header. |
+| **204 No Content** | Update succeeded, no body returned | ⚠ Optional | Only if representation unchanged. |
+| **400 Bad Request** | Invalid or missing fields | ✅ Both | Schema/validation errors. |
+| **401 Unauthorized** | Authentication required | ✅ Both |  |
+| **403 Forbidden** | Authenticated but not allowed | ✅ Both |  |
+| **404 Not Found** | Resource does not exist | ✅ Both |  |
+| **405 Method Not Allowed** | Wrong HTTP verb | ✅ Both |  |
+| **409 Conflict** | Version/state conflict | ✅ Both | For concurrent updates or integrity violations. |
+| **412 Precondition Failed** | If-Match mismatch | ✅ Both | Stale ETag. |
+| **422 Unprocessable Content** | Semantically invalid | ✅ Both | Valid JSON, violates business rule. |
+| **500 Internal Server Error** | Unexpected server failure | ✅ Both | No internal details exposed. |
+
+---
+
+**Headers**
+-----------
+
+| Header | Usage |
+| --- | --- |
+| `If-Match` | Required for conditional updates. |
+| `ETag` | Returned in every successful PUT. |
+| `Cache-Control` | MUST specify `private` or `no-store`. |
+| `Content-Type` | MUST be `application/json`. |
+| `Accept` | MUST be `application/json` or compatible. |
+
+---
+
+**OAS Authoring Requirements**
+------------------------------
+
+```
+paths:
+  /v1/customers/{id}:
+    put:
+      summary: Replace a customer resource
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+        - in: header
+          name: If-Match
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Customer' }
+      responses:
+        '200':
+          description: Successful replacement
+          headers:
+            ETag:
+              description: Entity tag for versioning
+              schema: { type: string }
+        '201': { description: Created (first-time PUT) }
+        '412': { description: Precondition failed (stale ETag) }
+        '400': { description: Invalid request }
+        '404': { description: Not found }
+```
+
+**MUST**
+
+* Define `If-Match` and `ETag` headers.
+* Restrict status codes to the approved matrix.
+* Use `application/json`.
+
+---
+
+**Governance Checklist**
+------------------------
+
+| Check | Validation |
+| --- | --- |
+| ✅ Idempotency guaranteed | PUT deterministically replaces the same resource |
+| ✅ Full resource in body | Required |
+| ✅ Returns updated representation | Required |
+| ✅ ETag / If-Match implemented | Required for concurrency control |
+| ✅ Proper status codes used | 200/201/204/400/401/403/404/405/409/412/422/500 |
+| ✅ Singleton creation allowed via PUT | 201 Created on first creation |
+| ✅ OAS validated via Spectral | Governance automation ready |
+
+---
+
+**Developer Summary**
+---------------------
+
+* Use **PUT** for full resource replacement or idempotent creation at a known URI.
+* Include the entire object; missing fields imply deletion.
+* Support **ETag** and **If-Match** for concurrency safety.
+* Return `201 Created` on first creation, `200 OK` on updates.
+* Ensure idempotency — repeated identical requests yield identical state.
+* Use **PATCH** for partial updates.
+* Follow the approved status-code matrix and RFC 7807 error model.
+* For **singleton resources**, PUT can create or replace them at a fixed URI; always include ETag and If-Match.
+
+---
+
+**Conditional Update Decision Tree**
+------------------------------------
+
+```
+                   ┌────────────────────────────┐
+                   │      Is this a change?      │
+                   └──────────────┬──────────────┘
+                                  │
+                     ┌────────────┴────────────┐
+                     │                         │
+               No → Use GET              Yes → Modify state
+                                              │
+                                  ┌───────────┴───────────┐
+                                  │                       │
+                      Is it a new resource?         Existing resource?
+                                  │                       │
+                    ┌─────────────┘                       └──────────────┐
+                    │                                                  │
+           Use POST (create)                             Replace or update?
+                                                                   │
+                                           ┌───────────────────────┴────────────────────────┐
+                                           │                                              │
+                                  Replace full representation?                Modify partial fields only?
+                                           │                                              │
+                                 ┌─────────┘                                              └──────────┐
+                                 │                                                             │
+                        ✅ Use PUT with If-Match                                 ✅ Use PATCH with If-Match
+```
 
 # Tactical Engagements & Analysis
 <a id="tactical-engagements-analysis-675725509712"></a>
@@ -8745,3 +8766,361 @@ Acceptance Criteria (AC)
 5. **[Token Claims]** The resulting LIAM token MUST contain distinct, verifiable claims for the authenticated party (the Partner/Wholesaler) **and** the end-customer they are acting on behalf of (e.g., `partner_id`, `customer_ban`, `scope`).
 6. **[Gateway Enforcement]** The API Gateway reference architecture is updated to demonstrate how to enforce this new, delegated authority model (i.e., validating claims for both the Partner and the Customer).
 7. **[Onboarding Flow]** The solution must document the new "Partner Onboarding" and "Customer Consent" user experience (e.g., how a customer grants a partner permission).
+
+## API Security Standards
+<a id="api-security-standards-675894099976"></a>
+
+
+
+### API Security Standard: Identity Derivation, Multi-Tenancy & Zero Trust
+<a id="api-security-standard-identity-derivation-multi-tenancy-zero-trust-675893968900"></a>
+
+**1. Purpose**
+==============
+
+This standard defines how APIs must derive user identity and tenant context within a **Strict Zero Trust Architecture (ZTNA)**.
+
+Zero Trust assumes the internal network is hostile, therefore:
+
+* **Identity must always come from a cryptographically verified token**, and
+* **Tenant context must always be explicitly provided and validated**, not inferred.
+
+This prevents spoofing, privilege escalation, cross-tenant leakage, and ambiguous authorization behavior across APIs and services.
+
+---
+
+**2. Core Identity Principle**
+==============================
+
+### **Identity MUST come from the verified authentication token.**
+
+Backends must NOT accept identity hints from:
+
+* Request bodies
+* Custom or forwarded headers
+* Query parameters
+* Emails supplied by the caller
+
+The token is the **single source of truth** for actor identity.
+
+Actor identity (`who is performing the action`) is derived from token claims such as:
+
+* `sub` (subject identifier — REQUIRED)
+* `email` (optional contact)
+* `scp` / `scope`
+* `roles` / `groups` (optional)
+
+Notification recipients (e.g., `notification_email`, `manager_email`) may appear in the request body, but they **never serve as acting-user identity**.
+
+---
+
+**3. Allowed vs Forbidden Identity Scenarios**
+==============================================
+
+| Scenario | Allowed? | Reason |
+| --- | --- | --- |
+| **A. “Notify Me”** – Acting user wants an email | **FORBIDDEN** | System must derive acting user's email from token. Caller cannot override identity. |
+| **B. “Notify Boss / Another Party”** | **ALLOWED** | Additional recipients are not identity. Body fields allowed when clearly named. |
+| **C. “Act on My Behalf (Self)”** | **FORBIDDEN** | Actor must come from token’s `sub`. No identity in request payload. |
+| **D. “Admin Acting on Behalf of End User”** | **SPECIAL CASE** | Requires delegated authorization (RFC 8693 `act` claim). Backend validates both admin & represented user. |
+| **E. “Partner Acting on Behalf of Customer”** | **SPECIAL CASE** | Allowed only with delegated access tokens or JWT assertions. Backend validates partner → customer linkage via scopes & delegation rules. |
+| **F. “SaaS / Automation App Acting on Behalf of User”** | **SPECIAL CASE** | Requires delegated user-consent tokens. Backend validates app identity, user identity, and granted scopes. |
+
+---
+
+**4. Gateway Requirements (Defense in Depth)**
+==============================================
+
+Gateways MUST:
+
+### **1. Validate**
+
+* Perform preliminary signature + expiry checks
+* Reject invalid tokens early
+
+### **2. Propagate**
+
+Forward the **original** `Authorization: Bearer <token>` header unchanged.
+
+### **3. Sanitize**
+
+Strip all caller-provided identity headers:
+
+* `X-User`
+* `X-Email`
+* `X-Authenticated-User`
+* `X-Acting-User`
+
+Gateways may add diagnostic headers, but they are **non-authoritative**.
+
+---
+
+**5. Backend Requirements (True Zero Trust)**
+=============================================
+
+Backends MUST independently validate:
+
+### **1. Token authenticity**
+
+Signature, issuer, audience, expiry, and required claims.
+
+### **2. Actor identity**
+
+Derived only from the token (`sub`, optional claims).
+
+### **3. Delegated identity (acting on behalf of)**
+
+If token contains delegated identity (e.g., `act`, RFC 8693):
+
+* Validate both the acting identity and represented identity
+* Validate permitted delegated scopes
+* Enforce tenant and resource boundaries
+
+### **4. Tenant boundaries**
+
+The backend must verify the caller is authorized to act *in the tenant they specify*.
+
+### **5. No identity in payload**
+
+Identity hints in request bodies must be ignored and should not be present in compliant APIs.
+
+---
+
+**6. Multi-Tenant Identity & Authorization**
+============================================
+
+Multi-tenant architectures allow users, partners, and systems to interact with multiple organizations or accounts.  
+Zero Trust requires **explicit tenant selection** and **verifiable tenant authorization** for every request.
+
+Identity = Who  
+Tenant = Where / On behalf of whom
+
+Both must be provided independently.
+
+---
+
+**6.1 Identity vs Tenant: Critical Distinction**
+================================================
+
+### **Identity (actor) — provided by token**
+
+* `sub`
+* `email`
+* `scp`
+* `roles` / `groups`
+* `partner_id` (optional)
+
+### **Tenant (context) — provided by the request**
+
+* `tenant_id`
+* `org_id`
+* `account_id`
+
+**Identity tells us who is calling.**  
+**Tenant tells us where they are acting.**
+
+They MUST NOT be collapsed into each other.
+
+---
+
+**6.2 Required Token Claims for Multi-Tenant Context**
+======================================================
+
+To enforce tenant-specific authorization, tokens MUST include:
+
+| Claim | Purpose |
+| --- | --- |
+| `sub` | Who the actor is |
+| `scp` **/** `scope` | What actions are allowed |
+| `tenant_membership` **(custom)** | List of tenants the user has access to (recommended) |
+| `act` **(delegated identity, RFC 8693)** | For acting on behalf of another user/tenant |
+| `partner_id` **(custom)** | Identifies partner organization (if applicable) |
+| `azp` | Authorized party for SaaS/on-behalf-of flows |
+
+---
+
+**6.3 Explicit Tenant Selection (Mandatory)**
+=============================================
+
+The API MUST require the caller to explicitly specify the tenant they are acting in, e.g.:
+
+```
+/tenants/{tenant_id}/orders
+POST /orders?tenant_id=12345
+```
+
+### **Why must the tenant be provided explicitly?**
+
+1. **Users often belong to multiple tenants** (consultants, partners, admins).
+2. **Tokens do not represent tenant intent**, only identity.
+3. **Inference creates ambiguity** and breaks Zero Trust.
+4. **Explicitness prevents cross-tenant privilege escalation.**
+5. **Auditing demands clear, deliberate tenant selection.**
+6. **Identity ≠ Tenant**, and must not imply tenant context.
+7. **Delegated access requires explicit “on behalf of” tenant resolution.**
+
+**Explicit tenant selection is the only way to guarantee correct authorization in multi-tenant APIs.**
+
+---
+
+**6.4 Tenant Cannot Be Inferred**
+=================================
+
+The tenant MUST NOT be inferred from:
+
+* “default tenant” settings
+* email domain
+* token issuer or IdP tenant
+* resource IDs
+* internal lookup
+* user profile metadata
+
+### **Why inference is banned**
+
+* Creates unintended privilege escalation
+* Causes operations on the wrong tenant
+* Breaks federated identity expectations
+* Violates Zero Trust: **Assume nothing. Validate everything.**
+* Inconsistent behavior across APIs
+* Impossible to audit reliably
+
+---
+
+**6.5 Tenant Membership Validation**
+====================================
+
+Once tenant is explicitly provided, backend MUST verify:
+
+1. Caller is mapped to that tenant
+2. Caller has appropriate scope for that tenant
+3. Delegation or admin privileges (if cross-tenant)
+4. Access is logged for audit
+5. If any check fails → **403 Forbidden**
+
+---
+
+**6.6 Cross-Tenant Access**
+===========================
+
+Cross-tenant access is **never permitted by default**.  
+It is only allowed via **delegated authorization** or **elevated admin scopes**.
+
+### **Pattern 1 — Delegated Access (“Acting on behalf of Customer”)**
+
+Used for:
+
+* Partners
+* Resellers
+* SaaS integrations
+* Bots / automation systems
+
+Required:
+
+* Token with `act` **claim** (RFC 8693)
+* Delegated scopes granting partner → customer access
+* Optional constraints like `partner_id`, `customer_id`
+
+Backend validates:
+
+* Partner identity
+* Customer identity
+* Delegation chain
+* Allowed scopes
+* Tenant boundaries
+
+---
+
+### **Pattern 2 — Admin Scopes (Internal elevated access)**
+
+Used by:
+
+* Support teams
+* NOC / operations
+* Internal engineering tools
+
+Required:
+
+* Token containing admin-level scopes (e.g., `tenant.admin`, `customer.manage`)
+* Optional delegated identity (`act`) if impersonation occurs
+
+Backend validates:
+
+* Admin’s identity
+* Admin privileges
+* Tenant scope
+* Operation type matches admin rights
+
+---
+
+**6.7 Multi-Tenant Scenarios**
+==============================
+
+| Scenario | Allowed? | Reason |
+| --- | --- | --- |
+| **MT-1: User acts in tenant they belong to** | ✔️ ALLOWED | Tenant is explicit; membership & scopes validated. |
+| **MT-2: User attempts to act in tenant they do NOT belong to** | ❌ FORBIDDEN | Tenant isolation violation; return `403`. |
+| **MT-3: Internal Admin acts across tenants** | ⚠️ SPECIAL CASE | Allowed only with admin scopes/delegation. |
+| **MT-4: Partner acts on behalf of Customer** | ⚠️ SPECIAL CASE | Must use delegated tokens (RFC 8693) and authorized scopes. |
+| **MT-5: SaaS app acts on behalf of end-user** | ⚠️ SPECIAL CASE | Requires delegated user-consent token and validated authorization chain. |
+
+---
+
+**7. PII & Email Handling**
+===========================
+
+### **Actor Email**
+
+* Always derived from token
+* Never supplied in payload
+* If wrong → user updates profile in IdP
+
+### **Notification Emails**
+
+Allowed only for contacts that are **not the actor**, e.g.:
+
+* `manager_email`
+* `approver_email`
+* `notification_email`
+
+---
+
+**8. Governance as Code (Spectral Rule)**
+=========================================
+
+```
+rules:
+  no-acting-user-in-body:
+    description: "Acting user identity must be derived from the authentication token, not from the request body."
+    severity: error
+    given: "$.paths[*][*][?(@.security)]..requestBody.content.*.schema.properties"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        notMatch: "^(user_email|actor_email|acting_user|customer_email|user_id)$"
+```
+
+---
+
+**9. Migration Plan**
+=====================
+
+| Phase | Action |
+| --- | --- |
+| 1. **Discover** | Identify APIs containing acting user identity in payload. |
+| 2. **Backend Update** | Switch identity derivation to token. |
+| 3. **Contract Update** | Remove identity fields; publish new versions. |
+| 4. **Deprecate** | Follow COM/API deprecation lifecycle. |
+| 5. **Hard Gate** | Gateway blocks requests that include forbidden identity fields. |
+
+---
+
+10. Final Summary
+=================
+
+**Identity = Token**  
+**Tenant = Explicit**  
+**Delegation = RFC 8693 or Admin Scopes**  
+**Notification ≠ Identity**  
+**Headers = Untrusted**  
+**Zero Trust = Verify at Every Layer**

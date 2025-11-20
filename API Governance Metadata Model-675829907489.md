@@ -1,6 +1,6 @@
 # API Governance Metadata Model
 
-> Confluence Page ID: 675829907489, Version: 3
+> Confluence Page ID: 675829907489, Version: 6
 
 1. Introduction
 ---------------
@@ -57,6 +57,9 @@ Tracks the API's maturity and the level of governance applied.
 * `governanceLevel` (String, Required): The level of review and adherence to standards applied to this API. This informs consumer trust and risk.
 
   + **Values:** `Fully Governed`, `Partially Governed`, `Lift and Shift`, `Exception`
+* `governanceProfile` **(String, Required):** The specific ruleset or "linter profile" that automation should apply to this API. This allows developers to self-select the strictness of the review based on the API's origin.
+
+  + **Values:** `legacy` (Minimal checks for older APIs), `lift-n-shift` (Basic structural checks), `full-governance` (Strict adherence to all standards).
 * `deprecationDate` (String, Optional): (If `lifecycleStage` is "Deprecated") The date (ISO 8601) when the API will no longer be supported.
 * `sunsetDate` (String, Optional): (If `lifecycleStage` is "Deprecated") The date (ISO 8601) when the API will be shut down.
 
@@ -70,6 +73,9 @@ Captures high-level technical attributes not defined in the OAS.
 * `protocol` (String, Required): The primary protocol used.
 
   + **Values:** `HTTPS`, `WSS` (WebSockets), `AMQP` (Messaging), etc.
+* `swaggerHubName`(String, Optional)**:** The unique, URL-friendly identifier (slug) for this API in SwaggerHub. This is used by CI/CD pipelines to sync the repository OAS with the SwaggerHub catalog.
+
+  + **Example:** `customer-order-api` (Must match the SwaggerHub URL, not the display name).
 
 ### 2.5. Security & Compliance
 
@@ -86,7 +92,7 @@ Defines the overall risk and compliance posture for the API.
 
 An immutable log of the *latest* governance review. This section is updated automatically by the governance process or tooling upon a successful review.
 
-* `reviewAuditTrail` (Object, Required): A container for all review-related metadata.
+* `reviewAuditTrail` (Object, Optional): A container for all review-related metadata.
 
   + `reviewId` (String, Required): A unique identifier for the latest governance review.
   + `reviewDate` (String, Required): The timestamp (ISO 8601) when the latest review was completed.
@@ -187,10 +193,10 @@ A common concern is that `x-` tags will clutter the rendered documentation (e.g.
       "minLength": 1
     },
     "ownershipModel": {
-    "description": "Defines the ownership classification of the API. For governance scope, always 'Lumen-Owned'.",
-    "type": "string",
-    "enum": ["Lumen-Owned"]
-  },
+      "description": "Defines the ownership classification of the API. For governance scope, always 'Lumen-Owned'.",
+      "type": "string",
+      "enum": ["Lumen-Owned"]
+    },
     "assetId": {
       "type": "string",
       "minLength": 1,
@@ -252,6 +258,15 @@ A common concern is that `x-` tags will clutter the rendered documentation (e.g.
         "Retired"
       ]
     },
+    "governanceProfile": {
+      "description": "The specific ruleset or 'linter profile' that automation should apply to this API.",
+      "type": "string",
+      "enum": [
+        "legacy",
+        "lift-n-shift",
+        "full-governance"
+      ]
+    },
     "governanceLevel": {
       "description": "The level of review and adherence to standards applied to this API.",
       "type": "string",
@@ -271,6 +286,10 @@ A common concern is that `x-` tags will clutter the rendered documentation (e.g.
       "description": "The date (ISO 8601) when the API will be shut down.",
       "type": ["string", "null"],
       "format": "date-time"
+    },
+    "swaggerHubName": {
+      "description": "The unique, URL-friendly identifier (slug) for this API in SwaggerHub. Used for CI/CD sync.",
+      "type": "string"
     },
     "apiStyle": {
       "description": "The architectural style of the API.",
@@ -352,7 +371,7 @@ A common concern is that `x-` tags will clutter the rendered documentation (e.g.
     "schemaVersion",
     "apiName",
     "ownershipModel",
-    "assetId"
+    "assetId",
     "businessOwner",
     "technicalOwner",
     "developmentTeam",
@@ -360,11 +379,11 @@ A common concern is that `x-` tags will clutter the rendered documentation (e.g.
     "consumerAudience",
     "apiLayer",
     "lifecycleStage",
+    "governanceProfile",
     "governanceLevel",
     "apiStyle",
     "protocol",
-    "dataClassification",
-    "reviewAuditTrail"
+    "dataClassification"
   ],
   "additionalProperties": false
 }
